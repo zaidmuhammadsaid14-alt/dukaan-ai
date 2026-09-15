@@ -42,7 +42,7 @@ html{scroll-behavior:smooth}body{background:#f8fafc}.glass{background:rgba(255,2
 </section>
 
 <!-- CUSTOMER MARKETPLACE -->
-<section id="customerApp" class="hidden min-h-screen pb-20 md:pb-8">
+<section id="customerApp" class="hidden min-h-screen">
 <header class="sticky top-0 z-40 glass border-b border-slate-200">
 <div class="max-w-7xl mx-auto px-3 sm:px-6 py-3">
 <div class="flex items-center gap-2">
@@ -51,18 +51,18 @@ html{scroll-behavior:smooth}body{background:#f8fafc}.glass{background:rgba(255,2
 <span class="hidden sm:inline">Dukaan <span class="text-indigo-600">AI</span></span>
 </button>
 <div class="relative flex-1 max-w-2xl mx-auto">
-<input id="search" oninput="renderMarketplace()" class="w-full bg-slate-100 border border-slate-200 rounded-2xl py-3 pl-11 pr-4 outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base" placeholder="Search products, shops, categories or countries...">
+<input id="search" oninput="renderMarketplace()" class="w-full bg-slate-100 border border-slate-200 rounded-2xl py-3 pl-11 pr-4 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Search products, shops, categories or countries...">
 <span class="absolute left-4 top-3.5 text-slate-400">🔎</span>
 </div>
-<button onclick="openCart()" class="relative w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center">🛒<span id="badge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[11px] min-w-5 h-5 rounded-full flex items-center justify-center">0</span></button>
-<button onclick="openAccount()" class="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center">👤</button>
+<button onclick="openCart()" class="relative w-11 h-11 rounded-2xl bg-slate-100">🛒<span id="badge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[11px] min-w-5 h-5 rounded-full flex items-center justify-center">0</span></button>
+<button onclick="openAccount()" class="w-11 h-11 rounded-2xl bg-slate-100">👤</button>
 </div>
 <div id="categories" class="flex gap-2 overflow-x-auto hidebar mt-3 pb-1"></div>
 </div>
 </header>
 
 <main class="max-w-7xl mx-auto px-3 sm:px-6 py-5">
-<!-- Hero Section -->
+<!-- Amazon/Daraz-like hero -->
 <div class="rounded-3xl bg-gradient-to-r from-indigo-600 to-blue-600 text-white p-6 sm:p-10 shadow-soft">
 <div class="max-w-2xl">
 <span class="bg-white/15 px-3 py-1 rounded-full text-xs font-bold">✨ Dukaan AI Marketplace</span>
@@ -75,30 +75,32 @@ html{scroll-behavior:smooth}body{background:#f8fafc}.glass{background:rgba(255,2
 </div>
 </div>
 
-<!-- Quick Highlights -->
+<!-- Quick links -->
 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
-<div class="bg-white rounded-2xl border p-4"><b>🚚 Delivery</b><p class="text-xs text-slate-500 mt-1">To your doorstep</p></div>
+<div class="bg-white rounded-2xl border p-4"><b>🚚 Delivery</b><p class="text-xs text-slate-500 mt-1">To your address</p></div>
 <div class="bg-white rounded-2xl border p-4"><b>🔒 Secure</b><p class="text-xs text-slate-500 mt-1">Account & orders</p></div>
 <div class="bg-white rounded-2xl border p-4"><b>💬 Sellers</b><p class="text-xs text-slate-500 mt-1">Call / WhatsApp</p></div>
-<div class="bg-white rounded-2xl border p-4"><b>🛒 Easy Cart</b><p class="text-xs text-slate-500 mt-1">Instant checkout</p></div>
+<div class="bg-white rounded-2xl border p-4"><b>🛒 Easy Cart</b><p class="text-xs text-slate-500 mt-1">Simple checkout</p></div>
 </div>
 
-<!-- Featured Section -->
+<!-- Featured -->
 <div class="flex items-end justify-between mt-8 mb-4">
 <div><p class="text-xs font-bold text-indigo-600 uppercase">Featured</p><h2 class="text-2xl font-black">Recommended for you</h2></div>
 <span id="count" class="text-sm text-slate-500"></span>
 </div>
 <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
 
-<!-- Empty Placeholders -->
+<!-- Empty product placeholders -->
 <div id="emptyState" class="hidden mt-8">
-<h2 class="text-xl font-black mb-3">No matching products found</h2>
+<h2 class="text-xl font-black mb-3">More products coming soon</h2>
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
 <div class="bg-white rounded-3xl border border-dashed p-5 text-center"><div class="aspect-square rounded-2xl bg-slate-100 flex items-center justify-center text-5xl">📦</div><p class="font-bold mt-3">Your product here</p><p class="text-xs text-slate-400">Waiting for sellers</p></div>
 <div class="bg-white rounded-3xl border border-dashed p-5 text-center"><div class="aspect-square rounded-2xl bg-slate-100 flex items-center justify-center text-5xl">👟</div><p class="font-bold mt-3">New shoes</p><p class="text-xs text-slate-400">Coming soon</p></div>
+<div class="bg-white rounded-3xl border border-dashed p-5 text-center"><div class="aspect-square rounded-2xl bg-slate-100 flex items-center justify-center text-5xl">📱</div><p class="font-bold mt-3">New electronics</p><p class="text-xs text-slate-400">Coming soon</p></div>
+<div class="bg-white rounded-3xl border border-dashed p-5 text-center"><div class="aspect-square rounded-2xl bg-slate-100 flex items-center justify-center text-5xl">👕</div><p class="font-bold mt-3">New fashion</p><p class="text-xs text-slate-400">Coming soon</p></div>
 </div></div>
 
-<!-- Shops Section -->
+<!-- Shops -->
 <div class="mt-10">
 <p class="text-xs font-bold text-indigo-600 uppercase">Marketplace</p>
 <h2 class="text-2xl font-black mt-1">Popular Shops</h2>
@@ -106,8 +108,8 @@ html{scroll-behavior:smooth}body{background:#f8fafc}.glass{background:rgba(255,2
 </div>
 </main>
 
-<!-- Mobile Navigation -->
-<nav class="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t shadow-2xl grid grid-cols-4 text-center">
+<!-- mobile nav -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t shadow-2xl grid grid-cols-4">
 <button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="py-3 text-xs font-bold">🏠<br>Home</button>
 <button onclick="document.getElementById('categories').scrollIntoView({behavior:'smooth'})" class="py-3 text-xs font-bold">📂<br>Categories</button>
 <button onclick="openCart()" class="py-3 text-xs font-bold">🛒<br>Cart</button>
@@ -115,49 +117,41 @@ html{scroll-behavior:smooth}body{background:#f8fafc}.glass{background:rgba(255,2
 </nav>
 </section>
 
-<!-- SELLER DASHBOARD -->
-<section id="sellerApp" class="hidden min-h-screen pb-10">
+<!-- SELLER -->
+<section id="sellerApp" class="hidden min-h-screen">
 <header class="sticky top-0 z-30 glass border-b">
 <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
 <button onclick="goHome()" class="font-black text-xl">🏪 Dukaan <span class="text-indigo-600">AI</span></button>
-<div class="ml-auto flex gap-2">
-<button onclick="openProductModal()" class="bg-indigo-600 text-white px-4 py-2.5 rounded-xl font-bold text-sm">+ Add Product</button>
-<button onclick="logout()" class="bg-slate-100 px-4 py-2.5 rounded-xl font-bold text-sm">Logout</button>
-</div>
-</div>
-</header>
+<div class="ml-auto flex gap-2"><button onclick="openProductModal()" class="bg-indigo-600 text-white px-4 py-2.5 rounded-xl font-bold">+ Add Product</button><button onclick="logout()" class="bg-slate-100 px-4 py-2.5 rounded-xl font-bold">Logout</button></div>
+</div></header>
 <main class="max-w-7xl mx-auto px-4 py-7">
-<div id="sellerDash">
-<div id="sellerHero" class="bg-white rounded-3xl border p-6 shadow-soft">
-<h2 class="text-2xl font-black" id="shopTitle">Welcome to Seller Dashboard</h2>
-<p class="text-slate-500 text-sm mt-1" id="shopSub">Manage your inventory and list products globally.</p>
-</div>
+<div id="sellerSetup"></div>
+<div id="sellerDash" class="hidden">
+<div id="sellerHero" class="bg-white rounded-3xl border p-6 shadow-soft"></div>
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
 <div class="bg-white rounded-3xl border p-5"><p class="text-sm text-slate-500">Products</p><b id="sProducts" class="text-3xl">0</b></div>
 <div class="bg-white rounded-3xl border p-5"><p class="text-sm text-slate-500">Low stock</p><b id="sStock" class="text-3xl">0</b></div>
-<div class="bg-white rounded-3xl border p-5"><p class="text-sm text-slate-500">Status</p><b class="text-lg text-green-600">Active Shop</b></div>
-<div class="bg-white rounded-3xl border p-5"><p class="text-sm text-slate-500">Contact Phone</p><b id="sPhone" class="text-sm">—</b></div>
+<div class="bg-white rounded-3xl border p-5"><p class="text-sm text-slate-500">Shop</p><b class="text-lg">Live</b></div>
+<div class="bg-white rounded-3xl border p-5"><p class="text-sm text-slate-500">Contact</p><b id="sPhone" class="text-sm">—</b></div>
 </div>
-<div class="bg-white rounded-3xl border mt-6 p-5">
-<h2 class="text-xl font-black">Your Products Inventory</h2>
-<div id="sellerProducts" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-5"></div>
+<div class="bg-white rounded-3xl border mt-6 p-5"><h2 class="text-xl font-black">Your Products</h2><div id="sellerProducts" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-5"></div></div>
 </div>
-</div>
-</main>
-</section>
+</main></section>
 
-<!-- MODAL CONTAINER -->
-<div id="modal" class="hidden fixed inset-0 z-50 bg-slate-950/60 p-4 overflow-y-auto flex items-center justify-center">
-<div id="modalBox" class="w-full max-w-lg bg-white rounded-3xl shadow-2xl modal overflow-hidden"></div>
-</div>
-
-<!-- TOAST NOTIFICATION -->
-<div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] bg-slate-900 text-white px-5 py-3 rounded-2xl font-semibold shadow-2xl text-sm"></div>
+<!-- MODAL -->
+<div id="modal" class="hidden fixed inset-0 z-50 bg-slate-950/60 p-4 overflow-y-auto"><div id="modalBox" class="max-w-lg mx-auto mt-5 bg-white rounded-3xl shadow-2xl modal overflow-hidden"></div></div>
+<div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] bg-slate-900 text-white px-5 py-3 rounded-2xl font-semibold shadow-2xl"></div>
 
 <script>
 const SUPABASE_URL="https://yrrrqagtnbcufhcswstp.supabase.co";
 const SUPABASE_KEY="sb_publishable_FGqvkjDrSAHG2RQxW4ErHw_29yN11YR";
-const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let supabaseClient=null;
+function sb(){
+  if(!supabaseClient && window.supabase){
+    supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  }
+  return supabaseClient;
+}
 
 const demo=[
 {id:"d1",name:"Classic Blue Shirt",price:2000,stock:12,category:"Clothes",country:"Pakistan",shopName:"Urban Wear",phone:"+923001234567",image_url:"https://images.unsplash.com/photo-1603252110481-7ba873bf42ab?auto=format&fit=crop&w=800&q=80",description:"Premium everyday shirt."},
@@ -204,88 +198,67 @@ showModal(`<div class="p-6"><div class="flex justify-between"><div><span class="
 <button onclick="forgot()" class="w-full text-sm text-indigo-600 font-bold">Forgot password? Send reset email</button>
 <p id="authMsg" class="text-sm text-center"></p></div></div>`);
 }
-
 function authMode(m){$("authBtn").setAttribute("onclick",`auth('${m}')`);$("authBtn").textContent=m==="login"?"Login":"Create Account";$("lt").className=m==="login"?"py-2.5 rounded-xl bg-white font-bold":"py-2.5 rounded-xl font-bold text-slate-500";$("st").className=m==="signup"?"py-2.5 rounded-xl bg-white font-bold":"py-2.5 rounded-xl font-bold text-slate-500"}
-
 async function auth(mode){
 let email=$("aEmail").value.trim(),pass=$("aPass").value,msg=$("authMsg");
+if(!sb()){
+  msg.textContent="Connection is loading. Please refresh once and try again.";
+  msg.className="text-sm text-center text-red-600";
+  return;
+}
 if(!email||!pass){msg.textContent="Email and password are required.";msg.className="text-sm text-center text-red-600";return}
 if(mode==="login"){
-let r=await supabaseClient.auth.signInWithPassword({email,password:pass});
+let r=await sb().auth.signInWithPassword({email,password:pass});
 if(r.error){msg.textContent=r.error.message;msg.className="text-sm text-center text-red-600";return}
 currentUser=r.data.user;closeModal();await afterLogin();return;
 }
 if(pass.length<6){msg.textContent="Password must be at least 6 characters.";msg.className="text-sm text-center text-red-600";return}
-let r=await supabaseClient.auth.signUp({email,password:pass,options:{data:{role:currentRole,full_name:$("aName")?.value.trim()||""}}});
+let r=await sb().auth.signUp({email,password:pass,options:{data:{role:currentRole,full_name:$("aName")?.value.trim()||""}}});
 if(r.error){msg.textContent=r.error.message;msg.className="text-sm text-center text-red-600";return}
 currentUser=r.data.user;
 if(currentRole==="customer")await saveCustomer();else await saveSeller();
 msg.textContent=r.data.session?"Account created!":"Account created. Check your email if confirmation is enabled.";
 msg.className="text-sm text-center text-green-600";
 }
-
 async function saveCustomer(){
 if(!currentUser)return;
-await supabaseClient.from("profiles").upsert({id:currentUser.id,role:"customer",full_name:$("aName").value.trim(),phone:$("aPhone").value.trim()});
+await sb().from("profiles").upsert({id:currentUser.id,role:"customer",full_name:$("aName").value.trim(),phone:$("aPhone").value.trim()});
 let address=$("aAddress").value.trim(),city=$("aCity").value.trim();
-if(address&&city)await supabaseClient.from("customer_addresses").insert({user_id:currentUser.id,label:"Home",address,city});
+if(address&&city)await sb().from("customer_addresses").insert({user_id:currentUser.id,label:"Home",address,city});
 }
-
 async function saveSeller(){
 if(!currentUser)return;
-await supabaseClient.from("profiles").upsert({id:currentUser.id,role:"owner",full_name:$("aName")?.value.trim()||""});
+await sb().from("profiles").upsert({id:currentUser.id,role:"owner",full_name:$("aName")?.value.trim()||""});
 let base={owner_id:currentUser.id,name:$("shopName").value.trim(),phone:$("shopPhone").value.trim()};
-let r=await supabaseClient.from("shops").insert({...base,country:$("shopCountry").value.trim(),category:$("shopCategory").value.trim()}).select().single();
-if(r.error)r=await supabaseClient.from("shops").insert(base).select().single();
+let r=await sb().from("shops").insert({...base,country:$("shopCountry").value.trim(),category:$("shopCategory").value.trim()}).select().single();
+if(r.error)r=await sb().from("shops").insert(base).select().single();
 if(!r.error)currentShop=r.data;
 }
-
 async function forgot(){
 let email=$("aEmail").value.trim(),msg=$("authMsg");
 if(!email){msg.textContent="Enter your email first.";msg.className="text-sm text-center text-red-600";return}
-let r=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:location.origin});
+let r=await sb().auth.resetPasswordForEmail(email,{redirectTo:location.origin});
 msg.textContent=r.error?r.error.message:"Password reset email sent.";msg.className="text-sm text-center "+(r.error?"text-red-600":"text-green-600");
 }
-
-async function afterLogin(){
-let r=currentUser.user_metadata?.role;currentRole=(r==="owner"||r==="seller")?"seller":"customer";
-if(currentRole==="seller") showSeller(); else showCustomer();
-}
+async function afterLogin(){let r=currentUser.user_metadata?.role;currentRole=(r==="owner"||r==="seller")?"seller":"customer";currentRole==="seller"?showSeller():showCustomer()}
 
 async function showCustomer(){
 $("landing").classList.add("hidden");$("sellerApp").classList.add("hidden");$("customerApp").classList.remove("hidden");
 await loadReal();renderCategories();renderMarketplace();updateBadge();
 }
-
-async function showSeller(){
-$("landing").classList.add("hidden");$("customerApp").classList.add("hidden");$("sellerApp").classList.remove("hidden");
-let s=await supabaseClient.from("shops").select("*").eq("owner_id",currentUser.id).single();
-if(s.data){
-currentShop=s.data;
-$("shopTitle").textContent=currentShop.name;
-$("shopSub").textContent=`Country: ${currentShop.country||'N/A'} | Category: ${currentShop.category||'General'}`;
-$("sPhone").textContent=currentShop.phone||'N/A';
-}
-await loadSellerProducts();
-}
-
-async function loadSellerProducts(){
-if(!currentShop) return;
-let r=await supabaseClient.from("products").select("*").eq("shop_id",currentShop.id);
-sellerProducts=r.data||[];
-$("sProducts").textContent=sellerProducts.length;
-$("sStock").textContent=sellerProducts.filter(p=>p.stock<5).length;
-$("sellerProducts").innerHTML=sellerProducts.map(p=>`
-<div class="bg-slate-50 border rounded-2xl p-4">
-<img src="${esc(p.image_url)}" class="w-full h-36 object-cover rounded-xl">
-<h4 class="font-black mt-2">${esc(p.name)}</h4>
-<p class="text-sm font-bold text-indigo-600">${money(p.price)}</p>
-<p class="text-xs text-slate-500">Stock: ${p.stock}</p>
-</div>
-`).join("")||'<p class="text-slate-400 text-sm col-span-4">No products added yet. Click "+ Add Product" to list one.</p>';
-}
-
 async function loadReal(){
-let r=await supabaseClient.from("products").select("*").order("name");if(r.error||!r.data)return;
-let s=await supabaseClient.from("shops").select("*");let shops=s.data||[];
-let real=r.data.map(p=>{let sh=shops.find(x=>x.id===p.shop_id
+let r=await sb().from("products").select("*").order("name");if(r.error||!r.data)return;
+let s=await sb().from("shops").select("*");let shops=s.data||[];
+let real=r.data.map(p=>{let sh=shops.find(x=>x.id===p.shop_id)||{};return {...p,shopName:sh.name||"Registered Shop",country:sh.country||"—",phone:sh.phone||"",category:p.category||"Other"}})
+products=[...demo,...real.filter(x=>!demo.some(d=>d.id===x.id))];
+}
+function renderCategories(){
+let cats=["All",...new Set(products.map(p=>p.category||"Other"))];$("categories").innerHTML=cats.map(c=>`<button onclick="setCat('${esc(c)}')" class="shrink-0 px-4 py-2 rounded-full text-sm font-bold ${category===c?"bg-indigo-600 text-white":"bg-slate-100 text-slate-600"}">${esc(c)}</button>`).join("")
+}
+function setCat(c){category=c;renderCategories();renderMarketplace()}
+function setQuick(c){category=c;renderCategories();renderMarketplace();window.scrollTo({top:300,behavior:"smooth"})}
+function renderMarketplace(){
+let q=($("search")?.value||"").toLowerCase().trim();
+let list=products.filter(p=>(category==="All"||(p.category||"Other")===category)&&`${p.name} ${p.category} ${p.country} ${p.shopName}`.toLowerCase().includes(q));
+$("count").textContent=list.length+" products";
+$("grid").innerH
