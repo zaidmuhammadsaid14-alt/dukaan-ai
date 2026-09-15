@@ -1,946 +1,194 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dukaan AI</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  padding:15px;
-  font-family:Arial,sans-serif;
-  background:#f4f6f8;
-  color:#222;
-}
-
-.box{
-  max-width:620px;
-  margin:auto;
-  background:#fff;
-  padding:20px;
-  border-radius:20px;
-}
-
-h1{text-align:center;margin-top:5px}
-
-input,textarea{
-  width:100%;
-  padding:14px;
-  margin:6px 0;
-  border:1px solid #ddd;
-  border-radius:11px;
-  font-size:16px;
-}
-
-textarea{
-  min-height:80px;
-  resize:vertical;
-}
-
-button{
-  width:100%;
-  padding:14px;
-  margin-top:8px;
-  border:0;
-  border-radius:11px;
-  background:#222;
-  color:#fff;
-  font-size:16px;
-}
-
-.green{background:#16803c}
-.blue{background:#2563eb}
-.red{background:#d33}
-
-.hidden{display:none}
-
-.logo{
-  width:100px;
-  height:100px;
-  border-radius:50%;
-  object-fit:cover;
-  display:block;
-  margin:10px auto;
-  border:3px solid #eee;
-}
-
-.shop-head{
-  text-align:center;
-  background:#f5f5f5;
-  padding:15px;
-  border-radius:15px;
-  margin-bottom:15px;
-}
-
-.card{
-  background:#f1f1f1;
-  padding:15px;
-  margin-top:12px;
-  border-radius:14px;
-}
-
-.product-img{
-  width:100%;
-  max-height:280px;
-  object-fit:cover;
-  border-radius:12px;
-  margin-bottom:12px;
-}
-
-.chat{
-  background:#f1f1f1;
-  min-height:100px;
-  padding:15px;
-  border-radius:12px;
-  margin-top:12px;
-}
-
-.status{
-  margin-top:10px;
-  padding:10px;
-  border-radius:10px;
-  background:#eee;
-  text-align:center;
-}
-
-.file{
-  padding:10px 0;
-}
-
-hr{
-  border:0;
-  border-top:1px solid #ddd;
-  margin:25px 0;
-}
-</style>
-</head>
-
-<body>
-
-<div class="box">
-
-<h1>🏪 Dukaan AI</h1>
-
-
-<!-- AUTH -->
-
-<div id="auth">
-
-<h2>👤 Shop Owner</h2>
-
-<input id="email" type="email" placeholder="Email">
-
-<input id="password" type="password" placeholder="Password">
-
-<button class="blue" onclick="signUp()">
-Create Account
-</button>
-
-<button onclick="login()">
-Login
-</button>
-
-<div id="status" class="status"></div>
-
-</div>
-
-
-<!-- SHOP SETUP -->
-
-<div id="setup" class="hidden">
-
-<h2>🏪 Create Your Shop</h2>
-
-<input id="shopName" placeholder="Shop name">
-
-<p><b>🖼️ Shop Logo</b></p>
-
-<input id="logoFile" class="file" type="file" accept="image/*">
-
-<button class="green" onclick="createShop()">
-Create My Shop
-</button>
-
-</div>
-
-
-<!-- DASHBOARD -->
-
-<div id="dashboard" class="hidden">
-
-
-<div class="shop-head">
-
-<img id="shopLogo" class="logo hidden">
-
-<h2 id="welcome"></h2>
-
-</div>
-
-
-<button class="red" onclick="logout()">
-Logout
-</button>
-
-
-<!-- SHOP LOGO -->
-
-<h3>🏪 Shop Logo</h3>
-
-<input id="newLogoFile" type="file" accept="image/*">
-
-<button class="blue" onclick="uploadShopLogo()">
-📸 Upload Shop Logo
-</button>
-
-
-<hr>
-
-
-<!-- ADD PRODUCT -->
-
-<h2>📦 Add Product</h2>
-
-<input id="productName" placeholder="Product name">
-
-<input id="productCategory" placeholder="Category">
-
-<textarea id="productDescription"
-placeholder="Product description"></textarea>
-
-<input id="productPrice"
-type="number"
-placeholder="Price">
-
-<input id="productStock"
-type="number"
-placeholder="Stock">
-
-<p><b>📸 Product Picture</b></p>
-
-<input id="productFile"
-type="file"
-accept="image/*">
-
-<button class="green" onclick="addProduct()">
-➕ Add Product
-</button>
-
-
-<h2>🛍️ Your Products</h2>
-
-<div id="products"></div>
-
-
-<hr>
-
-
-<!-- CUSTOMER AI -->
-
-<h2>🤖 Customer Assistant</h2>
-
-<div id="chat" class="chat">
-🤖 Dukaan AI:<br><br>
-Hi! How can I help you today? 😊
-</div>
-
-<input id="message"
-placeholder="Example: Blue shirt price?">
-
-<button onclick="reply()">
-Send
-</button>
-
-
-</div>
-
-</div>
-
-
-<script>
-
-/* =========================
-SUPABASE
-========================= */
-
-const SUPABASE_URL =
-"https://yrrrqagtnbcufhcswstp.supabase.co";
-
-const SUPABASE_KEY =
-"sb_publishable_FGqvkjDrSAHG2RQxW4ErHw_29yN11YR";
-
-const supabaseClient =
-window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
+-- DUukaan AI FINAL DATABASE SETUP
+-- Run this once in Supabase SQL Editor.
+-- It does NOT delete your existing products/shops.
+
+create extension if not exists pgcrypto;
+
+alter table shops add column if not exists phone text;
+alter table shops add column if not exists address text;
+alter table shops add column if not exists city text;
+alter table shops add column if not exists logo_url text;
+
+alter table products add column if not exists category text;
+alter table products add column if not exists description text;
+alter table products add column if not exists image_url text;
+
+create table if not exists profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  role text not null default 'customer' check (role in ('customer','owner')),
+  full_name text,
+  phone text,
+  created_at timestamptz default now()
 );
 
-
-/* =========================
-VARIABLES
-========================= */
-
-let currentUser=null;
-let currentShop=null;
-let products=[];
-
-
-/* =========================
-STATUS
-========================= */
-
-function status(text){
-
-document.getElementById("status").innerText=text;
-
-}
-
-
-/* =========================
-SIGN UP
-========================= */
-
-async function signUp(){
-
-const email=
-document.getElementById("email")
-.value.trim();
-
-const password=
-document.getElementById("password")
-.value;
-
-if(!email || !password){
-
-status("Please enter email and password.");
-
-return;
-
-}
-
-const {error}=
-await supabaseClient.auth.signUp({
-
-email:email,
-password:password
-
-});
-
-if(error){
-
-status(error.message);
-
-return;
-
-}
-
-status(
-"Account created! Check your email if confirmation is required."
+create table if not exists customer_addresses (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  title text not null,
+  address text not null,
+  city text not null,
+  phone text not null,
+  created_at timestamptz default now()
 );
 
-}
-
-
-/* =========================
-LOGIN
-========================= */
-
-async function login(){
-
-const email=
-document.getElementById("email")
-.value.trim();
-
-const password=
-document.getElementById("password")
-.value;
-
-if(!email || !password){
-
-status("Please enter email and password.");
-
-return;
-
-}
-
-const {data,error}=
-await supabaseClient.auth.signInWithPassword({
-
-email:email,
-password:password
-
-});
-
-if(error){
-
-status(error.message);
-
-return;
-
-}
-
-currentUser=data.user;
-
-await loadShop();
-
-}
-
-
-/* =========================
-LOAD SHOP
-========================= */
-
-async function loadShop(){
-
-const {data,error}=
-await supabaseClient
-.from("shops")
-.select("*")
-.eq("owner_id",currentUser.id)
-.limit(1);
-
-if(error){
-
-status(error.message);
-
-return;
-
-}
-
-document.getElementById("auth")
-.classList.add("hidden");
-
-if(data && data.length){
-
-currentShop=data[0];
-
-showDashboard();
-
-}else{
-
-document.getElementById("setup")
-.classList.remove("hidden");
-
-}
-
-}
-
-
-/* =========================
-UPLOAD IMAGE
-========================= */
-
-async function uploadImage(file){
-
-if(!file) return null;
-
-const extension=
-file.name.split(".").pop();
-
-const fileName=
-currentUser.id+
-"/"+
-Date.now()+
-"."+
-extension;
-
-const {error}=
-await supabaseClient.storage
-.from("products-images")
-.upload(
-fileName,
-file,
-{
-contentType:file.type,
-upsert:false
-}
+create table if not exists orders (
+  id uuid primary key default gen_random_uuid(),
+  customer_id uuid not null references auth.users(id) on delete restrict,
+  shop_id uuid not null references shops(id) on delete restrict,
+  address_id uuid not null references customer_addresses(id) on delete restrict,
+  status text not null default 'received'
+    check (status in ('received','confirmed','preparing','out_for_delivery','delivered','cancelled')),
+  total numeric(12,2) not null default 0,
+  created_at timestamptz default now()
 );
 
-if(error){
-
-alert("Image upload error: "+error.message);
-
-return null;
-
-}
-
-const {data}=
-supabaseClient.storage
-.from("products-images")
-.getPublicUrl(fileName);
-
-return data.publicUrl;
-
-}
-
-
-/* =========================
-CREATE SHOP
-========================= */
-
-async function createShop(){
-
-const name=
-document.getElementById("shopName")
-.value.trim();
-
-const file=
-document.getElementById("logoFile")
-.files[0];
-
-if(!name){
-
-alert("Please enter shop name.");
-
-return;
-
-}
-
-let logoUrl=null;
-
-if(file){
-
-logoUrl=await uploadImage(file);
-
-if(!logoUrl) return;
-
-}
-
-
-const {data,error}=
-await supabaseClient
-.from("shops")
-.insert({
-
-owner_id:currentUser.id,
-name:name,
-logo_url:logoUrl
-
-})
-.select()
-.single();
-
-
-if(error){
-
-alert(error.message);
-
-return;
-
-}
-
-currentShop=data;
-
-document.getElementById("setup")
-.classList.add("hidden");
-
-showDashboard();
-
-}
-
-
-/* =========================
-DASHBOARD
-========================= */
-
-async function showDashboard(){
-
-document.getElementById("auth")
-.classList.add("hidden");
-
-document.getElementById("setup")
-.classList.add("hidden");
-
-document.getElementById("dashboard")
-.classList.remove("hidden");
-
-document.getElementById("welcome").innerText=
-currentShop.name;
-
-const logo=
-document.getElementById("shopLogo");
-
-if(currentShop.logo_url){
-
-logo.src=currentShop.logo_url;
-
-logo.classList.remove("hidden");
-
-}
-
-await loadProducts();
-
-}
-
-
-/* =========================
-SHOP LOGO UPDATE
-========================= */
-
-async function uploadShopLogo(){
-
-const file=
-document.getElementById("newLogoFile")
-.files[0];
-
-if(!file){
-
-alert("Please select a logo from gallery.");
-
-return;
-
-}
-
-const url=
-await uploadImage(file);
-
-if(!url) return;
-
-
-const {error}=
-await supabaseClient
-.from("shops")
-.update({
-logo_url:url
-})
-.eq("id",currentShop.id);
-
-
-if(error){
-
-alert(error.message);
-
-return;
-
-}
-
-currentShop.logo_url=url;
-
-const logo=
-document.getElementById("shopLogo");
-
-logo.src=url;
-
-logo.classList.remove("hidden");
-
-alert("Shop logo uploaded successfully! ✅");
-
-}
-
-
-/* =========================
-LOAD PRODUCTS
-========================= */
-
-async function loadProducts(){
-
-const {data,error}=
-await supabaseClient
-.from("products")
-.select("*")
-.eq("shop_id",currentShop.id)
-.order("name");
-
-
-if(error){
-
-alert(error.message);
-
-return;
-
-}
-
-products=data || [];
-
-showProducts();
-
-}
-
-
-/* =========================
-ADD PRODUCT
-========================= */
-
-async function addProduct(){
-
-const name=
-document.getElementById("productName")
-.value.trim();
-
-const category=
-document.getElementById("productCategory")
-.value.trim();
-
-const description=
-document.getElementById("productDescription")
-.value.trim();
-
-const price=
-document.getElementById("productPrice")
-.value;
-
-const stock=
-document.getElementById("productStock")
-.value;
-
-const file=
-document.getElementById("productFile")
-.files[0];
-
-
-if(!name || price==="" || stock===""){
-
-alert("Please enter product name, price and stock.");
-
-return;
-
-}
-
-
-let imageUrl=null;
-
-if(file){
-
-imageUrl=await uploadImage(file);
-
-if(!imageUrl) return;
-
-}
-
-
-const productData={
-
-shop_id:currentShop.id,
-name:name,
-category:category,
-description:description,
-price:Number(price),
-stock:Number(stock)
-
-};
-
-
-if(imageUrl){
-
-productData.image_url=imageUrl;
-
-}
-
-
-const {error}=
-await supabaseClient
-.from("products")
-.insert(productData);
-
-
-if(error){
-
-alert(error.message);
-
-return;
-
-}
-
-
-document.getElementById("productName").value="";
-document.getElementById("productCategory").value="";
-document.getElementById("productDescription").value="";
-document.getElementById("productPrice").value="";
-document.getElementById("productStock").value="";
-document.getElementById("productFile").value="";
-
-
-await loadProducts();
-
-alert("Product added successfully! ✅");
-
-}
-
-
-/* =========================
-SHOW PRODUCTS
-========================= */
-
-function showProducts(){
-
-const container=
-document.getElementById("products");
-
-container.innerHTML="";
-
-
-if(products.length===0){
-
-container.innerHTML=
-"<p>No products added yet.</p>";
-
-return;
-
-}
-
-
-products.forEach(function(product){
-
-let image="";
-
-if(product.image_url){
-
-image=
-`<img class="product-img"
-src="${product.image_url}"
-alt="${product.name}">`;
-
-}
-
-
-container.innerHTML+=`
-
-<div class="card">
-
-${image}
-
-<h3>📦 ${product.name}</h3>
-
-${product.category ?
-"🏷️ Category: "+product.category+"<br><br>"
-:""}
-
-${product.description ?
-"📝 "+product.description+"<br><br>"
-:""}
-
-💰 Price: Rs. ${product.price}<br>
-
-📊 Stock: ${product.stock}
-
-</div>
-
-`;
-
-});
-
-}
-
-
-/* =========================
-AI ASSISTANT
-========================= */
-
-function reply(){
-
-const message=
-document.getElementById("message")
-.value
-.toLowerCase()
-.trim();
-
-const chat=
-document.getElementById("chat");
-
-
-if(!message){
-
-alert("Please enter a message.");
-
-return;
-
-}
-
-
-const product=
-products.find(function(item){
-
-return message.includes(
-item.name.toLowerCase()
+create table if not exists order_items (
+  id uuid primary key default gen_random_uuid(),
+  order_id uuid not null references orders(id) on delete cascade,
+  product_id uuid not null references products(uuid) on delete restrict,
+  quantity integer not null check (quantity > 0),
+  unit_price numeric(12,2) not null
 );
 
-});
+create table if not exists shop_messages (
+  id uuid primary key default gen_random_uuid(),
+  customer_id uuid not null references auth.users(id) on delete cascade,
+  shop_id uuid not null references shops(id) on delete cascade,
+  product_name text,
+  message text not null,
+  created_at timestamptz default now()
+);
 
+alter table profiles enable row level security;
+alter table customer_addresses enable row level security;
+alter table orders enable row level security;
+alter table order_items enable row level security;
+alter table shop_messages enable row level security;
 
-if(product){
+drop policy if exists "profiles own select" on profiles;
+create policy "profiles own select" on profiles for select to authenticated
+using (id = auth.uid());
 
-if(Number(product.stock)>0){
+drop policy if exists "profiles own insert" on profiles;
+create policy "profiles own insert" on profiles for insert to authenticated
+with check (id = auth.uid());
 
-chat.innerHTML=
-`
-🤖 Dukaan AI:<br><br>
-Yes! <b>${product.name}</b> is available. 😊
-<br><br>
-💰 Price: Rs. ${product.price}
-<br>
-📦 Stock: ${product.stock}
-`;
+drop policy if exists "profiles own update" on profiles;
+create policy "profiles own update" on profiles for update to authenticated
+using (id = auth.uid()) with check (id = auth.uid());
 
-}else{
+drop policy if exists "addresses own all" on customer_addresses;
+create policy "addresses own all" on customer_addresses for all to authenticated
+using (user_id = auth.uid()) with check (user_id = auth.uid());
 
-chat.innerHTML=
-`
-🤖 Dukaan AI:<br><br>
-Sorry, <b>${product.name}</b> is currently out of stock. 😔
-`;
+drop policy if exists "products public read" on products;
+create policy "products public read" on products for select to anon, authenticated using (true);
 
-}
+drop policy if exists "shop owner product insert" on products;
+create policy "shop owner product insert" on products for insert to authenticated
+with check (exists (select 1 from shops s where s.id=shop_id and s.owner_id=auth.uid()));
 
-}else{
+drop policy if exists "shop owner product update" on products;
+create policy "shop owner product update" on products for update to authenticated
+using (exists (select 1 from shops s where s.id=shop_id and s.owner_id=auth.uid()))
+with check (exists (select 1 from shops s where s.id=shop_id and s.owner_id=auth.uid()));
 
-chat.innerHTML=
-`
-🤖 Dukaan AI:<br><br>
-Sorry, I couldn't find that product. 😕
-<br><br>
-Please ask using the product name.
-`;
+drop policy if exists "shop owner product delete" on products;
+create policy "shop owner product delete" on products for delete to authenticated
+using (exists (select 1 from shops s where s.id=shop_id and s.owner_id=auth.uid()));
 
-}
+drop policy if exists "shop public read" on shops;
+create policy "shop public read" on shops for select to anon, authenticated using (true);
 
+drop policy if exists "owner shop update" on shops;
+create policy "owner shop update" on shops for update to authenticated
+using (owner_id=auth.uid()) with check (owner_id=auth.uid());
 
-document.getElementById("message").value="";
+drop policy if exists "owner shop insert" on shops;
+create policy "owner shop insert" on shops for insert to authenticated
+with check (owner_id=auth.uid());
 
-}
+drop policy if exists "orders customer read" on orders;
+create policy "orders customer read" on orders for select to authenticated
+using (customer_id=auth.uid());
 
+drop policy if exists "orders owner read" on orders;
+create policy "orders owner read" on orders for select to authenticated
+using (exists (select 1 from shops s where s.id=shop_id and s.owner_id=auth.uid()));
 
-/* =========================
-LOGOUT
-========================= */
+drop policy if exists "orders owner update" on orders;
+create policy "orders owner update" on orders for update to authenticated
+using (exists (select 1 from shops s where s.id=shop_id and s.owner_id=auth.uid()))
+with check (exists (select 1 from shops s where s.id=shop_id and s.owner_id=auth.uid()));
 
-async function logout(){
+drop policy if exists "order items customer read" on order_items;
+create policy "order items customer read" on order_items for select to authenticated
+using (exists (select 1 from orders o where o.id=order_id and o.customer_id=auth.uid()));
 
-await supabaseClient.auth.signOut();
+drop policy if exists "order items owner read" on order_items;
+create policy "order items owner read" on order_items for select to authenticated
+using (exists (
+  select 1 from orders o join shops s on s.id=o.shop_id
+  where o.id=order_id and s.owner_id=auth.uid()
+));
 
-location.reload();
+drop policy if exists "messages customer all" on shop_messages;
+create policy "messages customer all" on shop_messages for all to authenticated
+using (customer_id=auth.uid()) with check (customer_id=auth.uid());
 
-}
+drop policy if exists "messages owner read" on shop_messages;
+create policy "messages owner read" on shop_messages for select to authenticated
+using (exists (select 1 from shops s where s.id=shop_id and s.owner_id=auth.uid()));
 
+-- Atomic order creation: checks stock, calculates total, creates order/items, reduces stock.
+create or replace function create_order(
+  p_shop_id uuid,
+  p_address_id uuid,
+  p_items jsonb
+) returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_order uuid;
+  v_total numeric(12,2) := 0;
+  v_item jsonb;
+  v_product products%rowtype;
+  v_qty integer;
+begin
+  if not exists (select 1 from customer_addresses where id=p_address_id and user_id=auth.uid()) then
+    raise exception 'Invalid delivery address';
+  end if;
 
-/* =========================
-CHECK LOGIN
-========================= */
+  insert into orders(customer_id,shop_id,address_id,status,total)
+  values(auth.uid(),p_shop_id,p_address_id,'received',0)
+  returning id into v_order;
 
-async function checkSession(){
+  for v_item in select * from jsonb_array_elements(p_items)
+  loop
+    v_qty := (v_item->>'quantity')::integer;
+    select * into v_product from products
+    where uuid=(v_item->>'product_id')::uuid and shop_id=p_shop_id
+    for update;
 
-const {data}=
-await supabaseClient.auth.getSession();
+    if not found then raise exception 'Product not found'; end if;
+    if v_product.stock < v_qty then raise exception 'Not enough stock for %',v_product.name; end if;
 
-if(data.session){
+    insert into order_items(order_id,product_id,quantity,unit_price)
+    values(v_order,v_product.uuid,v_qty,v_product.price);
 
-currentUser=
-data.session.user;
+    v_total := v_total + (v_product.price * v_qty);
+    update products set stock=stock-v_qty where uuid=v_product.uuid;
+  end loop;
 
-await loadShop();
+  if v_total <= 0 then raise exception 'Cart is empty'; end if;
+  update orders set total=v_total where id=v_order;
+  return v_order;
+end;
+$$;
 
-}
+grant execute on function create_order(uuid,uuid,jsonb) to authenticated;
 
-}
-
-
-checkSession();
-
-</script>
-
-</body>
-</html>
+-- Storage bucket should already exist: products-images
+-- Keep your existing storage policies for public SELECT + authenticated INSERT/UPDATE/DELETE.
