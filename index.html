@@ -1,4 +1,4 @@
-            <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -121,4 +121,191 @@ button {
 
         <input id="message" placeholder="Ask about a product">
 
-        <button onclick="reply()">Send
+        <button onclick="reply()">Send</button>
+
+    </div>
+
+</div>
+
+<script>
+
+let products = JSON.parse(localStorage.getItem("products")) || [];
+
+function createShop() {
+
+    const shopName =
+        document.getElementById("shopName").value.trim();
+
+    if (shopName === "") {
+        alert("Please enter your shop name.");
+        return;
+    }
+
+    localStorage.setItem("shopName", shopName);
+
+    document.getElementById("start").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+
+    document.getElementById("shopTitle").innerText =
+        "Welcome, " + shopName + " 👋";
+
+    showProducts();
+}
+
+function saveProducts() {
+    localStorage.setItem(
+        "products",
+        JSON.stringify(products)
+    );
+}
+
+function addProduct() {
+
+    const name =
+        document.getElementById("productName").value.trim();
+
+    const price =
+        document.getElementById("productPrice").value;
+
+    const stock =
+        document.getElementById("productStock").value;
+
+    if (name === "" || price === "" || stock === "") {
+        alert("Please fill in all product details.");
+        return;
+    }
+
+    products.push({
+        name: name,
+        price: price,
+        stock: stock
+    });
+
+    saveProducts();
+    showProducts();
+
+    document.getElementById("productName").value = "";
+    document.getElementById("productPrice").value = "";
+    document.getElementById("productStock").value = "";
+}
+
+function showProducts() {
+
+    const container =
+        document.getElementById("products");
+
+    container.innerHTML = "";
+
+    if (products.length === 0) {
+
+        container.innerHTML =
+            "<p>No products added yet.</p>";
+
+        return;
+    }
+
+    products.forEach(function(product, index) {
+
+        container.innerHTML += `
+            <div class="product">
+                <b>📦 ${product.name}</b><br><br>
+                💰 Price: Rs. ${product.price}<br>
+                📊 Stock: ${product.stock}
+
+                <button class="delete"
+                onclick="deleteProduct(${index})">
+                🗑️ Delete
+                </button>
+            </div>
+        `;
+    });
+}
+
+function deleteProduct(index) {
+
+    products.splice(index, 1);
+
+    saveProducts();
+    showProducts();
+}
+
+function showDashboard() {
+
+    document.getElementById("productSection").style.display =
+        "block";
+
+    document.getElementById("assistantSection").style.display =
+        "none";
+}
+
+function showAssistant() {
+
+    document.getElementById("productSection").style.display =
+        "none";
+
+    document.getElementById("assistantSection").style.display =
+        "block";
+}
+
+function reply() {
+
+    const message =
+        document.getElementById("message")
+        .value
+        .toLowerCase()
+        .trim();
+
+    const chat =
+        document.getElementById("chat");
+
+    if (message === "") {
+        alert("Please enter a message.");
+        return;
+    }
+
+    const product =
+        products.find(function(item) {
+
+            return message.includes(
+                item.name.toLowerCase()
+            );
+
+        });
+
+    if (product) {
+
+        if (Number(product.stock) > 0) {
+
+            chat.innerHTML =
+                "🤖 Dukaan AI:<br><br>" +
+                "Yes! " + product.name +
+                " is available. 😊<br><br>" +
+                "💰 Price: Rs. " +
+                product.price + "<br>" +
+                "📦 Stock: " +
+                product.stock;
+
+        } else {
+
+            chat.innerHTML =
+                "🤖 Dukaan AI:<br><br>" +
+                "Sorry, " + product.name +
+                " is currently out of stock.";
+
+        }
+
+    } else {
+
+        chat.innerHTML =
+            "🤖 Dukaan AI:<br><br>" +
+            "Sorry, I couldn't find that product. 😕";
+
+    }
+
+    document.getElementById("message").value = "";
+}
+
+</script>
+
+</body>
+</html>
