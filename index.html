@@ -1,35 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dukaan AI</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
+*{box-sizing:border-box}
+
 body{
-  font-family:Arial,sans-serif;
-  background:#f5f5f5;
   margin:0;
   padding:20px;
+  font-family:Arial,sans-serif;
+  background:#f5f5f5;
+  color:#222;
 }
+
 .box{
-  background:white;
-  max-width:500px;
+  max-width:600px;
   margin:auto;
-  padding:25px;
+  background:white;
+  padding:24px;
   border-radius:20px;
 }
+
 h1{text-align:center}
-input{
+
+input,select,textarea{
   width:100%;
-  box-sizing:border-box;
-  padding:14px;
+  padding:13px;
   margin:7px 0;
   border:1px solid #ddd;
   border-radius:10px;
   font-size:16px;
 }
+
 button{
   width:100%;
   padding:14px;
@@ -39,17 +46,30 @@ button{
   background:#222;
   color:white;
   font-size:16px;
+  cursor:pointer;
 }
+
 .green{background:#16803c}
-.red{background:#d33}
 .blue{background:#2563eb}
+.red{background:#d33}
+
 .card{
   background:#f1f1f1;
   padding:15px;
   margin-top:12px;
   border-radius:12px;
 }
+
+.card img{
+  width:100%;
+  max-height:250px;
+  object-fit:cover;
+  border-radius:10px;
+  margin-bottom:10px;
+}
+
 .hidden{display:none}
+
 .chat{
   background:#f1f1f1;
   min-height:100px;
@@ -57,6 +77,7 @@ button{
   border-radius:12px;
   margin-top:15px;
 }
+
 #status{
   margin-top:12px;
   padding:10px;
@@ -72,11 +93,12 @@ button{
 
 <h1>🏪 Dukaan AI</h1>
 
-<!-- AUTH -->
+<!-- LOGIN -->
 <div id="auth">
 
 <h2>👤 Shop Owner</h2>
-<p>Create your account or login to manage your shop.</p>
+
+<p>Create an account or login to manage your shop.</p>
 
 <input id="email" type="email" placeholder="Email">
 
@@ -114,22 +136,36 @@ Create My Shop
 
 <button class="red" onclick="logout()">Logout</button>
 
+
+<!-- ADD PRODUCT -->
 <h3>📦 Add Product</h3>
 
 <input id="productName" placeholder="Product name">
+
+<input id="productCategory" placeholder="Category">
+
+<input id="productDescription" placeholder="Description">
 
 <input id="productPrice" type="number" placeholder="Price">
 
 <input id="productStock" type="number" placeholder="Stock">
 
+<input id="productImage" placeholder="Image URL">
+
 <button class="green" onclick="addProduct()">
 ➕ Add Product
 </button>
 
+
+<h3>🛍️ Your Products</h3>
+
 <div id="products"></div>
+
 
 <hr>
 
+
+<!-- AI ASSISTANT -->
 <h2>🤖 Customer Assistant</h2>
 
 <div id="chat" class="chat">
@@ -137,7 +173,7 @@ Create My Shop
 Hi! How can I help you today? 😊
 </div>
 
-<input id="message" placeholder="Customer message">
+<input id="message" placeholder="Ask about a product">
 
 <button onclick="reply()">Send</button>
 
@@ -147,6 +183,10 @@ Hi! How can I help you today? 😊
 
 
 <script>
+
+/* =========================
+   SUPABASE CONNECTION
+========================= */
 
 const SUPABASE_URL =
 "https://yrrrqagtnbcufhcswstp.supabase.co";
@@ -161,83 +201,82 @@ window.supabase.createClient(
 );
 
 
+/* =========================
+   VARIABLES
+========================= */
+
 let currentUser = null;
 let currentShop = null;
 let products = [];
 
 
-/* STATUS */
+/* =========================
+   STATUS
+========================= */
 
 function showStatus(text){
-
   document.getElementById("status").innerText = text;
-
 }
 
 
-/* SIGN UP */
+/* =========================
+   SIGN UP
+========================= */
 
 async function signUp(){
 
   const email =
-  document.getElementById("email").value.trim();
+    document.getElementById("email").value.trim();
 
   const password =
-  document.getElementById("password").value;
+    document.getElementById("password").value;
 
   if(!email || !password){
-
     showStatus("Please enter email and password.");
     return;
   }
 
   const {data,error} =
-  await supabaseClient.auth.signUp({
-    email:email,
-    password:password
-  });
+    await supabaseClient.auth.signUp({
+      email:email,
+      password:password
+    });
 
   if(error){
-
     showStatus(error.message);
     return;
   }
 
-  if(data.user){
-
-    currentUser = data.user;
-
-    showStatus(
-      "Account created successfully. You can now login."
-    );
-  }
+  showStatus(
+    "Account created! Check your email if confirmation is required."
+  );
 }
 
 
-/* LOGIN */
+/* =========================
+   LOGIN
+========================= */
 
 async function login(){
 
   const email =
-  document.getElementById("email").value.trim();
+    document.getElementById("email").value.trim();
 
   const password =
-  document.getElementById("password").value;
+    document.getElementById("password").value;
 
   if(!email || !password){
-
     showStatus("Please enter email and password.");
     return;
   }
 
   const {data,error} =
-  await supabaseClient.auth.signInWithPassword({
-    email:email,
-    password:password
-  });
+    await supabaseClient.auth.signInWithPassword({
+      email:email,
+      password:password
+    });
 
   if(error){
-
     showStatus(error.message);
     return;
   }
@@ -245,29 +284,29 @@ async function login(){
   currentUser = data.user;
 
   await loadShop();
-
 }
 
 
-/* LOAD SHOP */
+/* =========================
+   LOAD SHOP
+========================= */
 
 async function loadShop(){
 
   const {data,error} =
-  await supabaseClient
-  .from("shops")
-  .select("*")
-  .eq("owner_id",currentUser.id)
-  .limit(1);
+    await supabaseClient
+      .from("shops")
+      .select("*")
+      .eq("owner_id",currentUser.id)
+      .limit(1);
 
   if(error){
-
     showStatus(error.message);
     return;
   }
 
   document.getElementById("auth")
-  .classList.add("hidden");
+    .classList.add("hidden");
 
   if(data && data.length > 0){
 
@@ -278,38 +317,37 @@ async function loadShop(){
   }else{
 
     document.getElementById("setup")
-    .classList.remove("hidden");
+      .classList.remove("hidden");
   }
-
 }
 
 
-/* CREATE SHOP */
+/* =========================
+   CREATE SHOP
+========================= */
 
 async function createShop(){
 
   const name =
-  document.getElementById("shopName")
-  .value.trim();
+    document.getElementById("shopName")
+      .value.trim();
 
   if(!name){
-
     alert("Please enter your shop name.");
     return;
   }
 
   const {data,error} =
-  await supabaseClient
-  .from("shops")
-  .insert({
-    owner_id:currentUser.id,
-    name:name
-  })
-  .select()
-  .single();
+    await supabaseClient
+      .from("shops")
+      .insert({
+        owner_id:currentUser.id,
+        name:name
+      })
+      .select()
+      .single();
 
   if(error){
-
     alert(error.message);
     return;
   }
@@ -317,49 +355,50 @@ async function createShop(){
   currentShop = data;
 
   document.getElementById("setup")
-  .classList.add("hidden");
+    .classList.add("hidden");
 
   showDashboard();
-
 }
 
 
-/* DASHBOARD */
+/* =========================
+   DASHBOARD
+========================= */
 
 async function showDashboard(){
 
   document.getElementById("auth")
-  .classList.add("hidden");
+    .classList.add("hidden");
 
   document.getElementById("setup")
-  .classList.add("hidden");
+    .classList.add("hidden");
 
   document.getElementById("dashboard")
-  .classList.remove("hidden");
+    .classList.remove("hidden");
 
   document.getElementById("welcome").innerHTML =
-  "Welcome to <b>" +
-  currentShop.name +
-  "</b>! 🎉";
+    "Welcome to <b>" +
+    currentShop.name +
+    "</b>! 🎉";
 
   await loadProducts();
-
 }
 
 
-/* LOAD PRODUCTS */
+/* =========================
+   LOAD PRODUCTS
+========================= */
 
 async function loadProducts(){
 
   const {data,error} =
-  await supabaseClient
-  .from("products")
-  .select("*")
-  .eq("shop_id",currentShop.id)
-  .order("name");
+    await supabaseClient
+      .from("products")
+      .select("*")
+      .eq("shop_id",currentShop.id)
+      .order("name");
 
   if(error){
-
     alert(error.message);
     return;
   }
@@ -367,109 +406,170 @@ async function loadProducts(){
   products = data || [];
 
   showProducts();
-
 }
 
 
-/* ADD PRODUCT */
+/* =========================
+   ADD PRODUCT
+========================= */
 
 async function addProduct(){
 
   const name =
-  document.getElementById("productName")
-  .value.trim();
+    document.getElementById("productName")
+      .value.trim();
+
+  const category =
+    document.getElementById("productCategory")
+      .value.trim();
+
+  const description =
+    document.getElementById("productDescription")
+      .value.trim();
 
   const price =
-  document.getElementById("productPrice").value;
+    document.getElementById("productPrice").value;
 
   const stock =
-  document.getElementById("productStock").value;
+    document.getElementById("productStock").value;
+
+  const imageUrl =
+    document.getElementById("productImage")
+      .value.trim();
+
 
   if(!name || price === "" || stock === ""){
-
-    alert("Please fill in all fields.");
+    alert("Please fill in product name, price and stock.");
     return;
   }
 
-  const {error} =
-  await supabaseClient
-  .from("products")
-  .insert({
+
+  const productData = {
     shop_id:currentShop.id,
     name:name,
+    category:category,
+    description:description,
     price:Number(price),
     stock:Number(stock)
-  });
+  };
+
+
+  /* Add image URL only if entered */
+
+  if(imageUrl){
+    productData.image_url = imageUrl;
+  }
+
+
+  const {error} =
+    await supabaseClient
+      .from("products")
+      .insert(productData);
+
 
   if(error){
-
     alert(error.message);
     return;
   }
 
+
   document.getElementById("productName").value="";
+  document.getElementById("productCategory").value="";
+  document.getElementById("productDescription").value="";
   document.getElementById("productPrice").value="";
   document.getElementById("productStock").value="";
+  document.getElementById("productImage").value="";
+
 
   await loadProducts();
-
 }
 
 
-/* SHOW PRODUCTS */
+/* =========================
+   SHOW PRODUCTS
+========================= */
 
 function showProducts(){
 
   const container =
-  document.getElementById("products");
+    document.getElementById("products");
 
   container.innerHTML="";
 
+
+  if(products.length === 0){
+
+    container.innerHTML =
+      "<p>No products added yet.</p>";
+
+    return;
+  }
+
+
   products.forEach(function(product){
 
+    const image =
+      product.image_url
+        ? `<img src="${product.image_url}" alt="${product.name}">`
+        : "";
+
+
     container.innerHTML += `
+
       <div class="card">
 
+        ${image}
+
         <b>📦 ${product.name}</b><br><br>
+
+        ${product.category
+          ? "🏷️ Category: " + product.category + "<br>"
+          : ""}
+
+        ${product.description
+          ? "📝 " + product.description + "<br><br>"
+          : ""}
 
         💰 Price: Rs. ${product.price}<br>
 
         📊 Stock: ${product.stock}
 
       </div>
+
     `;
-
   });
-
 }
 
 
-/* CUSTOMER ASSISTANT */
+/* =========================
+   CUSTOMER ASSISTANT
+========================= */
 
 function reply(){
 
   const message =
-  document.getElementById("message")
-  .value.toLowerCase()
-  .trim();
+    document.getElementById("message")
+      .value.toLowerCase()
+      .trim();
 
   const chat =
-  document.getElementById("chat");
+    document.getElementById("chat");
+
 
   if(!message){
-
     alert("Please enter a message.");
     return;
   }
 
+
   const product =
-  products.find(function(item){
+    products.find(function(item){
 
-    return message.includes(
-      item.name.toLowerCase()
-    );
+      return message.includes(
+        item.name.toLowerCase()
+      );
 
-  });
+    });
 
 
   if(product){
@@ -477,65 +577,69 @@ function reply(){
     if(Number(product.stock) > 0){
 
       chat.innerHTML =
-      "🤖 Dukaan AI:<br><br>" +
-      "Yes! " +
-      product.name +
-      " is available. 😊<br>" +
-      "💰 Price: Rs. " +
-      product.price +
-      "<br>📦 Stock: " +
-      product.stock;
+        "🤖 Dukaan AI:<br><br>" +
+        "Yes! " +
+        product.name +
+        " is available. 😊<br><br>" +
+        "💰 Price: Rs. " +
+        product.price +
+        "<br>📦 Stock: " +
+        product.stock;
 
     }else{
 
       chat.innerHTML =
-      "🤖 Dukaan AI:<br><br>" +
-      "Sorry, " +
-      product.name +
-      " is currently out of stock.";
+        "🤖 Dukaan AI:<br><br>" +
+        "Sorry, " +
+        product.name +
+        " is currently out of stock.";
 
     }
 
   }else{
 
     chat.innerHTML =
-    "🤖 Dukaan AI:<br><br>" +
-    "Sorry, I couldn't find that product. 😕";
+      "🤖 Dukaan AI:<br><br>" +
+      "Sorry, I couldn't find that product. 😕";
 
   }
 
-  document.getElementById("message").value="";
 
+  document.getElementById("message").value="";
 }
 
 
-/* LOGOUT */
+/* =========================
+   LOGOUT
+========================= */
 
 async function logout(){
 
   await supabaseClient.auth.signOut();
 
   location.reload();
-
 }
 
 
-/* CHECK EXISTING LOGIN */
+/* =========================
+   CHECK SESSION
+========================= */
 
 async function checkSession(){
 
   const {data} =
-  await supabaseClient.auth.getSession();
+    await supabaseClient.auth.getSession();
 
   if(data.session){
 
-    currentUser = data.session.user;
+    currentUser =
+      data.session.user;
 
     await loadShop();
 
   }
-
 }
+
 
 checkSession();
 
@@ -543,19 +647,3 @@ checkSession();
 
 </body>
 </html>
-<script>
-async function loadProducts() {
-  const { data, error } = await supabase
-    .from("products")
-    .select("*");
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-
-  console.log(data);
-}
-
-loadProducts();
-</script>
