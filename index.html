@@ -27,12 +27,12 @@ html{scroll-behavior:smooth}body{background:#f8fafc}.glass{background:rgba(255,2
 <p class="text-blue-100 text-lg mt-3">A smart marketplace for customers and shops.</p>
 </div>
 <div class="grid md:grid-cols-2 gap-5 max-w-3xl mx-auto mt-10">
-<button onclick="openAuth('customer')" class="text-left bg-white text-slate-900 rounded-3xl p-7 shadow-2xl hover:-translate-y-1 transition">
+<button type="button" onclick="openAuth('customer')" class="text-left bg-white text-slate-900 rounded-3xl p-7 shadow-2xl hover:-translate-y-1 transition">
 <div class="text-4xl">🛒</div><h2 class="text-2xl font-black mt-4">I'm a Customer</h2>
 <p class="text-slate-500 mt-2">Search products, shop, contact sellers, add to cart and order.</p>
 <span class="block mt-5 text-indigo-600 font-bold">Continue as Customer →</span>
 </button>
-<button onclick="openAuth('seller')" class="text-left bg-white/10 border border-white/20 rounded-3xl p-7 shadow-2xl hover:-translate-y-1 transition">
+<button type="button" onclick="openAuth('seller')" class="text-left bg-white/10 border border-white/20 rounded-3xl p-7 shadow-2xl hover:-translate-y-1 transition">
 <div class="text-4xl">🏪</div><h2 class="text-2xl font-black mt-4">I'm a Shopkeeper / Seller</h2>
 <p class="text-blue-100 mt-2">Create a shop and list your products on the marketplace.</p>
 <span class="block mt-5 text-cyan-300 font-bold">Continue as Seller →</span>
@@ -46,7 +46,7 @@ html{scroll-behavior:smooth}body{background:#f8fafc}.glass{background:rgba(255,2
 <header class="sticky top-0 z-40 glass border-b border-slate-200">
 <div class="max-w-7xl mx-auto px-3 sm:px-6 py-3">
 <div class="flex items-center gap-2">
-<button onclick="goHome()" class="flex items-center gap-2 font-black text-lg sm:text-xl shrink-0">
+<button type="button" onclick="goHome()" class="flex items-center gap-2 font-black text-lg sm:text-xl shrink-0">
 <span class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center">🛍️</span>
 <span class="hidden sm:inline">Dukaan <span class="text-indigo-600">AI</span></span>
 </button>
@@ -54,8 +54,8 @@ html{scroll-behavior:smooth}body{background:#f8fafc}.glass{background:rgba(255,2
 <input id="search" oninput="renderMarketplace()" class="w-full bg-slate-100 border border-slate-200 rounded-2xl py-3 pl-11 pr-4 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Search products, shops, categories or countries...">
 <span class="absolute left-4 top-3.5 text-slate-400">🔎</span>
 </div>
-<button onclick="openCart()" class="relative w-11 h-11 rounded-2xl bg-slate-100">🛒<span id="badge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[11px] min-w-5 h-5 rounded-full flex items-center justify-center">0</span></button>
-<button onclick="openAccount()" class="w-11 h-11 rounded-2xl bg-slate-100">👤</button>
+<button type="button" onclick="openCart()" class="relative w-11 h-11 rounded-2xl bg-slate-100">🛒<span id="badge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[11px] min-w-5 h-5 rounded-full flex items-center justify-center">0</span></button>
+<button type="button" onclick="openAccount()" class="w-11 h-11 rounded-2xl bg-slate-100">👤</button>
 </div>
 <div id="categories" class="flex gap-2 overflow-x-auto hidebar mt-3 pb-1"></div>
 </div>
@@ -69,8 +69,8 @@ html{scroll-behavior:smooth}body{background:#f8fafc}.glass{background:rgba(255,2
 <h1 class="text-3xl sm:text-5xl font-black mt-4">Shop from real shops.</h1>
 <p class="text-blue-100 mt-3">Search, compare, contact sellers and get products delivered to your address.</p>
 <div class="flex flex-wrap gap-2 mt-5">
-<button onclick="setQuick('All')" class="bg-white text-indigo-700 px-4 py-2.5 rounded-xl font-bold">Explore Products</button>
-<button onclick="openCart()" class="bg-white/15 border border-white/20 px-4 py-2.5 rounded-xl font-bold">View Cart</button>
+<button type="button" onclick="setQuick('All')" class="bg-white text-indigo-700 px-4 py-2.5 rounded-xl font-bold">Explore Products</button>
+<button type="button" onclick="openCart()" class="bg-white/15 border border-white/20 px-4 py-2.5 rounded-xl font-bold">View Cart</button>
 </div>
 </div>
 </div>
@@ -110,10 +110,10 @@ html{scroll-behavior:smooth}body{background:#f8fafc}.glass{background:rgba(255,2
 
 <!-- mobile nav -->
 <nav class="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t shadow-2xl grid grid-cols-4">
-<button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="py-3 text-xs font-bold">🏠<br>Home</button>
-<button onclick="document.getElementById('categories').scrollIntoView({behavior:'smooth'})" class="py-3 text-xs font-bold">📂<br>Categories</button>
-<button onclick="openCart()" class="py-3 text-xs font-bold">🛒<br>Cart</button>
-<button onclick="openAccount()" class="py-3 text-xs font-bold">👤<br>Account</button>
+<button type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="py-3 text-xs font-bold">🏠<br>Home</button>
+<button type="button" onclick="document.getElementById('categories').scrollIntoView({behavior:'smooth'})" class="py-3 text-xs font-bold">📂<br>Categories</button>
+<button type="button" onclick="openCart()" class="py-3 text-xs font-bold">🛒<br>Cart</button>
+<button type="button" onclick="openAccount()" class="py-3 text-xs font-bold">👤<br>Account</button>
 </nav>
 </section>
 
@@ -121,8 +121,8 @@ html{scroll-behavior:smooth}body{background:#f8fafc}.glass{background:rgba(255,2
 <section id="sellerApp" class="hidden min-h-screen">
 <header class="sticky top-0 z-30 glass border-b">
 <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
-<button onclick="goHome()" class="font-black text-xl">🏪 Dukaan <span class="text-indigo-600">AI</span></button>
-<div class="ml-auto flex gap-2"><button onclick="openProductModal()" class="bg-indigo-600 text-white px-4 py-2.5 rounded-xl font-bold">+ Add Product</button><button onclick="logout()" class="bg-slate-100 px-4 py-2.5 rounded-xl font-bold">Logout</button></div>
+<button type="button" onclick="goHome()" class="font-black text-xl">🏪 Dukaan <span class="text-indigo-600">AI</span></button>
+<div class="ml-auto flex gap-2"><button type="button" onclick="openProductModal()" class="bg-indigo-600 text-white px-4 py-2.5 rounded-xl font-bold">+ Add Product</button><button type="button" onclick="logout()" class="bg-slate-100 px-4 py-2.5 rounded-xl font-bold">Logout</button></div>
 </div></header>
 <main class="max-w-7xl mx-auto px-4 py-7">
 <div id="sellerSetup"></div>
@@ -179,8 +179,8 @@ function updateBadge(){let n=cart.reduce((a,x)=>a+x.quantity,0);$("badge").textC
 
 function openAuth(role){
 currentRole=role;let c=role==="customer";
-showModal(`<div class="p-6"><div class="flex justify-between"><div><span class="text-3xl">${c?"🛒":"🏪"}</span><h2 class="text-2xl font-black mt-2">${c?"Customer":"Seller"} Account</h2><p class="text-sm text-slate-500">Login or create your account.</p></div><button onclick="closeModal()" class="w-10 h-10 bg-slate-100 rounded-xl">✕</button></div>
-<div class="grid grid-cols-2 bg-slate-100 p-1 rounded-2xl mt-5"><button id="lt" onclick="authMode('login')" class="py-2.5 rounded-xl bg-white font-bold">Login</button><button id="st" onclick="authMode('signup')" class="py-2.5 rounded-xl font-bold text-slate-500">Sign Up</button></div>
+showModal(`<div class="p-6"><div class="flex justify-between"><div><span class="text-3xl">${c?"🛒":"🏪"}</span><h2 class="text-2xl font-black mt-2">${c?"Customer":"Seller"} Account</h2><p class="text-sm text-slate-500">Login or create your account.</p></div><button type="button" onclick="closeModal()" class="w-10 h-10 bg-slate-100 rounded-xl">✕</button></div>
+<div class="grid grid-cols-2 bg-slate-100 p-1 rounded-2xl mt-5"><button type="button" id="lt" onclick="authMode('login')" class="py-2.5 rounded-xl bg-white font-bold">Login</button><button type="button" id="st" onclick="authMode('signup')" class="py-2.5 rounded-xl font-bold text-slate-500">Sign Up</button></div>
 <div class="space-y-3 mt-5">
 <input id="aName" class="${c?'':'hidden'} w-full border rounded-2xl px-4 py-3" placeholder="Full name">
 <input id="aEmail" type="email" class="w-full border rounded-2xl px-4 py-3" placeholder="Email / Gmail">
@@ -194,8 +194,8 @@ showModal(`<div class="p-6"><div class="flex justify-between"><div><span class="
 <input id="shopCategory" class="w-full border rounded-2xl px-4 py-3" placeholder="Shop category">
 <input id="shopPhone" class="w-full border rounded-2xl px-4 py-3" placeholder="Shop phone / WhatsApp">
 </div>
-<button id="authBtn" onclick="auth('login')" class="w-full bg-indigo-600 text-white py-3.5 rounded-2xl font-black">Login</button>
-<button onclick="forgot()" class="w-full text-sm text-indigo-600 font-bold">Forgot password? Send reset email</button>
+<button type="button" id="authBtn" onclick="auth('login')" class="w-full bg-indigo-600 text-white py-3.5 rounded-2xl font-black">Login</button>
+<button type="button" onclick="forgot()" class="w-full text-sm text-indigo-600 font-bold">Forgot password? Send reset email</button>
 <p id="authMsg" class="text-sm text-center"></p></div></div>`);
 }
 function authMode(m){$("authBtn").setAttribute("onclick",`auth('${m}')`);$("authBtn").textContent=m==="login"?"Login":"Create Account";$("lt").className=m==="login"?"py-2.5 rounded-xl bg-white font-bold":"py-2.5 rounded-xl font-bold text-slate-500";$("st").className=m==="signup"?"py-2.5 rounded-xl bg-white font-bold":"py-2.5 rounded-xl font-bold text-slate-500"}
@@ -253,12 +253,8 @@ let real=r.data.map(p=>{let sh=shops.find(x=>x.id===p.shop_id)||{};return {...p,
 products=[...demo,...real.filter(x=>!demo.some(d=>d.id===x.id))];
 }
 function renderCategories(){
-let cats=["All",...new Set(products.map(p=>p.category||"Other"))];$("categories").innerHTML=cats.map(c=>`<button onclick="setCat('${esc(c)}')" class="shrink-0 px-4 py-2 rounded-full text-sm font-bold ${category===c?"bg-indigo-600 text-white":"bg-slate-100 text-slate-600"}">${esc(c)}</button>`).join("")
+let cats=["All",...new Set(products.map(p=>p.category||"Other"))];$("categories").innerHTML=cats.map(c=>`<button type="button" onclick="setCat('${esc(c)}')" class="shrink-0 px-4 py-2 rounded-full text-sm font-bold ${category===c?"bg-indigo-600 text-white":"bg-slate-100 text-slate-600"}">${esc(c)}</button>`).join("")
 }
 function setCat(c){category=c;renderCategories();renderMarketplace()}
 function setQuick(c){category=c;renderCategories();renderMarketplace();window.scrollTo({top:300,behavior:"smooth"})}
 function renderMarketplace(){
-let q=($("search")?.value||"").toLowerCase().trim();
-let list=products.filter(p=>(category==="All"||(p.category||"Other")===category)&&`${p.name} ${p.category} ${p.country} ${p.shopName}`.toLowerCase().includes(q));
-$("count").textContent=list.length+" products";
-$("grid").innerH
