@@ -543,3 +543,19 @@ checkSession();
 
 </body>
 </html>
+<script>
+async function loadProducts() {
+  const { data, error } = await supabase
+    .from("products")
+    .select("*");
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  console.log(data);
+}
+
+loadProducts();
+</script>
