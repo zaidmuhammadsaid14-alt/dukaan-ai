@@ -3,7 +3,16 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dukaan AI</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://yrrqagtnbcufhcswstp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_FGqvkjDrSAHG2RQxW4ErHw_29yN11YR";
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
+</script>
 <style>
 body{
   font-family:Arial,sans-serif;
