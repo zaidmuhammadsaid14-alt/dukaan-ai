@@ -1,194 +1,335 @@
--- DUukaan AI FINAL DATABASE SETUP
--- Run this once in Supabase SQL Editor.
--- It does NOT delete your existing products/shops.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dukaan AI</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f6f8;font-family:Arial,sans-serif;color:#18202a}
+.wrap{max-width:720px;margin:auto;padding:16px}.panel{background:#fff;border-radius:20px;padding:20px;margin:12px 0;box-shadow:0 5px 22px #0000000d}
+h1,h2,h3{margin-top:0}.brand{text-align:center;padding:20px 10px}.brand .mark{font-size:48px}.brand h1{font-size:34px;margin:4px 0}.muted{color:#697586}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{width:100%;border:0;border-radius:12px;padding:13px;margin-top:8px;background:#18202a;color:white;font-size:16px;font-weight:600}
+button.secondary{background:#eef1f5;color:#18202a}button.green{background:#138a46}button.blue{background:#1769e0}button.gold{background:#b27a08}button.danger{background:#c93434}
+input,textarea,select{width:100%;padding:13px;border:1px solid #d7dce2;border-radius:11px;margin:6px 0;font-size:16px;background:white}
+textarea{min-height:80px}.hidden{display:none!important}.msg{padding:11px;border-radius:10px;background:#eef1f5;margin-top:10px}.err{background:#ffe9e9;color:#9c1c1c}.ok{background:#e8f8ee;color:#116b38}
+.role{padding:18px;border:2px solid #e3e7ec;border-radius:15px;text-align:center}.role b{font-size:18px}.role.active{border-color:#1769e0;background:#f0f6ff}
+.top{display:flex;align-items:center;gap:12px}.top img{width:54px;height:54px;border-radius:50%;object-fit:cover;background:#eee}.top .grow{flex:1}.top button{width:auto;padding:9px 12px;margin:0}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:12px 0}.tabs button{font-size:12px;padding:10px 5px;margin:0}.tabs button.active{background:#1769e0}
+.card{border:1px solid #e4e7eb;border-radius:15px;padding:14px;margin:10px 0;background:#fff}.product{display:grid;grid-template-columns:95px 1fr;gap:12px}.product img{width:95px;height:95px;object-fit:cover;border-radius:12px;background:#f0f2f5}.price{font-weight:700;font-size:18px}.pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#eef1f5;font-size:12px;margin:3px}.cartrow{display:grid;grid-template-columns:1fr 110px;gap:10px;align-items:center}.qty{display:flex;gap:5px}.qty button{margin:0;padding:8px}.logoPreview{width:90px;height:90px;border-radius:50%;object-fit:cover;background:#eee;display:block;margin:8px 0}.total{font-size:20px;font-weight:700}.orderstatus{font-weight:700}.small{font-size:13px}.chat{background:#f0f2f5;border-radius:12px;padding:12px;min-height:80px}.bubble{padding:9px 11px;border-radius:12px;margin:6px 0;max-width:90%}.me{background:#1769e0;color:white;margin-left:auto}.them{background:white}
+@media(max-width:500px){.grid{grid-template-columns:1fr}.tabs button{font-size:11px}.product{grid-template-columns:80px 1fr}.product img{width:80px;height:80px}}
+</style>
+</head>
+<body>
+<div class="wrap">
 
-create extension if not exists pgcrypto;
+<div class="brand">
+  <div class="mark">🛍️</div>
+  <h1>Dukaan <span style="color:#b27a08">AI</span></h1>
+  <div class="muted">Smart Shop • Happy Customers</div>
+</div>
 
-alter table shops add column if not exists phone text;
-alter table shops add column if not exists address text;
-alter table shops add column if not exists city text;
-alter table shops add column if not exists logo_url text;
+<div id="authView" class="panel">
+  <h2>Welcome 👋</h2>
+  <p class="muted">Aap kya karna chahte hain?</p>
+  <div class="grid">
+    <div id="customerRole" class="role active" onclick="selectRole('customer')">🛍️<br><b>I'm a Customer</b><br><span class="small">Products & orders</span></div>
+    <div id="ownerRole" class="role" onclick="selectRole('owner')">🏪<br><b>Create a Shop</b><br><span class="small">Sell your products</span></div>
+  </div>
 
-alter table products add column if not exists category text;
-alter table products add column if not exists description text;
-alter table products add column if not exists image_url text;
+  <h3 id="authTitle">Customer Login</h3>
+  <input id="email" type="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <input id="fullName" class="customerOnly" placeholder="Your name">
+  <input id="phone" class="customerOnly" placeholder="Phone number">
 
-create table if not exists profiles (
-  id uuid primary key references auth.users(id) on delete cascade,
-  role text not null default 'customer' check (role in ('customer','owner')),
-  full_name text,
-  phone text,
-  created_at timestamptz default now()
-);
+  <button class="blue" onclick="signUp()">Create Account</button>
+  <button onclick="login()">Login</button>
+  <button class="secondary" onclick="forgotPassword()">Forgot Password?</button>
+  <div id="authMsg" class="msg hidden"></div>
+  <p class="small muted">Signup ke baad email verification required ho sakti hai.</p>
+</div>
 
-create table if not exists customer_addresses (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users(id) on delete cascade,
-  title text not null,
-  address text not null,
-  city text not null,
-  phone text not null,
-  created_at timestamptz default now()
-);
+<div id="resetView" class="panel hidden">
+  <h2>🔐 Set New Password</h2>
+  <input id="newPassword" type="password" placeholder="New password">
+  <input id="newPassword2" type="password" placeholder="Repeat new password">
+  <button class="blue" onclick="saveNewPassword()">Update Password</button>
+  <div id="resetMsg" class="msg hidden"></div>
+</div>
 
-create table if not exists orders (
-  id uuid primary key default gen_random_uuid(),
-  customer_id uuid not null references auth.users(id) on delete restrict,
-  shop_id uuid not null references shops(id) on delete restrict,
-  address_id uuid not null references customer_addresses(id) on delete restrict,
-  status text not null default 'received'
-    check (status in ('received','confirmed','preparing','out_for_delivery','delivered','cancelled')),
-  total numeric(12,2) not null default 0,
-  created_at timestamptz default now()
-);
+<div id="appView" class="hidden">
+  <div class="panel top">
+    <img id="headerLogo" class="hidden">
+    <div class="grow"><b id="headerName">Dukaan AI</b><div id="headerSub" class="small muted"></div></div>
+    <button class="danger" onclick="logout()">Logout</button>
+  </div>
 
-create table if not exists order_items (
-  id uuid primary key default gen_random_uuid(),
-  order_id uuid not null references orders(id) on delete cascade,
-  product_id uuid not null references products(uuid) on delete restrict,
-  quantity integer not null check (quantity > 0),
-  unit_price numeric(12,2) not null
-);
+  <div id="customerApp" class="hidden">
+    <div class="tabs">
+      <button id="ctHome" onclick="customerTab('home')">🔎 Search</button>
+      <button id="ctCart" onclick="customerTab('cart')">🛒 Cart</button>
+      <button id="ctOrders" onclick="customerTab('orders')">📦 Orders</button>
+      <button id="ctProfile" onclick="customerTab('profile')">👤 Profile</button>
+    </div>
 
-create table if not exists shop_messages (
-  id uuid primary key default gen_random_uuid(),
-  customer_id uuid not null references auth.users(id) on delete cascade,
-  shop_id uuid not null references shops(id) on delete cascade,
-  product_name text,
-  message text not null,
-  created_at timestamptz default now()
-);
+    <div id="customerHome" class="panel">
+      <h2>🤖 Dukaan AI</h2>
+      <input id="searchBox" placeholder="e.g. blue shirt under 2000">
+      <button class="blue" onclick="searchProducts()">Search</button>
+      <div id="searchResults"></div>
+      <hr>
+      <h3>📍 Delivery Address</h3>
+      <input id="addrTitle" placeholder="Home / Office">
+      <textarea id="addrText" placeholder="Full delivery address"></textarea>
+      <input id="addrCity" placeholder="City">
+      <input id="addrPhone" placeholder="Delivery phone">
+      <button class="green" onclick="saveAddress()">Save Address</button>
+      <div id="addressList"></div>
+    </div>
 
-alter table profiles enable row level security;
-alter table customer_addresses enable row level security;
-alter table orders enable row level security;
-alter table order_items enable row level security;
-alter table shop_messages enable row level security;
+    <div id="customerCart" class="panel hidden">
+      <h2>🛒 My Cart</h2>
+      <div id="cartList"></div>
+      <div class="total" id="cartTotal"></div>
+      <select id="checkoutAddress"></select>
+      <button class="green" onclick="checkout()">Place Order</button>
+      <div id="cartMsg" class="msg hidden"></div>
+    </div>
 
-drop policy if exists "profiles own select" on profiles;
-create policy "profiles own select" on profiles for select to authenticated
-using (id = auth.uid());
+    <div id="customerOrders" class="panel hidden">
+      <h2>📦 My Orders</h2>
+      <div id="myOrders"></div>
+    </div>
 
-drop policy if exists "profiles own insert" on profiles;
-create policy "profiles own insert" on profiles for insert to authenticated
-with check (id = auth.uid());
+    <div id="customerProfile" class="panel hidden">
+      <h2>👤 My Profile</h2>
+      <input id="profileName" placeholder="Name">
+      <input id="profilePhone" placeholder="Phone">
+      <button class="blue" onclick="saveProfile()">Save Profile</button>
+      <h3>🔑 Account</h3>
+      <button class="secondary" onclick="forgotPassword()">Send Password Reset Email</button>
+    </div>
+  </div>
 
-drop policy if exists "profiles own update" on profiles;
-create policy "profiles own update" on profiles for update to authenticated
-using (id = auth.uid()) with check (id = auth.uid());
+  <div id="ownerSetup" class="panel hidden">
+  <h2>🏪 Create Your Shop</h2>
+  <input id="newShopName" placeholder="Shop name">
+  <input id="newShopPhone" placeholder="Shop phone">
+  <textarea id="newShopAddress" placeholder="Shop address"></textarea>
+  <input id="newShopCity" placeholder="City">
+  <input id="newShopLogo" type="file" accept="image/*">
+  <button class="green" onclick="createOwnerShop()">Create My Shop</button>
+  <div id="ownerSetupMsg" class="msg hidden"></div>
+</div>
 
-drop policy if exists "addresses own all" on customer_addresses;
-create policy "addresses own all" on customer_addresses for all to authenticated
-using (user_id = auth.uid()) with check (user_id = auth.uid());
+<div id="ownerApp" class="hidden">
+    <div class="tabs">
+      <button id="otHome" onclick="ownerTab('home')">🏪 Shop</button>
+      <button id="otProducts" onclick="ownerTab('products')">📦 Products</button>
+      <button id="otOrders" onclick="ownerTab('orders')">🧾 Orders</button>
+      <button id="otProfile" onclick="ownerTab('profile')">⚙️ Shop</button>
+    </div>
 
-drop policy if exists "products public read" on products;
-create policy "products public read" on products for select to anon, authenticated using (true);
+    <div id="ownerHome" class="panel">
+      <h2>📊 Shop Dashboard</h2>
+      <div class="grid">
+        <div class="card"><b id="statProducts">0</b><br><span class="muted">Products</span></div>
+        <div class="card"><b id="statOrders">0</b><br><span class="muted">Orders</span></div>
+      </div>
+    </div>
 
-drop policy if exists "shop owner product insert" on products;
-create policy "shop owner product insert" on products for insert to authenticated
-with check (exists (select 1 from shops s where s.id=shop_id and s.owner_id=auth.uid()));
+    <div id="ownerProducts" class="panel hidden">
+      <h2>📦 Add Product</h2>
+      <input id="pName" placeholder="Product name">
+      <input id="pCategory" placeholder="Category">
+      <textarea id="pDescription" placeholder="Description"></textarea>
+      <div class="grid">
+        <input id="pPrice" type="number" placeholder="Price">
+        <input id="pStock" type="number" placeholder="Stock">
+      </div>
+      <input id="pFile" type="file" accept="image/*">
+      <button class="green" onclick="addProduct()">📸 Upload & Add Product</button>
+      <div id="ownerProductList"></div>
+    </div>
 
-drop policy if exists "shop owner product update" on products;
-create policy "shop owner product update" on products for update to authenticated
-using (exists (select 1 from shops s where s.id=shop_id and s.owner_id=auth.uid()))
-with check (exists (select 1 from shops s where s.id=shop_id and s.owner_id=auth.uid()));
+    <div id="ownerOrders" class="panel hidden">
+      <h2>🧾 Customer Orders</h2>
+      <div id="ownerOrderList"></div>
+    </div>
 
-drop policy if exists "shop owner product delete" on products;
-create policy "shop owner product delete" on products for delete to authenticated
-using (exists (select 1 from shops s where s.id=shop_id and s.owner_id=auth.uid()));
+    <div id="ownerProfile" class="panel hidden">
+      <h2>🏪 Shop Profile</h2>
+      <input id="shopNameEdit" placeholder="Shop name">
+      <input id="shopPhoneEdit" placeholder="Shop phone">
+      <textarea id="shopAddressEdit" placeholder="Shop address"></textarea>
+      <input id="shopCityEdit" placeholder="City">
+      <input id="shopLogoFile" type="file" accept="image/*">
+      <button class="gold" onclick="saveShop()">💾 Save Shop</button>
+      <div id="shopMsg" class="msg hidden"></div>
+    </div>
+  </div>
+</div>
+</div>
 
-drop policy if exists "shop public read" on shops;
-create policy "shop public read" on shops for select to anon, authenticated using (true);
+<script>
+const SUPABASE_URL="https://yrrrqagtnbcufhcswstp.supabase.co";
+const SUPABASE_KEY="sb_publishable_FGqvkjDrSAHG2RQxW4ErHw_29yN11YR";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-drop policy if exists "owner shop update" on shops;
-create policy "owner shop update" on shops for update to authenticated
-using (owner_id=auth.uid()) with check (owner_id=auth.uid());
+let role="customer", user=null, profile=null, shop=null, products=[], addresses=[], cart=JSON.parse(localStorage.getItem("dukaan_cart")||"[]");
 
-drop policy if exists "owner shop insert" on shops;
-create policy "owner shop insert" on shops for insert to authenticated
-with check (owner_id=auth.uid());
-
-drop policy if exists "orders customer read" on orders;
-create policy "orders customer read" on orders for select to authenticated
-using (customer_id=auth.uid());
-
-drop policy if exists "orders owner read" on orders;
-create policy "orders owner read" on orders for select to authenticated
-using (exists (select 1 from shops s where s.id=shop_id and s.owner_id=auth.uid()));
-
-drop policy if exists "orders owner update" on orders;
-create policy "orders owner update" on orders for update to authenticated
-using (exists (select 1 from shops s where s.id=shop_id and s.owner_id=auth.uid()))
-with check (exists (select 1 from shops s where s.id=shop_id and s.owner_id=auth.uid()));
-
-drop policy if exists "order items customer read" on order_items;
-create policy "order items customer read" on order_items for select to authenticated
-using (exists (select 1 from orders o where o.id=order_id and o.customer_id=auth.uid()));
-
-drop policy if exists "order items owner read" on order_items;
-create policy "order items owner read" on order_items for select to authenticated
-using (exists (
-  select 1 from orders o join shops s on s.id=o.shop_id
-  where o.id=order_id and s.owner_id=auth.uid()
-));
-
-drop policy if exists "messages customer all" on shop_messages;
-create policy "messages customer all" on shop_messages for all to authenticated
-using (customer_id=auth.uid()) with check (customer_id=auth.uid());
-
-drop policy if exists "messages owner read" on shop_messages;
-create policy "messages owner read" on shop_messages for select to authenticated
-using (exists (select 1 from shops s where s.id=shop_id and s.owner_id=auth.uid()));
-
--- Atomic order creation: checks stock, calculates total, creates order/items, reduces stock.
-create or replace function create_order(
-  p_shop_id uuid,
-  p_address_id uuid,
-  p_items jsonb
-) returns uuid
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare
-  v_order uuid;
-  v_total numeric(12,2) := 0;
-  v_item jsonb;
-  v_product products%rowtype;
-  v_qty integer;
-begin
-  if not exists (select 1 from customer_addresses where id=p_address_id and user_id=auth.uid()) then
-    raise exception 'Invalid delivery address';
-  end if;
-
-  insert into orders(customer_id,shop_id,address_id,status,total)
-  values(auth.uid(),p_shop_id,p_address_id,'received',0)
-  returning id into v_order;
-
-  for v_item in select * from jsonb_array_elements(p_items)
-  loop
-    v_qty := (v_item->>'quantity')::integer;
-    select * into v_product from products
-    where uuid=(v_item->>'product_id')::uuid and shop_id=p_shop_id
-    for update;
-
-    if not found then raise exception 'Product not found'; end if;
-    if v_product.stock < v_qty then raise exception 'Not enough stock for %',v_product.name; end if;
-
-    insert into order_items(order_id,product_id,quantity,unit_price)
-    values(v_order,v_product.uuid,v_qty,v_product.price);
-
-    v_total := v_total + (v_product.price * v_qty);
-    update products set stock=stock-v_qty where uuid=v_product.uuid;
-  end loop;
-
-  if v_total <= 0 then raise exception 'Cart is empty'; end if;
-  update orders set total=v_total where id=v_order;
-  return v_order;
-end;
-$$;
-
-grant execute on function create_order(uuid,uuid,jsonb) to authenticated;
-
--- Storage bucket should already exist: products-images
--- Keep your existing storage policies for public SELECT + authenticated INSERT/UPDATE/DELETE.
+function selectRole(r){
+  role=r;
+  document.getElementById("customerRole").classList.toggle("active",r==="customer");
+  document.getElementById("ownerRole").classList.toggle("active",r==="owner");
+  document.getElementById("authTitle").innerText=r==="owner"?"Shop Owner Login":"Customer Login";
+  document.querySelectorAll(".customerOnly").forEach(x=>x.classList.toggle("hidden",r!=="customer"));
+}
+function showMsg(id,text,error=false){
+  const e=document.getElementById(id); e.textContent=text; e.className="msg "+(error?"err":"ok");
+}
+async function signUp(){
+  const email=document.getElementById("email").value.trim(), password=document.getElementById("password").value;
+  if(!email||password.length<6)return showMsg("authMsg","Email aur 6+ character password required.",true);
+  const {data,error}=await supabaseClient.auth.signUp({email,password});
+  if(error)return showMsg("authMsg",error.message,true);
+  if(data.user){
+    const name=document.getElementById("fullName").value.trim();
+    const phone=document.getElementById("phone").value.trim();
+    await supabaseClient.from("profiles").upsert({id:data.user.id,role,full_name:name||null,phone:phone||null});
+  }
+  showMsg("authMsg","Account created. Email verification complete karke Login karein.");
+}
+async function login(){
+  const email=document.getElementById("email").value.trim(), password=document.getElementById("password").value;
+  const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
+  if(error)return showMsg("authMsg",error.message,true);
+  user=data.user; await startApp();
+}
+async function forgotPassword(){
+  const email=document.getElementById("email").value.trim()||user?.email;
+  if(!email)return showMsg("authMsg","Pehle email enter karein.",true);
+  const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+  if(error)return showMsg("authMsg",error.message,true);
+  showMsg("authMsg","Password reset email bhej di gayi. Email mein link/code instructions follow karein.");
+}
+async function saveNewPassword(){
+  const a=document.getElementById("newPassword").value,b=document.getElementById("newPassword2").value;
+  if(a.length<6||a!==b)return showMsg("resetMsg","Password 6+ characters ho aur dono same hon.",true);
+  const {error}=await supabaseClient.auth.updateUser({password:a});
+  if(error)return showMsg("resetMsg",error.message,true);
+  showMsg("resetMsg","Password updated successfully. Ab app use karein.");
+  setTimeout(()=>document.getElementById("resetView").classList.add("hidden"),1200);
+}
+async function startApp(){
+  const {data:p}=await supabaseClient.from("profiles").select("*").eq("id",user.id).single();
+  profile=p||{role:"customer"};
+  role=profile.role||"customer";
+  document.getElementById("authView").classList.add("hidden");
+  document.getElementById("appView").classList.remove("hidden");
+  if(role==="owner") await loadOwner(); else await loadCustomer();
+}
+async function loadCustomer(){
+  document.getElementById("customerApp").classList.remove("hidden");
+  document.getElementById("ownerApp").classList.add("hidden");
+  document.getElementById("headerName").textContent=profile.full_name||"Customer";
+  document.getElementById("headerSub").textContent=user.email;
+  document.getElementById("profileName").value=profile.full_name||"";
+  document.getElementById("profilePhone").value=profile.phone||"";
+  await loadAddresses(); await searchProducts(true); await loadMyOrders(); customerTab("home");
+}
+async function createOwnerShop(){
+  const name=document.getElementById("newShopName").value.trim();
+  const phone=document.getElementById("newShopPhone").value.trim();
+  const address=document.getElementById("newShopAddress").value.trim();
+  const city=document.getElementById("newShopCity").value.trim();
+  const file=document.getElementById("newShopLogo").files[0];
+  if(!name||!phone||!address||!city)return showMsg("ownerSetupMsg","Shop name, phone, address aur city required.",true);
+  let logo_url=null;
+  if(file){logo_url=await uploadImage(file);if(!logo_url)return}
+  const {data,error}=await supabaseClient.from("shops").insert({owner_id:user.id,name,phone,address,city,logo_url}).select().single();
+  if(error)return showMsg("ownerSetupMsg",error.message,true);
+  shop=data; await loadOwner();
+}
+async function loadOwner(){
+  const {data,error}=await supabaseClient.from("shops").select("*").eq("owner_id",user.id).limit(1);
+  if(error)return alert(error.message);
+  document.getElementById("customerApp").classList.add("hidden");
+  if(!data?.length){
+    document.getElementById("ownerApp").classList.add("hidden");
+    document.getElementById("ownerSetup").classList.remove("hidden");
+    return;
+  }
+  shop=data[0];
+  document.getElementById("ownerSetup").classList.add("hidden");
+  document.getElementById("ownerApp").classList.remove("hidden");
+  document.getElementById("headerName").textContent=shop.name;
+  document.getElementById("headerSub").textContent=shop.city||"Shop Owner";
+  if(shop.logo_url){let x=document.getElementById("headerLogo");x.src=shop.logo_url;x.classList.remove("hidden")}
+  document.getElementById("shopNameEdit").value=shop.name||"";
+  document.getElementById("shopPhoneEdit").value=shop.phone||"";
+  document.getElementById("shopAddressEdit").value=shop.address||"";
+  document.getElementById("shopCityEdit").value=shop.city||"";
+  await loadOwnerProducts(); await loadOwnerOrders(); ownerTab("home");
+}
+function customerTab(t){
+  ["customerHome","customerCart","customerOrders","customerProfile"].forEach(x=>document.getElementById(x).classList.add("hidden"));
+  document.getElementById("customer"+t[0].toUpperCase()+t.slice(1)).classList.remove("hidden");
+  renderCart(); if(t==="orders")loadMyOrders(); if(t==="home")loadAddresses();
+}
+function ownerTab(t){
+  ["ownerHome","ownerProducts","ownerOrders","ownerProfile"].forEach(x=>document.getElementById(x).classList.add("hidden"));
+  document.getElementById("owner"+t[0].toUpperCase()+t.slice(1)).classList.remove("hidden");
+  if(t==="products")loadOwnerProducts(); if(t==="orders")loadOwnerOrders();
+}
+async function searchProducts(initial=false){
+  const q=document.getElementById("searchBox").value.trim().toLowerCase();
+  const {data,error}=await supabaseClient.from("products").select("*,shops(id,name,phone,address,city,logo_url)").order("name").limit(100);
+  if(error){document.getElementById("searchResults").innerHTML=`<div class="msg err">${error.message}</div>`;return}
+  products=(data||[]).filter(p=>!q||`${p.name} ${p.category||""} ${p.description||""}`.toLowerCase().includes(q));
+  const box=document.getElementById("searchResults");
+  box.innerHTML=products.length?"":"<div class='msg'>No matching products.</div>";
+  products.forEach(p=>{
+    box.innerHTML+=`<div class="card product">
+      ${p.image_url?`<img src="${esc(p.image_url)}">`:`<div style="width:95px;height:95px;border-radius:12px;background:#eee;display:grid;place-items:center">📦</div>`}
+      <div><h3>${esc(p.name)}</h3><div class="price">Rs. ${Number(p.price||0)}</div><div class="small">Stock: ${Number(p.stock||0)}</div>
+      ${p.category?`<span class="pill">${esc(p.category)}</span>`:""}
+      <p class="small">${esc(p.description||"")}</p><p class="small">🏪 ${esc(p.shops?.name||"Shop")}</p>
+      <button class="green" onclick="addToCart('${p.uuid}','${p.shop_id}')">🛒 Add to Cart</button>
+      <button class="secondary" onclick="contactShop('${p.shop_id}','${p.name}')">💬 Ask Shop</button></div></div>`;
+  });
+}
+function addToCart(id,shopId){
+  const p=products.find(x=>x.uuid===id); if(!p)return;
+  if(Number(p.stock)<=0)return alert("Out of stock.");
+  if(cart.length&&cart[0].shop_id!==shopId)return alert("Ek order mein ek shop ke products rakhein. Pehle current cart empty karein.");
+  const x=cart.find(i=>i.uuid===id); if(x){if(x.qty<Number(p.stock))x.qty++}else cart.push({uuid:id,shop_id:shopId,name:p.name,price:Number(p.price),qty:1});
+  localStorage.setItem("dukaan_cart",JSON.stringify(cart)); renderCart(); alert("Added to cart ✅");
+}
+function renderCart(){
+  const box=document.getElementById("cartList"),totalEl=document.getElementById("cartTotal");
+  if(!box)return; box.innerHTML="";
+  let total=0;
+  cart.forEach((i,n)=>{total+=i.price*i.qty;box.innerHTML+=`<div class="card cartrow"><div><b>${esc(i.name)}</b><br>Rs. ${i.price} × ${i.qty}</div><div class="qty"><button onclick="changeQty(${n},-1)">−</button><button onclick="changeQty(${n},1)">+</button><button class="danger" onclick="removeCart(${n})">×</button></div></div>`});
+  if(!cart.length)box.innerHTML="<div class='msg'>Cart empty hai.</div>";
+  totalEl.textContent=cart.length?`Total: Rs. ${total}`:"";
+  const s=document.getElementById("checkoutAddress"); if(s)s.innerHTML=addresses.map(a=>`<option value="${a.id}">${esc(a.title)} — ${esc(a.address)}</option>`).join("")||"<option value=''>Save an address first</option>";
+}
+function changeQty(n,d){cart[n].qty=Math.max(1,cart[n].qty+d);localStorage.setItem("dukaan_cart",JSON.stringify(cart));renderCart()}
+function removeCart(n){cart.splice(n,1);localStorage.setItem("dukaan_cart",JSON.stringify(cart));renderCart()}
+async function loadAddresses(){
+  const {data}=await supabaseClient.from("customer_addresses").select("*").eq("user_id",user.id).order("created_at",{ascending:false});
+  addresses=data||[]; renderAddresses(); renderCart();
+}
+function renderAddresses(){document.getElementById("addressList").innerHTML=addresses.map(a=>`<div class="card"><b>📍 ${esc(a.title)}</b><br>${esc(a.address)}, ${esc(a.city)}<br>📞 ${esc(a.phone||"")}</div>`).join("")||"<p class='muted'>No saved address.</p>"}
+async function saveAddress(){
+  const title=document.getElementById("addrTitle").value.trim(),address=document.getElementById("addrText").value.trim(),city=document.getElementById("addrCity").value.trim(),phone=document.getElementById("addrPhone").value.trim();
+  if(!title||!address||!city||!phone)return alert("Address, city aur phone complete karein.");
+  const {error}=await supabaseClient.from("customer_addresses").insert({user_id:user.id,title,address,city,phone});
+  if(error)return alert(error.message);
+  document.getElementById("addrText").value=""; await loadAddresses();
+}
+async function checkout(){
+  if(!cart.length)return alert("Cart empty hai.");
+  const addressId=document.getElementById("checkoutAddress").v
