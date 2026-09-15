@@ -5,304 +5,277 @@
 <title>Dukaan AI</title>
 
 <style>
-body {
-    font-family: Arial, sans-serif;
-    background: #f5f5f5;
-    padding: 20px;
-    margin: 0;
+body{
+  font-family:Arial,sans-serif;
+  background:#f5f5f5;
+  margin:0;
+  padding:20px;
 }
-
-.box {
-    background: white;
-    padding: 25px;
-    border-radius: 20px;
-    max-width: 450px;
-    margin: 20px auto;
+.box{
+  background:white;
+  max-width:500px;
+  margin:auto;
+  padding:25px;
+  border-radius:20px;
 }
-
-h1 {
-    text-align: center;
+h1{text-align:center}
+input{
+  width:100%;
+  box-sizing:border-box;
+  padding:14px;
+  margin:7px 0;
+  border:1px solid #ddd;
+  border-radius:10px;
+  font-size:16px;
 }
-
-input {
-    width: 100%;
-    padding: 14px;
-    margin: 7px 0;
-    box-sizing: border-box;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    font-size: 16px;
+button{
+  width:100%;
+  padding:14px;
+  margin-top:8px;
+  border:0;
+  border-radius:10px;
+  background:#222;
+  color:white;
+  font-size:16px;
 }
-
-button {
-    width: 100%;
-    padding: 14px;
-    margin-top: 8px;
-    border: none;
-    border-radius: 10px;
-    background: #222;
-    color: white;
-    font-size: 16px;
+.green{background:#16803c}
+.red{background:#d33}
+.card{
+  background:#f1f1f1;
+  padding:15px;
+  margin-top:12px;
+  border-radius:12px;
 }
-
-.product {
-    background: #f1f1f1;
-    padding: 15px;
-    margin-top: 12px;
-    border-radius: 12px;
-}
-
-.delete {
-    background: #d33;
-}
-
-.section {
-    display: none;
-}
-
-.chat {
-    background: #f1f1f1;
-    padding: 15px;
-    border-radius: 12px;
-    min-height: 80px;
-    margin-top: 15px;
-}
-
-.nav button {
-    width: 49%;
+.hidden{display:none}
+.chat{
+  background:#f1f1f1;
+  min-height:100px;
+  padding:15px;
+  border-radius:12px;
+  margin-top:15px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="box" id="start">
-    <h1>🏪 Dukaan AI</h1>
-    <p>Your AI assistant for your business 🤖</p>
+<div class="box">
 
-    <input id="shopName" placeholder="Enter your shop name">
+<h1>🏪 Dukaan AI</h1>
 
-    <button onclick="createShop()">Create My Shop</button>
+<div id="setup">
+<p>Your AI assistant for your business 🤖</p>
+
+<input id="shopName" placeholder="Enter your shop name">
+
+<button onclick="createShop()">Create My Shop</button>
 </div>
 
-<div class="box section" id="dashboard">
+<div id="dashboard" class="hidden">
 
-    <h1>🏪 Dukaan AI</h1>
+<h2>📊 Shop Dashboard</h2>
+<p id="welcome"></p>
 
-    <h3 id="shopTitle"></h3>
+<h3>📦 Add Product</h3>
 
-    <div class="nav">
-        <button onclick="showDashboard()">📦 Products</button>
-        <button onclick="showAssistant()">🤖 Assistant</button>
-    </div>
+<input id="productName" placeholder="Product name">
+<input id="productPrice" type="number" placeholder="Price">
+<input id="productStock" type="number" placeholder="Stock">
 
-    <div id="productSection">
+<button class="green" onclick="addProduct()">➕ Add Product</button>
 
-        <h3>Add Product</h3>
+<div id="products"></div>
 
-        <input id="productName" placeholder="Product name">
-        <input id="productPrice" type="number" placeholder="Price">
-        <input id="productStock" type="number" placeholder="Stock">
+<hr>
 
-        <button onclick="addProduct()">➕ Add Product</button>
+<h2>🤖 Customer Assistant</h2>
 
-        <div id="products"></div>
+<div id="chat" class="chat">
+🤖 Dukaan AI:<br><br>
+Hi! How can I help you today? 😊
+</div>
 
-    </div>
+<input id="message" placeholder="Customer message">
 
-    <div id="assistantSection" style="display:none">
+<button onclick="reply()">Send</button>
 
-        <h3>Customer Assistant</h3>
-
-        <div class="chat" id="chat">
-            🤖 Dukaan AI:<br><br>
-            Hi! How can I help you today? 😊
-        </div>
-
-        <input id="message" placeholder="Ask about a product">
-
-        <button onclick="reply()">Send</button>
-
-    </div>
+</div>
 
 </div>
 
 <script>
 
-let products = JSON.parse(localStorage.getItem("products")) || [];
+let products =
+JSON.parse(localStorage.getItem("products")) || [];
 
-function createShop() {
+let shop =
+localStorage.getItem("shopName") || "";
 
-    const shopName =
-        document.getElementById("shopName").value.trim();
+function createShop(){
 
-    if (shopName === "") {
-        alert("Please enter your shop name.");
-        return;
-    }
+  const name =
+  document.getElementById("shopName").value.trim();
 
-    localStorage.setItem("shopName", shopName);
+  if(name === ""){
+    alert("Please enter your shop name.");
+    return;
+  }
 
-    document.getElementById("start").style.display = "none";
-    document.getElementById("dashboard").style.display = "block";
+  shop = name;
 
-    document.getElementById("shopTitle").innerText =
-        "Welcome, " + shopName + " 👋";
+  localStorage.setItem("shopName",shop);
 
-    showProducts();
+  document.getElementById("setup")
+  .classList.add("hidden");
+
+  document.getElementById("dashboard")
+  .classList.remove("hidden");
+
+  document.getElementById("welcome").innerHTML =
+  "Welcome to <b>" + shop + "</b>! 🎉";
+
+  showProducts();
 }
 
-function saveProducts() {
-    localStorage.setItem(
-        "products",
-        JSON.stringify(products)
+function addProduct(){
+
+  const name =
+  document.getElementById("productName").value.trim();
+
+  const price =
+  document.getElementById("productPrice").value;
+
+  const stock =
+  document.getElementById("productStock").value;
+
+  if(name === "" || price === "" || stock === ""){
+    alert("Please fill in all fields.");
+    return;
+  }
+
+  products.push({
+    name:name,
+    price:price,
+    stock:stock
+  });
+
+  localStorage.setItem(
+    "products",
+    JSON.stringify(products)
+  );
+
+  document.getElementById("productName").value="";
+  document.getElementById("productPrice").value="";
+  document.getElementById("productStock").value="";
+
+  showProducts();
+}
+
+function showProducts(){
+
+  const container =
+  document.getElementById("products");
+
+  container.innerHTML="";
+
+  products.forEach(function(product,index){
+
+    container.innerHTML += `
+      <div class="card">
+        <b>📦 ${product.name}</b><br><br>
+        💰 Price: Rs. ${product.price}<br>
+        📊 Stock: ${product.stock}
+
+        <button class="red"
+        onclick="deleteProduct(${index})">
+        🗑️ Delete
+        </button>
+      </div>
+    `;
+  });
+}
+
+function deleteProduct(index){
+
+  products.splice(index,1);
+
+  localStorage.setItem(
+    "products",
+    JSON.stringify(products)
+  );
+
+  showProducts();
+}
+
+function reply(){
+
+  const message =
+  document.getElementById("message")
+  .value.toLowerCase()
+  .trim();
+
+  const chat =
+  document.getElementById("chat");
+
+  if(message === ""){
+    alert("Please enter a message.");
+    return;
+  }
+
+  const product =
+  products.find(function(item){
+
+    return message.includes(
+      item.name.toLowerCase()
     );
-}
 
-function addProduct() {
+  });
 
-    const name =
-        document.getElementById("productName").value.trim();
+  if(product){
 
-    const price =
-        document.getElementById("productPrice").value;
+    if(Number(product.stock) > 0){
 
-    const stock =
-        document.getElementById("productStock").value;
+      chat.innerHTML =
+      "🤖 Dukaan AI:<br><br>" +
+      "Yes! " + product.name +
+      " is available. 😊<br>" +
+      "💰 Price: Rs. " +
+      product.price + "<br>" +
+      "📦 Stock: " +
+      product.stock;
 
-    if (name === "" || price === "" || stock === "") {
-        alert("Please fill in all product details.");
-        return;
-    }
+    }else{
 
-    products.push({
-        name: name,
-        price: price,
-        stock: stock
-    });
-
-    saveProducts();
-    showProducts();
-
-    document.getElementById("productName").value = "";
-    document.getElementById("productPrice").value = "";
-    document.getElementById("productStock").value = "";
-}
-
-function showProducts() {
-
-    const container =
-        document.getElementById("products");
-
-    container.innerHTML = "";
-
-    if (products.length === 0) {
-
-        container.innerHTML =
-            "<p>No products added yet.</p>";
-
-        return;
-    }
-
-    products.forEach(function(product, index) {
-
-        container.innerHTML += `
-            <div class="product">
-                <b>📦 ${product.name}</b><br><br>
-                💰 Price: Rs. ${product.price}<br>
-                📊 Stock: ${product.stock}
-
-                <button class="delete"
-                onclick="deleteProduct(${index})">
-                🗑️ Delete
-                </button>
-            </div>
-        `;
-    });
-}
-
-function deleteProduct(index) {
-
-    products.splice(index, 1);
-
-    saveProducts();
-    showProducts();
-}
-
-function showDashboard() {
-
-    document.getElementById("productSection").style.display =
-        "block";
-
-    document.getElementById("assistantSection").style.display =
-        "none";
-}
-
-function showAssistant() {
-
-    document.getElementById("productSection").style.display =
-        "none";
-
-    document.getElementById("assistantSection").style.display =
-        "block";
-}
-
-function reply() {
-
-    const message =
-        document.getElementById("message")
-        .value
-        .toLowerCase()
-        .trim();
-
-    const chat =
-        document.getElementById("chat");
-
-    if (message === "") {
-        alert("Please enter a message.");
-        return;
-    }
-
-    const product =
-        products.find(function(item) {
-
-            return message.includes(
-                item.name.toLowerCase()
-            );
-
-        });
-
-    if (product) {
-
-        if (Number(product.stock) > 0) {
-
-            chat.innerHTML =
-                "🤖 Dukaan AI:<br><br>" +
-                "Yes! " + product.name +
-                " is available. 😊<br><br>" +
-                "💰 Price: Rs. " +
-                product.price + "<br>" +
-                "📦 Stock: " +
-                product.stock;
-
-        } else {
-
-            chat.innerHTML =
-                "🤖 Dukaan AI:<br><br>" +
-                "Sorry, " + product.name +
-                " is currently out of stock.";
-
-        }
-
-    } else {
-
-        chat.innerHTML =
-            "🤖 Dukaan AI:<br><br>" +
-            "Sorry, I couldn't find that product. 😕";
+      chat.innerHTML =
+      "🤖 Dukaan AI:<br><br>" +
+      "Sorry, " + product.name +
+      " is currently out of stock.";
 
     }
 
-    document.getElementById("message").value = "";
+  }else{
+
+    chat.innerHTML =
+    "🤖 Dukaan AI:<br><br>" +
+    "Sorry, I couldn't find that product. 😕";
+
+  }
+
+  document.getElementById("message").value="";
+}
+
+if(shop){
+
+  document.getElementById("setup")
+  .classList.add("hidden");
+
+  document.getElementById("dashboard")
+  .classList.remove("hidden");
+
+  document.getElementById("welcome").innerHTML =
+  "Welcome to <b>" + shop + "</b>! 🎉";
+
+  showProducts();
 }
 
 </script>
