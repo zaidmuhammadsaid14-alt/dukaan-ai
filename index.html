@@ -3,16 +3,9 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dukaan AI</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const SUPABASE_URL = "https://yrrqagtnbcufhcswstp.supabase.co";
-const SUPABASE_KEY = "sb_publishable_FGqvkjDrSAHG2RQxW4ErHw_29yN11YR";
-const supabase = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
 
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 body{
   font-family:Arial,sans-serif;
@@ -49,6 +42,7 @@ button{
 }
 .green{background:#16803c}
 .red{background:#d33}
+.blue{background:#2563eb}
 .card{
   background:#f1f1f1;
   padding:15px;
@@ -63,6 +57,12 @@ button{
   border-radius:12px;
   margin-top:15px;
 }
+#status{
+  margin-top:12px;
+  padding:10px;
+  border-radius:10px;
+  background:#eee;
+}
 </style>
 </head>
 
@@ -72,26 +72,59 @@ button{
 
 <h1>🏪 Dukaan AI</h1>
 
-<div id="setup">
-<p>Your AI assistant for your business 🤖</p>
+<!-- AUTH -->
+<div id="auth">
 
-<input id="shopName" placeholder="Enter your shop name">
+<h2>👤 Shop Owner</h2>
+<p>Create your account or login to manage your shop.</p>
 
-<button onclick="createShop()">Create My Shop</button>
+<input id="email" type="email" placeholder="Email">
+
+<input id="password" type="password" placeholder="Password">
+
+<button class="blue" onclick="signUp()">Create Account</button>
+
+<button onclick="login()">Login</button>
+
+<div id="status"></div>
+
 </div>
 
+
+<!-- SHOP SETUP -->
+<div id="setup" class="hidden">
+
+<h2>🏪 Create Your Shop</h2>
+
+<input id="shopName" placeholder="Shop name">
+
+<button class="green" onclick="createShop()">
+Create My Shop
+</button>
+
+</div>
+
+
+<!-- DASHBOARD -->
 <div id="dashboard" class="hidden">
 
 <h2>📊 Shop Dashboard</h2>
+
 <p id="welcome"></p>
+
+<button class="red" onclick="logout()">Logout</button>
 
 <h3>📦 Add Product</h3>
 
 <input id="productName" placeholder="Product name">
+
 <input id="productPrice" type="number" placeholder="Price">
+
 <input id="productStock" type="number" placeholder="Stock">
 
-<button class="green" onclick="addProduct()">➕ Add Product</button>
+<button class="green" onclick="addProduct()">
+➕ Add Product
+</button>
 
 <div id="products"></div>
 
@@ -112,27 +145,191 @@ Hi! How can I help you today? 😊
 
 </div>
 
+
 <script>
 
-let products =
-JSON.parse(localStorage.getItem("products")) || [];
+const SUPABASE_URL =
+"https://yrrqagtnbcufhcswstp.supabase.co";
 
-let shop =
-localStorage.getItem("shopName") || "";
+const SUPABASE_KEY =
+"";
 
-function createShop(){
+const supabaseClient =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+let currentUser = null;
+let currentShop = null;
+let products = [];
+
+
+/* STATUS */
+
+function showStatus(text){
+
+  document.getElementById("status").innerText = text;
+
+}
+
+
+/* SIGN UP */
+
+async function signUp(){
+
+  const email =
+  document.getElementById("email").value.trim();
+
+  const password =
+  document.getElementById("password").value;
+
+  if(!email || !password){
+
+    showStatus("Please enter email and password.");
+    return;
+  }
+
+  const {data,error} =
+  await supabaseClient.auth.signUp({
+    email:email,
+    password:password
+  });
+
+  if(error){
+
+    showStatus(error.message);
+    return;
+  }
+
+  if(data.user){
+
+    currentUser = data.user;
+
+    showStatus(
+      "Account created successfully. You can now login."
+    );
+  }
+}
+
+
+/* LOGIN */
+
+async function login(){
+
+  const email =
+  document.getElementById("email").value.trim();
+
+  const password =
+  document.getElementById("password").value;
+
+  if(!email || !password){
+
+    showStatus("Please enter email and password.");
+    return;
+  }
+
+  const {data,error} =
+  await supabaseClient.auth.signInWithPassword({
+    email:email,
+    password:password
+  });
+
+  if(error){
+
+    showStatus(error.message);
+    return;
+  }
+
+  currentUser = data.user;
+
+  await loadShop();
+
+}
+
+
+/* LOAD SHOP */
+
+async function loadShop(){
+
+  const {data,error} =
+  await supabaseClient
+  .from("shops")
+  .select("*")
+  .eq("owner_id",currentUser.id)
+  .limit(1);
+
+  if(error){
+
+    showStatus(error.message);
+    return;
+  }
+
+  document.getElementById("auth")
+  .classList.add("hidden");
+
+  if(data && data.length > 0){
+
+    currentShop = data[0];
+
+    showDashboard();
+
+  }else{
+
+    document.getElementById("setup")
+    .classList.remove("hidden");
+  }
+
+}
+
+
+/* CREATE SHOP */
+
+async function createShop(){
 
   const name =
-  document.getElementById("shopName").value.trim();
+  document.getElementById("shopName")
+  .value.trim();
 
-  if(name === ""){
+  if(!name){
+
     alert("Please enter your shop name.");
     return;
   }
 
-  shop = name;
+  const {data,error} =
+  await supabaseClient
+  .from("shops")
+  .insert({
+    owner_id:currentUser.id,
+    name:name
+  })
+  .select()
+  .single();
 
-  localStorage.setItem("shopName",shop);
+  if(error){
+
+    alert(error.message);
+    return;
+  }
+
+  currentShop = data;
+
+  document.getElementById("setup")
+  .classList.add("hidden");
+
+  showDashboard();
+
+}
+
+
+/* DASHBOARD */
+
+async function showDashboard(){
+
+  document.getElementById("auth")
+  .classList.add("hidden");
 
   document.getElementById("setup")
   .classList.add("hidden");
@@ -141,15 +338,46 @@ function createShop(){
   .classList.remove("hidden");
 
   document.getElementById("welcome").innerHTML =
-  "Welcome to <b>" + shop + "</b>! 🎉";
+  "Welcome to <b>" +
+  currentShop.name +
+  "</b>! 🎉";
 
-  showProducts();
+  await loadProducts();
+
 }
 
-function addProduct(){
+
+/* LOAD PRODUCTS */
+
+async function loadProducts(){
+
+  const {data,error} =
+  await supabaseClient
+  .from("products")
+  .select("*")
+  .eq("shop_id",currentShop.id)
+  .order("name");
+
+  if(error){
+
+    alert(error.message);
+    return;
+  }
+
+  products = data || [];
+
+  showProducts();
+
+}
+
+
+/* ADD PRODUCT */
+
+async function addProduct(){
 
   const name =
-  document.getElementById("productName").value.trim();
+  document.getElementById("productName")
+  .value.trim();
 
   const price =
   document.getElementById("productPrice").value;
@@ -157,28 +385,38 @@ function addProduct(){
   const stock =
   document.getElementById("productStock").value;
 
-  if(name === "" || price === "" || stock === ""){
+  if(!name || price === "" || stock === ""){
+
     alert("Please fill in all fields.");
     return;
   }
 
-  products.push({
+  const {error} =
+  await supabaseClient
+  .from("products")
+  .insert({
+    shop_id:currentShop.id,
     name:name,
-    price:price,
-    stock:stock
+    price:Number(price),
+    stock:Number(stock)
   });
 
-  localStorage.setItem(
-    "products",
-    JSON.stringify(products)
-  );
+  if(error){
+
+    alert(error.message);
+    return;
+  }
 
   document.getElementById("productName").value="";
   document.getElementById("productPrice").value="";
   document.getElementById("productStock").value="";
 
-  showProducts();
+  await loadProducts();
+
 }
+
+
+/* SHOW PRODUCTS */
 
 function showProducts(){
 
@@ -187,34 +425,26 @@ function showProducts(){
 
   container.innerHTML="";
 
-  products.forEach(function(product,index){
+  products.forEach(function(product){
 
     container.innerHTML += `
       <div class="card">
+
         <b>📦 ${product.name}</b><br><br>
+
         💰 Price: Rs. ${product.price}<br>
+
         📊 Stock: ${product.stock}
 
-        <button class="red"
-        onclick="deleteProduct(${index})">
-        🗑️ Delete
-        </button>
       </div>
     `;
+
   });
+
 }
 
-function deleteProduct(index){
 
-  products.splice(index,1);
-
-  localStorage.setItem(
-    "products",
-    JSON.stringify(products)
-  );
-
-  showProducts();
-}
+/* CUSTOMER ASSISTANT */
 
 function reply(){
 
@@ -226,7 +456,8 @@ function reply(){
   const chat =
   document.getElementById("chat");
 
-  if(message === ""){
+  if(!message){
+
     alert("Please enter a message.");
     return;
   }
@@ -240,24 +471,27 @@ function reply(){
 
   });
 
+
   if(product){
 
     if(Number(product.stock) > 0){
 
       chat.innerHTML =
       "🤖 Dukaan AI:<br><br>" +
-      "Yes! " + product.name +
+      "Yes! " +
+      product.name +
       " is available. 😊<br>" +
       "💰 Price: Rs. " +
-      product.price + "<br>" +
-      "📦 Stock: " +
+      product.price +
+      "<br>📦 Stock: " +
       product.stock;
 
     }else{
 
       chat.innerHTML =
       "🤖 Dukaan AI:<br><br>" +
-      "Sorry, " + product.name +
+      "Sorry, " +
+      product.name +
       " is currently out of stock.";
 
     }
@@ -271,21 +505,39 @@ function reply(){
   }
 
   document.getElementById("message").value="";
+
 }
 
-if(shop){
 
-  document.getElementById("setup")
-  .classList.add("hidden");
+/* LOGOUT */
 
-  document.getElementById("dashboard")
-  .classList.remove("hidden");
+async function logout(){
 
-  document.getElementById("welcome").innerHTML =
-  "Welcome to <b>" + shop + "</b>! 🎉";
+  await supabaseClient.auth.signOut();
 
-  showProducts();
+  location.reload();
+
 }
+
+
+/* CHECK EXISTING LOGIN */
+
+async function checkSession(){
+
+  const {data} =
+  await supabaseClient.auth.getSession();
+
+  if(data.session){
+
+    currentUser = data.session.user;
+
+    await loadShop();
+
+  }
+
+}
+
+checkSession();
 
 </script>
 
