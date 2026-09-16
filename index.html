@@ -227,7 +227,6 @@ function openAuth(r){
   show("auth");
   $("authTitle").textContent=r==='seller'?'Seller Login':'Customer Login'
 }
-function openAuth(r){role=r;hide("landing");show("auth");$("authTitle").textContent=r==='seller'?'Seller Login':'Customer Login'}
 $("signup").onclick=async()=>{
   let e=$("email").value.trim(),p=$("password").value;
   if(!e||!p){$("authMsg").textContent="Provide email and password.";return}
