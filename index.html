@@ -669,6 +669,103 @@ $("forgot").onclick=async()=>{
   let{error}=await sb.auth.resetPasswordForEmail(e);
   $("authMsg").textContent=error?error.message:"Password reset email sent.";
 };
+function cartModal(){
+  $("modalTitle").textContent="🛒 My Cart";
+
+  let total=cart.reduce((sum,item)=>sum+(Number(item.price)*item.qty),0);
+
+  $("modalBody").innerHTML=cart.length
+    ? cart.map(item=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e2e8f0">
+        <div>
+          <b>${esc(item.name)}</b>
+          <div class="muted">Qty: ${item.qty}</div>
+        </div>
+        <b>Rs. ${(Number(item.price)*item.qty).toLocaleString()}</b>
+      </div>
+    `).join('')+
+    `<div style="margin-top:15px;text-align:right;font-size:18px">
+      Total: <b>Rs. ${total.toLocaleString()}</b>
+    </div>`
+    : '<p class="muted">Your cart is empty.</p>';
+
+  show("modal");
+}
+function openAddProductModal(){
+  $("modalTitle").textContent="➕ Add Product";
+
+  $("modalBody").innerHTML=`
+    <div class="form">
+      <label>Product Name</label>
+      <input id="pName" placeholder="e.g. Wireless Headphones">
+
+      <label>Price (Rs.)</label>
+      <input id="pPrice" type="number" placeholder="2500">
+
+      <label>Stock</label>
+      <input id="pStock" type="number" placeholder="10">
+
+      <label>Category</label>
+      <select id="pCategory">
+        <option value="Fashion">Fashion</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Home">Home</option>
+        <option value="Beauty">Beauty</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <label>Image URL</label>
+      <input id="pImage" placeholder="https://...">
+
+      <label>Description</label>
+      <textarea id="pDescription" placeholder="Describe your product"></textarea>
+
+      <button class="btn primary" style="width:100%" onclick="saveProduct()">
+        Add Product
+      </button>
+    </div>
+  `;
+
+  show("modal");
+}
+
+async function saveProduct(){
+  if(!shop){
+    toast("Please create your shop first.");
+    return;
+  }
+
+  let name=$("pName").value.trim();
+  let price=Number($("pPrice").value);
+  let stock=Number($("pStock").value);
+  let category=$("pCategory").value;
+  let image_url=$("pImage").value.trim();
+  let description=$("pDescription").value.trim();
+
+  if(!name || price<=0){
+    toast("Enter product name and valid price.");
+    return;
+  }
+
+  let{error}=await sb.from("products").insert({
+    shop_id:shop.id,
+    name,
+    price,
+    stock,
+    category,
+    image_url,
+    description
+  });
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  hide("modal");
+  toast("Product added successfully!");
+  loadSellerProducts();
+}
 // Initial Boot
 initApp();
 </script>
