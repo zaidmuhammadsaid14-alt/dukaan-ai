@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
 
@@ -9,6 +10,9 @@
   >
 
   <title>Dukaan AI</title>
+
+  <!-- SUPABASE -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     * {
@@ -24,10 +28,20 @@
       min-height: 100vh;
     }
 
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
     button {
       border: none;
       cursor: pointer;
-      font: inherit;
+    }
+
+    button:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
     }
 
     .container {
@@ -59,19 +73,20 @@
 
     .header-btn {
       background: #2563eb;
-      color: white;
+      color: #ffffff;
       padding: 10px 18px;
       border-radius: 8px;
     }
 
     main {
+      min-height: calc(100vh - 150px);
       padding: 70px 0;
     }
 
     .hero {
-      text-align: center;
       max-width: 750px;
-      margin: 0 auto;
+      margin: auto;
+      text-align: center;
     }
 
     .hero h1 {
@@ -107,11 +122,11 @@
 
     .primary-btn {
       background: #2563eb;
-      color: white;
+      color: #ffffff;
     }
 
     .secondary-btn {
-      background: white;
+      background: #ffffff;
       color: #111827;
       border: 1px solid #d1d5db;
     }
@@ -119,7 +134,7 @@
     .status {
       margin-top: 45px;
       padding: 18px;
-      background: white;
+      background: #ffffff;
       border: 1px solid #e5e7eb;
       border-radius: 12px;
       text-align: left;
@@ -127,6 +142,94 @@
 
     .status strong {
       color: #16a34a;
+    }
+
+    .auth-box,
+    .dashboard-box {
+      width: min(480px, 100%);
+      margin: auto;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    }
+
+    .auth-box h2,
+    .dashboard-box h2 {
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .auth-box > p,
+    .dashboard-box > p {
+      color: #6b7280;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .back-btn {
+      background: transparent;
+      color: #2563eb;
+      padding: 0;
+      margin-bottom: 24px;
+      font-weight: 700;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: 700;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px 13px;
+      border: 1px solid #d1d5db;
+      border-radius: 9px;
+      outline: none;
+      background: #ffffff;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #2563eb;
+    }
+
+    .auth-submit {
+      width: 100%;
+      margin-top: 5px;
+    }
+
+    .auth-message {
+      display: none;
+      margin-top: 16px;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .auth-switch {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 22px;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .auth-switch button {
+      background: transparent;
+      color: #2563eb;
+      font-weight: 700;
+    }
+
+    .dashboard-box .primary-btn {
+      margin-top: 8px;
     }
 
     footer {
@@ -165,82 +268,1189 @@
       .secondary-btn {
         width: 100%;
       }
+
+      .auth-box,
+      .dashboard-box {
+        padding: 22px;
+      }
     }
   </style>
 </head>
 
+
 <body>
 
+  <!-- HEADER -->
   <header>
+
     <div class="container header-inner">
+
       <div class="logo">
         Dukaan <span>AI</span>
       </div>
 
       <button
+        id="headerAuthButton"
         class="header-btn"
-        onclick="showMessage()"
+        type="button"
+        onclick="showAuth('login')"
       >
-        Get Started
+        Login
       </button>
+
     </div>
+
   </header>
 
+
   <main>
-    <div class="container">
-      <section class="hero">
 
-        <h1>
-          Your Smart
-          <span>Dukaan</span>
-        </h1>
 
-        <p>
-          A modern AI-powered marketplace where customers
-          can discover products and sellers can manage
-          their online business.
-        </p>
+    <!-- HOME PAGE -->
+    <section
+      id="homePage"
+    >
 
-        <div class="actions">
+      <div class="container">
+
+        <div class="hero">
+
+          <h1>
+            Your Smart
+            <span>Dukaan</span>
+          </h1>
+
+          <p>
+            A modern AI-powered marketplace
+            for customers and sellers.
+          </p>
+
+          <div class="actions">
+
+            <button
+              class="primary-btn"
+              type="button"
+              onclick="showAuth('signup')"
+            >
+              Create Account
+            </button>
+
+            <button
+              class="secondary-btn"
+              type="button"
+              onclick="showAuth('login')"
+            >
+              Login
+            </button>
+
+          </div>
+
+          <div class="status">
+
+            System Status:
+            <strong>
+              Authentication Ready
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- AUTH PAGE -->
+    <section
+      id="authPage"
+      style="display:none"
+    >
+
+      <div class="container">
+
+        <div class="auth-box">
+
+          <button
+            class="back-btn"
+            type="button"
+            onclick="showHome()"
+          >
+            ← Back
+          </button>
+
+
+          <h2 id="authTitle">
+            Login
+          </h2>
+
+
+          <p id="authSubtitle">
+            Login to your Dukaan AI account.
+          </p>
+
+
+          <!-- FULL NAME -->
+
+          <div
+            id="nameField"
+            class="form-group"
+            style="display:none"
+          >
+
+            <label for="fullName">
+              Full Name
+            </label>
+
+            <input
+              id="fullName"
+              type="text"
+              placeholder="Enter your full name"
+              autocomplete="name"
+            >
+
+          </div>
+
+
+          <!-- EMAIL -->
+
+          <div class="form-group">
+
+            <label for="email">
+              Email
+            </label>
+
+            <input
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              autocomplete="email"
+            >
+
+          </div>
+
+
+          <!-- PASSWORD -->
+
+          <div class="form-group">
+
+            <label for="password">
+              Password
+            </label>
+
+            <input
+              id="password"
+              type="password"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              minlength="6"
+            >
+
+          </div>
+
+
+          <!-- ACCOUNT ROLE -->
+
+          <div
+            id="roleField"
+            class="form-group"
+            style="display:none"
+          >
+
+            <label for="accountRole">
+              Account Type
+            </label>
+
+            <select id="accountRole">
+
+              <option value="customer">
+                Customer
+              </option>
+
+              <option value="seller">
+                Seller
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <!-- AUTH BUTTON -->
+
+          <button
+            id="authButton"
+            class="primary-btn auth-submit"
+            type="button"
+            onclick="submitAuth()"
+          >
+            Login
+          </button>
+
+
+          <!-- MESSAGE -->
+
+          <p
+            id="authMessage"
+            class="auth-message"
+          ></p>
+
+
+          <!-- SWITCH -->
+
+          <div class="auth-switch">
+
+            <span id="switchText">
+              Don't have an account?
+            </span>
+
+            <button
+              id="switchButton"
+              type="button"
+              onclick="toggleAuthMode()"
+            >
+              Sign up
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- CUSTOMER PAGE -->
+
+    <section
+      id="customerPage"
+      style="display:none"
+    >
+
+      <div class="container">
+
+        <div class="dashboard-box">
+
+          <h2>
+            Welcome,
+            <span id="customerName">
+              Customer
+            </span>
+          </h2>
+
+          <p>
+            Your Dukaan AI customer account
+            is ready.
+          </p>
 
           <button
             class="primary-btn"
-            onclick="showMessage()"
+            type="button"
+            onclick="logoutUser()"
           >
-            Start Shopping
+            Logout
           </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- SELLER PAGE -->
+
+    <section
+      id="sellerPage"
+      style="display:none"
+    >
+
+      <div class="container">
+
+        <div class="dashboard-box">
+
+          <h2>
+            Welcome,
+            <span id="sellerName">
+              Seller
+            </span>
+          </h2>
+
+          <p>
+            Your Dukaan AI seller account
+            is ready.
+          </p>
 
           <button
-            class="secondary-btn"
-            onclick="showMessage()"
+            class="primary-btn"
+            type="button"
+            onclick="logoutUser()"
           >
-            Become a Seller
+            Logout
           </button>
 
         </div>
 
-        <div class="status">
-          System Status:
-          <strong>Foundation Ready</strong>
-        </div>
+      </div>
 
-      </section>
-    </div>
+    </section>
+
+
   </main>
+
 
   <footer>
     © 2026 Dukaan AI. All rights reserved.
   </footer>
 
+
   <script>
+
     "use strict";
 
-    function showMessage() {
-      alert("Dukaan AI is ready. Next step: Authentication.");
+
+    /* ============================================
+       SUPABASE CONFIG
+       ============================================ */
+
+    const SUPABASE_URL =
+      "https://yrrrqagtnbcufhcswstp.supabase.co";
+
+    const SUPABASE_ANON_KEY =
+      "sb_publishable_FGqvkjDrSAHG2RQxW4ErHw_29yN11YR";
+
+
+    if (!window.supabase) {
+
+      throw new Error(
+        "Supabase library did not load."
+      );
+
     }
 
-    console.log("Dukaan AI foundation loaded successfully.");
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+      );
+
+
+    /* ============================================
+       STATE
+       ============================================ */
+
+    let authMode = "login";
+
+    let redirectInProgress = false;
+
+
+    /* ============================================
+       PAGE HELPERS
+       ============================================ */
+
+    function hideAllPages() {
+
+      document.getElementById(
+        "homePage"
+      ).style.display = "none";
+
+      document.getElementById(
+        "authPage"
+      ).style.display = "none";
+
+      document.getElementById(
+        "customerPage"
+      ).style.display = "none";
+
+      document.getElementById(
+        "sellerPage"
+      ).style.display = "none";
+
+    }
+
+
+    function showHome() {
+
+      hideAllPages();
+
+      document.getElementById(
+        "homePage"
+      ).style.display = "block";
+
+
+      const button =
+        document.getElementById(
+          "headerAuthButton"
+        );
+
+
+      button.textContent =
+        "Login";
+
+
+      button.onclick =
+        function () {
+
+          showAuth("login");
+
+        };
+
+    }
+
+
+    function showAuth(mode) {
+
+      authMode = mode;
+
+      hideAllPages();
+
+
+      document.getElementById(
+        "authPage"
+      ).style.display = "block";
+
+
+      updateAuthUI();
+
+      clearAuthMessage();
+
+    }
+
+
+    /* ============================================
+       AUTH UI
+       ============================================ */
+
+    function updateAuthUI() {
+
+      const isSignup =
+        authMode === "signup";
+
+
+      document.getElementById(
+        "authTitle"
+      ).textContent =
+        isSignup
+          ? "Create Account"
+          : "Login";
+
+
+      document.getElementById(
+        "authSubtitle"
+      ).textContent =
+        isSignup
+          ? "Create your Dukaan AI account."
+          : "Login to your Dukaan AI account.";
+
+
+      document.getElementById(
+        "authButton"
+      ).textContent =
+        isSignup
+          ? "Create Account"
+          : "Login";
+
+
+      document.getElementById(
+        "nameField"
+      ).style.display =
+        isSignup
+          ? "block"
+          : "none";
+
+
+      document.getElementById(
+        "roleField"
+      ).style.display =
+        isSignup
+          ? "block"
+          : "none";
+
+
+      document.getElementById(
+        "switchText"
+      ).textContent =
+        isSignup
+          ? "Already have an account?"
+          : "Don't have an account?";
+
+
+      document.getElementById(
+        "switchButton"
+      ).textContent =
+        isSignup
+          ? "Login"
+          : "Sign up";
+
+    }
+
+
+    function toggleAuthMode() {
+
+      authMode =
+        authMode === "login"
+          ? "signup"
+          : "login";
+
+
+      updateAuthUI();
+
+      clearAuthMessage();
+
+    }
+
+
+    /* ============================================
+       AUTH MESSAGE
+       ============================================ */
+
+    function showAuthMessage(
+      message,
+      isError = true
+    ) {
+
+      const element =
+        document.getElementById(
+          "authMessage"
+        );
+
+
+      element.textContent =
+        message;
+
+
+      element.style.display =
+        "block";
+
+
+      element.style.color =
+        isError
+          ? "#dc2626"
+          : "#16a34a";
+
+    }
+
+
+    function clearAuthMessage() {
+
+      const element =
+        document.getElementById(
+          "authMessage"
+        );
+
+
+      element.textContent =
+        "";
+
+
+      element.style.display =
+        "none";
+
+    }
+
+
+    /* ============================================
+       SUBMIT AUTH
+       ============================================ */
+
+    async function submitAuth() {
+
+      clearAuthMessage();
+
+
+      const email =
+        document.getElementById(
+          "email"
+        ).value.trim();
+
+
+      const password =
+        document.getElementById(
+          "password"
+        ).value;
+
+
+      if (!email) {
+
+        showAuthMessage(
+          "Please enter your email."
+        );
+
+        return;
+
+      }
+
+
+      if (!password) {
+
+        showAuthMessage(
+          "Please enter your password."
+        );
+
+        return;
+
+      }
+
+
+      if (password.length < 6) {
+
+        showAuthMessage(
+          "Password must be at least 6 characters."
+        );
+
+        return;
+
+      }
+
+
+      const button =
+        document.getElementById(
+          "authButton"
+        );
+
+
+      button.disabled =
+        true;
+
+
+      button.textContent =
+        authMode === "signup"
+          ? "Creating..."
+          : "Logging in...";
+
+
+      try {
+
+        if (authMode === "signup") {
+
+          await signupUser(
+            email,
+            password
+          );
+
+        } else {
+
+          await loginUser(
+            email,
+            password
+          );
+
+        }
+
+      } catch (error) {
+
+        console.error(
+          "Authentication error:",
+          error
+        );
+
+
+        showAuthMessage(
+          getAuthError(error)
+        );
+
+      } finally {
+
+        button.disabled =
+          false;
+
+
+        button.textContent =
+          authMode === "signup"
+            ? "Create Account"
+            : "Login";
+
+      }
+
+    }
+
+
+    /* ============================================
+       SIGNUP
+       ============================================ */
+
+    async function signupUser(
+      email,
+      password
+    ) {
+
+      const fullName =
+        document.getElementById(
+          "fullName"
+        ).value.trim();
+
+
+      const role =
+        document.getElementById(
+          "accountRole"
+        ).value;
+
+
+      if (!fullName) {
+
+        throw new Error(
+          "Please enter your full name."
+        );
+
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth.signUp({
+
+          email: email,
+
+          password: password,
+
+          options: {
+
+            data: {
+
+              full_name:
+                fullName,
+
+              role:
+                role
+
+            }
+
+          }
+
+        });
+
+
+      if (error) {
+
+        throw error;
+
+      }
+
+
+      if (
+        !data ||
+        !data.user
+      ) {
+
+        throw new Error(
+          "Account could not be created."
+        );
+
+      }
+
+
+      if (data.session) {
+
+        await loadUserAndRedirect(
+          data.user
+        );
+
+        return;
+
+      }
+
+
+      showAuthMessage(
+        "Account created. Please check your email to verify your account, then log in.",
+        false
+      );
+
+    }
+
+
+    /* ============================================
+       LOGIN
+       ============================================ */
+
+    async function loginUser(
+      email,
+      password
+    ) {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth
+          .signInWithPassword({
+
+            email:
+              email,
+
+            password:
+              password
+
+          });
+
+
+      if (error) {
+
+        throw error;
+
+      }
+
+
+      if (
+        !data ||
+        !data.user
+      ) {
+
+        throw new Error(
+          "Login failed."
+        );
+
+      }
+
+
+      await loadUserAndRedirect(
+        data.user
+      );
+
+    }
+
+
+    /* ============================================
+       LOAD USER PROFILE
+       ============================================ */
+
+    async function loadUserAndRedirect(
+      user
+    ) {
+
+      if (
+        !user ||
+        redirectInProgress
+      ) {
+
+        return;
+
+      }
+
+
+      redirectInProgress =
+        true;
+
+
+      try {
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient
+            .from("profiles")
+            .select("*")
+            .eq("id", user.id)
+            .maybeSingle();
+
+
+        if (error) {
+
+          throw error;
+
+        }
+
+
+        const metadata =
+          user.user_metadata ||
+          {};
+
+
+        const profile =
+          data || {
+
+            full_name:
+              metadata.full_name || "",
+
+            role:
+              metadata.role || "customer"
+
+          };
+
+
+        const role =
+          profile.role === "seller"
+            ? "seller"
+            : "customer";
+
+
+        const fullName =
+          profile.full_name ||
+          metadata.full_name ||
+          (
+            role === "seller"
+              ? "Seller"
+              : "Customer"
+          );
+
+
+        hideAllPages();
+
+
+        if (role === "seller") {
+
+          document.getElementById(
+            "sellerName"
+          ).textContent =
+            fullName;
+
+
+          document.getElementById(
+            "sellerPage"
+          ).style.display =
+            "block";
+
+        } else {
+
+          document.getElementById(
+            "customerName"
+          ).textContent =
+            fullName;
+
+
+          document.getElementById(
+            "customerPage"
+          ).style.display =
+            "block";
+
+        }
+
+
+        const headerButton =
+          document.getElementById(
+            "headerAuthButton"
+          );
+
+
+        headerButton.textContent =
+          "Logout";
+
+
+        headerButton.onclick =
+          function () {
+
+            logoutUser();
+
+          };
+
+      } finally {
+
+        redirectInProgress =
+          false;
+
+      }
+
+    }
+
+
+    /* ============================================
+       LOGOUT
+       ============================================ */
+
+    async function logoutUser() {
+
+      try {
+
+        const {
+          error
+        } =
+          await supabaseClient.auth
+            .signOut();
+
+
+        if (error) {
+
+          throw error;
+
+        }
+
+
+        showHome();
+
+      } catch (error) {
+
+        console.error(
+          "Logout error:",
+          error
+        );
+
+
+        alert(
+          "Logout failed. Please try again."
+        );
+
+      }
+
+    }
+
+
+    /* ============================================
+       AUTH ERROR
+       ============================================ */
+
+    function getAuthError(error) {
+
+      const message =
+        String(
+          error?.message || ""
+        ).toLowerCase();
+
+
+      if (
+        message.includes(
+          "invalid login credentials"
+        )
+      ) {
+
+        return (
+          "Email or password is incorrect."
+        );
+
+      }
+
+
+      if (
+        message.includes(
+          "user already registered"
+        )
+      ) {
+
+        return (
+          "This email is already registered."
+        );
+
+      }
+
+
+      if (
+        message.includes(
+          "email not confirmed"
+        )
+      ) {
+
+        return (
+          "Please verify your email before logging in."
+        );
+
+      }
+
+
+      if (
+        message.includes(
+          "rate limit"
+        )
+      ) {
+
+        return (
+          "Too many attempts. Please wait a little and try again."
+        );
+
+      }
+
+
+      return (
+        error?.message ||
+        "Something went wrong. Please try again."
+      );
+
+    }
+
+
+    /* ============================================
+       EXISTING SESSION
+       ============================================ */
+
+    async function checkExistingSession() {
+
+      try {
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient.auth
+            .getSession();
+
+
+        if (error) {
+
+          throw error;
+
+        }
+
+
+        if (
+          data?.session?.user
+        ) {
+
+          await loadUserAndRedirect(
+            data.session.user
+          );
+
+        } else {
+
+          showHome();
+
+        }
+
+      } catch (error) {
+
+        console.error(
+          "Session check failed:",
+          error
+        );
+
+
+        showHome();
+
+      }
+
+    }
+
+
+    /* ============================================
+       AUTH STATE LISTENER
+       ============================================ */
+
+    supabaseClient.auth.onAuthStateChange(
+      function (event) {
+
+        if (
+          event === "SIGNED_OUT"
+        ) {
+
+          redirectInProgress =
+            false;
+
+          showHome();
+
+        }
+
+      }
+    );
+
+
+    /* ============================================
+       START APP
+       ============================================ */
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      function () {
+
+        updateAuthUI();
+
+        checkExistingSession();
+
+      }
+    );
+
   </script>
 
 </body>
+
 </html>
