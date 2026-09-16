@@ -293,6 +293,19 @@ function addToCart(id){
   $("cartCount").textContent=cart.reduce((a,b)=>a+b.qty,0);
   toast("Added to cart!");
 }
+function changeCartQty(id,change){
+  let item=cart.find(x=>x.id===id);
+  if(!item)return;
+
+  item.qty+=change;
+
+  if(item.qty<=0){
+    cart=cart.filter(x=>x.id!==id);
+  }
+
+  $("cartCount").textContent=cart.reduce((a,b)=>a+b.qty,0);
+  cartModal();
+}
 function cartModal(){
   $("modalTitle").textContent="My Cart";
 
@@ -330,6 +343,83 @@ function cartModal(){
   `;
 
   show("modal");
+}
+async function deleteProduct(id){
+  if(!confirm("Delete this product?")) return;
+
+  let {error}=await sb.from("products").delete().eq("id",id);
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  toast("Product deleted successfully!");
+  loadSellerProducts();
+}
+async function checkoutCart(){
+  if(!cart.length){
+    toast("Your cart is empty.");
+    return;
+  }
+
+  let {data:{user}}=await sb.auth.getUser();
+
+  if(!user){
+    toast("Please login first.");
+    return;
+  }
+
+  let phone=prompt("Enter your phone number:");
+
+  if(!phone){
+    toast("Phone number is required.");
+    return;
+  }
+
+  let total=cart.reduce(
+    (sum,item)=>sum+(Number(item.price)||0)*item.qty,
+    0
+  );
+
+  let {data:order,error}=await sb
+    .from("orders")
+    .insert({
+      customer_id:user.id,
+      total:total,
+      status:"pending",
+      phone:phone
+    })
+    .select()
+    .single();
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  let items=cart.map(item=>({
+    order_id:order.id,
+    product_id:item.id,
+    quantity:item.qty,
+    price:Number(item.price)||0
+  }));
+
+  let {error:itemError}=await sb
+    .from("order_items")
+    .insert(items);
+
+  if(itemError){
+    toast(itemError.message);
+    return;
+  }
+
+  cart=[];
+  $("cartCount").textContent="0";
+  hide("modal");
+
+  toast("Order placed successfully!");
+  openOrders();
 }
 function toggleWishlist(id){
   let idx=wishlist.indexOf(id);
@@ -405,7 +495,86 @@ async function loadShopData(){
     loadSellerOrders();
   }
 }
+function openAddProductModal(){
+  if(!shop){
+    toast("Please create your shop profile first.");
+    return;
+  }
 
+  $("modalTitle").textContent="➕ Add New Product";
+
+  $("modalBody").innerHTML=`
+    <label class="muted">Product Name</label>
+    <input id="productName" placeholder="Product name">
+
+    <label class="muted">Category</label>
+    <select id="productCategory">
+      <option value="Fashion">Fashion</option>
+      <option value="Electronics">Electronics</option>
+      <option value="Home">Home</option>
+      <option value="Beauty">Beauty</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <label class="muted">Price (Rs.)</label>
+    <input id="productPrice" type="number" min="0" placeholder="Price">
+
+    <label class="muted">Stock</label>
+    <input id="productStock" type="number" min="0" placeholder="Available stock">
+
+    <label class="muted">Product Image URL</label>
+    <input id="productImage" placeholder="https://...">
+
+    <label class="muted">Description</label>
+    <textarea id="productDescription" rows="4" placeholder="Describe your product"></textarea>
+
+    <button class="btn primary" style="width:100%;margin-top:8px" onclick="saveProduct()">
+      Add Product
+    </button>
+  `;
+
+  show("modal");
+}
+$("saveShop").onclick=async()=>{
+  let {data:{user}}=await sb.auth.getUser();
+  if(!user)return;
+
+  let shopData={
+    name:$("shopName").value.trim(),
+    category:$("shopCategory").value.trim(),
+    phone:$("shopPhone").value.trim(),
+    address:$("shopAddress").value.trim()
+  };
+
+  if(!shopData.name){
+    toast("Enter shop name.");
+    return;
+  }
+
+  let result;
+
+  if(shop){
+    result=await sb.from("shops")
+      .update(shopData)
+      .eq("id",shop.id)
+      .select()
+      .single();
+  }else{
+    result=await sb.from("shops")
+      .insert({...shopData,owner_id:user.id})
+      .select()
+      .single();
+  }
+
+  if(result.error){
+    toast(result.error.message);
+    return;
+  }
+
+  shop=result.data;
+  toast("Shop profile saved successfully!");
+  loadSellerProducts();
+};
 async function loadSellerProducts(){
   if(!shop)return;
   let{data}=await sb.from("products").select("*").eq("shop_id",shop.id);
@@ -423,7 +592,43 @@ async function loadSellerProducts(){
     </div>
   `).join('');
 }
+async function saveProduct(){
+  if(!shop){
+    toast("Please save your shop profile first.");
+    return;
+  }
 
+  let name=$("productName").value.trim();
+  let category=$("productCategory").value.trim();
+  let price=Number($("productPrice").value);
+  let stock=Number($("productStock").value);
+  let image_url=$("productImage").value.trim();
+  let description=$("productDescription").value.trim();
+
+  if(!name||!price){
+    toast("Product name and price are required.");
+    return;
+  }
+
+  let {error}=await sb.from("products").insert({
+    shop_id:shop.id,
+    name,
+    category,
+    price,
+    stock,
+    image_url,
+    description
+  });
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  toast("Product added successfully!");
+  hide("modal");
+  loadSellerProducts();
+}
 async function loadSellerOrders(){
   let{data}=await sb.from("orders").select("*").order("created_at",{ascending:false});
   let list=data||[];
@@ -443,7 +648,27 @@ function showSellerTab(tabId){
   ['productsTab','ordersTab','profileTab'].forEach(t=>hide(t));
   show(tabId);
 }
+$("search").addEventListener("input",renderProducts);
 
+$("cats").addEventListener("click",e=>{
+  let btn=e.target.closest("[data-cat]");
+  if(!btn)return;
+  currentCat=btn.dataset.cat;
+  renderProducts();
+});
+
+$("cartBtn").onclick=cartModal;
+
+$("forgot").onclick=async()=>{
+  let e=$("email").value.trim();
+  if(!e){
+    $("authMsg").textContent="Enter your email first.";
+    return;
+  }
+
+  let{error}=await sb.auth.resetPasswordForEmail(e);
+  $("authMsg").textContent=error?error.message:"Password reset email sent.";
+};
 // Initial Boot
 initApp();
 </script>
