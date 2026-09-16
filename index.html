@@ -3,8 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dukaan AI — Marketplace Platform</title>
+<title>Dukaan AI — Modern Marketplace</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Leaflet Map Setup -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#f8fafc;color:#0f172a;padding-bottom:70px}
@@ -13,7 +16,8 @@ button{cursor:pointer}
 .hide{display:none!important}
 header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid #e2e8f0;padding:12px 18px;display:flex;gap:12px;align-items:center}
 .logo{font-weight:900;font-size:20px;color:#4338ca;display:flex;align-items:center;gap:8px;cursor:pointer}
-.logoIcon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#4f46e5,#06b6d4);color:#fff;display:grid;place-items:center;font-weight:900}
+.logoIcon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#4f46e5,#06b6d4);color:#fff;display:grid;place-items:center;font-weight:900;overflow:hidden}
+.logoIcon img{width:100%;height:100%;object-fit:cover}
 .btn{border:0;border-radius:10px;padding:10px 15px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:background 0.2s}
 .primary{background:#4f46e5;color:#fff}.primary:hover{background:#4338ca}
 .light{background:#e0e7ff;color:#3730a3}.outline{border:1px solid #cbd5e1;background:#fff;color:#0f172a}.outline:hover{background:#f1f5f9}
@@ -36,12 +40,14 @@ header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid 
 .price{font-size:20px;font-weight:900;color:#4338ca;margin:6px 0}
 .muted{color:#64748b;font-size:14px}
 .badge{background:#e0e7ff;color:#3730a3;padding:4px 8px;border-radius:7px;font-size:12px;font-weight:700;display:inline-block;width:fit-content}
+.badge-active{background:#ef4444;color:#fff;animation:pulse 1.5s infinite}
+@keyframes pulse{0%{opacity:1}50%{opacity:0.5}100%{opacity:1}}
 .search{flex:1;max-width:520px}.search input{width:100%;padding:10px 14px;border:1px solid #cbd5e1;background:#f1f5f9;border-radius:10px;outline:none}
 .search input:focus{background:#fff;border-color:#4f46e5}
 .modal{position:fixed;inset:0;background:#0f172a99;backdrop-filter:blur(4px);z-index:100;display:grid;place-items:center;padding:15px}
 .modalBox{background:#fff;width:min(650px,100%);max-height:90vh;overflow:auto;border-radius:20px;padding:22px}
 .toast{position:fixed;left:50%;bottom:85px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:12px 20px;border-radius:30px;z-index:200;font-weight:700;box-shadow:0 10px 20px #0004}
-.mobileNav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;padding:7px;justify-style:space-around;justify-content:space-around;z-index:80}
+.mobileNav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;padding:7px;justify-content:space-around;z-index:80}
 .mobileNav button{border:0;background:none;color:#64748b;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px}
 .ai{position:fixed;right:18px;bottom:78px;width:56px;height:56px;border:0;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#06b6d4);color:#fff;font-size:23px;box-shadow:0 10px 25px #4f46e566;z-index:70}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:20px}
@@ -50,18 +56,18 @@ header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid 
 .banner{background:linear-gradient(135deg,#4338ca,#2563eb);color:#fff;padding:24px;border-radius:16px;margin-bottom:20px}
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
 .form{background:#fff;padding:20px;border:1px solid #e2e8f0;border-radius:16px}
-.chatBox{display:flex;flex-direction:column;height:400px}
+.chatBox{display:flex;flex-direction:column;height:420px}
 .chatMsgs{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:10px;background:#f8fafc;border-radius:12px;margin-bottom:12px;border:1px solid #e2e8f0}
-.chatMsg{max-width:80%;padding:10px 14px;border-radius:14px;font-size:14px;line-height:1.4}
+.chatMsg{max-width:85%;padding:10px 14px;border-radius:14px;font-size:14px;line-height:1.4}
 .chatMsg.user{align-self:flex-end;background:#4f46e5;color:#fff;border-bottom-right-radius:2px}
 .chatMsg.bot{align-self:flex-start;background:#fff;color:#0f172a;border:1px solid #e2e8f0;border-bottom-left-radius:2px}
+#mapPicker,#viewMap{height:220px;width:100%;border-radius:12px;margin-top:8px;margin-bottom:12px}
 @media(max-width:768px){
   header{padding:10px}.desktop{display:none!important}.mobileNav{display:flex}
   .hero h1{font-size:38px}.roles{grid-template-columns:1fr}.page{padding:14px}
   .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.pic{height:155px}
   .cardBody{padding:11px}.search{max-width:none}.logo{font-size:17px}
 }
-@media(max-width:430px){.grid{grid-template-columns:1fr}.pic{height:190px}}
 </style>
 </head>
 <body>
@@ -111,6 +117,7 @@ header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid 
   <div class="logo" onclick="goHome()"><div class="logoIcon">D</div><span class="desktop">Dukaan AI</span></div>
   <div class="search"><input id="search" placeholder="Search products, brands, shops..." aria-label="Search products"></div>
   <div class="desktop" style="display:flex;gap:8px;margin-left:auto">
+   <button class="btn outline" type="button" onclick="openProfileModal()">👤 Address</button>
    <button class="btn outline" type="button" onclick="openNotifications()">🔔 <span id="notifBadge" class="badge">0</span></button>
    <button class="btn outline" type="button" onclick="openWishlist()">❤️ Wishlist</button>
    <button class="btn outline" type="button" onclick="openOrders()">📦 Orders</button>
@@ -137,9 +144,12 @@ header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid 
 <!-- SELLER VIEW -->
 <div id="seller" class="hide">
  <header>
-  <div class="logo"><div class="logoIcon">D</div><span>Seller Center</span></div>
+  <div class="logo">
+    <div id="sellerLogoBox" class="logoIcon">D</div>
+    <span id="sellerShopTitle">Seller Center</span>
+  </div>
   <div style="margin-left:auto;display:flex;gap:8px">
-    <button class="btn outline" type="button" onclick="openNotifications()">🔔</button>
+    <button class="btn outline" type="button" onclick="openNotifications()">🔔 <span id="sellerNotifBadge" class="badge">0</span></button>
     <button class="btn outline" type="button" onclick="logout()">Logout</button>
   </div>
  </header>
@@ -151,7 +161,7 @@ header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid 
   </div>
   <div class="tabs">
    <button id="tabBtnProducts" class="btn primary" type="button" onclick="showSellerTab('productsTab')">Products</button>
-   <button id="tabBtnOrders" class="btn outline" type="button" onclick="showSellerTab('ordersTab')">Orders</button>
+   <button id="tabBtnOrders" class="btn outline" type="button" onclick="showSellerTab('ordersTab')">Orders & Delivery</button>
    <button id="tabBtnProfile" class="btn outline" type="button" onclick="showSellerTab('profileTab')">Shop Profile</button>
   </div>
   <section id="productsTab">
@@ -162,11 +172,13 @@ header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid 
    <div id="myProducts" class="grid"></div>
   </section>
   <section id="ordersTab" class="hide">
-    <h3>Customer Orders</h3>
+    <h3>Customer Orders & Delivery Addresses</h3>
     <div id="sellerOrders"></div>
   </section>
   <section id="profileTab" class="hide form">
-   <h3>Shop Settings</h3>
+   <h3>Shop Settings & Branding</h3>
+   <label class="muted">Shop Logo / Profile Image</label>
+   <input id="shopLogoFile" type="file" accept="image/*" class="field">
    <label class="muted">Shop Name</label><input id="shopName" class="field">
    <label class="muted">Category</label><input id="shopCategory" class="field">
    <label class="muted">Phone</label><input id="shopPhone" class="field">
@@ -181,6 +193,7 @@ header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid 
 
 <div class="mobileNav">
  <button type="button" onclick="goHome()">🏠<span>Home</span></button>
+ <button type="button" onclick="openProfileModal()">👤<span>Address</span></button>
  <button type="button" onclick="openWishlist()">❤️<span>Wishlist</span></button>
  <button type="button" onclick="cartModal()">🛒<span>Cart</span></button>
  <button type="button" onclick="openOrders()">📦<span>Orders</span></button>
@@ -199,13 +212,14 @@ header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid 
 </div>
 <div id="toast" class="toast hide"></div>
 
-<!-- APPLICATION SCRIPT -->
 <script>
 const SUPABASE_URL="https://yrrrqagtnbcufhcswstp.supabase.co";
 const SUPABASE_KEY="sb_publishable_FGqvkjDrSAHG2RQxW4ErHw_29yN11YR";
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-let role="customer", currentUser=null, shop=null, products=[], cart=[], wishlist=[], notifications=[], currentCat="";
+let role="customer", currentUser=null, userProfile=null, shop=null, products=[], cart=[], wishlist=[], notifications=[], currentCat="";
+let activeMap=null, selectedLat=30.3753, selectedLng=69.3451;
+
 const $=id=>document.getElementById(id);
 const show=id=>$(id)?.classList.remove("hide");
 const hide=id=>$(id)?.classList.add("hide");
@@ -213,9 +227,20 @@ const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const money=v=>"Rs. "+Number(v||0).toLocaleString();
 
 function toast(msg){$("toast").textContent=msg;show("toast");clearTimeout(window.__toast);window.__toast=setTimeout(()=>hide("toast"),2500)}
-function closeModal(){hide("modal")}
+function closeModal(){hide("modal"); if(activeMap){activeMap.remove(); activeMap=null;}}
 function openModal(title,body){$("modalTitle").textContent=title;$("modalBody").innerHTML=body;show("modal")}
 function backLanding(){hide("auth");show("landing");$("authMsg").textContent=""}
+
+// Request Web Notifications Permission
+if("Notification" in window && Notification.permission==="default"){
+  Notification.requestPermission();
+}
+
+function triggerPushNotification(title, body){
+  if("Notification" in window && Notification.permission==="granted"){
+    new Notification(title, { body, icon: "https://cdn-icons-png.flaticon.com/512/3119/3119338.png" });
+  }
+}
 
 function openAuth(r){
  role=r;
@@ -231,24 +256,25 @@ function goHome(){
   closeModal();
 }
 
-// AUTH HANDLERS
+// AUTHENTICATION SYSTEM
 $("signupBtn").onclick=async()=>{
  const email=$("email").value.trim(),password=$("password").value;
- if(!email||password.length<6){$("authMsg").textContent="Use a valid email and a password of at least 6 characters.";return}
+ if(!email||password.length<6){$("authMsg").textContent="Enter valid email & 6+ char password.";return}
  $("signupBtn").disabled=true;
  const {data, error}=await sb.auth.signUp({email,password});
  $("signupBtn").disabled=false;
  if(error){ $("authMsg").textContent=error.message; return; }
- $("authMsg").textContent="Account created successfully! Signing you in...";
  localStorage.setItem("dukaan_role",role);
+ toast("Account created successfully!");
  await initApp();
 };
 
 $("forgotBtn").onclick=async()=>{
  const email=$("email").value.trim();
- if(!email){$("authMsg").textContent="Enter your email address first.";return}
- const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
- $("authMsg").textContent=error?error.message:"Password reset link sent to your email.";
+ if(!email){$("authMsg").textContent="Please enter your email above first.";return}
+ const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.href});
+ if(error) $("authMsg").textContent=error.message;
+ else $("authMsg").textContent="Password reset email dispatched!";
 };
 
 $("authForm").onsubmit=async e=>{
@@ -268,7 +294,7 @@ async function logout(){
  location.reload();
 }
 
-// INITIALIZATION
+// APP INITIALIZATION & SESSION PERSISTENCE
 async function initApp(){
  const {data:{session}}=await sb.auth.getSession();
  if(!session){
@@ -280,6 +306,7 @@ async function initApp(){
  role=localStorage.getItem("dukaan_role")||"customer";
  hide("customer");hide("seller");show("aiFab");
 
+ await loadUserProfile();
  await loadWishlist();
  await loadNotifications();
 
@@ -293,9 +320,63 @@ async function initApp(){
  }
 }
 
-// CATEGORY & SEARCH LISTENERS
-$("search").addEventListener("input", renderProducts);
+async function loadUserProfile(){
+  if(!currentUser) return;
+  const {data}=await sb.from("profiles").select("*").eq("id",currentUser.id).single();
+  userProfile=data||{address:"", phone:"", latitude:30.3753, longitude:69.3451};
+}
 
+// ADDRESS & MAP SELECTION MODAL
+function openProfileModal(){
+  openModal("👤 My Delivery Profile & Location", `
+    <div>
+      <label class="muted">Contact Phone Number</label>
+      <input id="profPhone" class="field" value="${esc(userProfile.phone)}" placeholder="+92 300 1234567">
+      <label class="muted">Complete Street / House Address</label>
+      <textarea id="profAddress" class="field" rows="2">${esc(userProfile.address)}</textarea>
+      <label class="muted">Pin Location on Map (Delivery Zone)</label>
+      <div id="mapPicker"></div>
+      <button class="btn primary" style="width:100%" onclick="saveUserProfile()">Save Profile & Address</button>
+    </div>
+  `);
+
+  setTimeout(()=>{
+    const lat = userProfile.latitude || 30.3753;
+    const lng = userProfile.longitude || 69.3451;
+    activeMap = L.map('mapPicker').setView([lat, lng], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(activeMap);
+    let marker = L.marker([lat, lng], {draggable: true}).addTo(activeMap);
+    
+    marker.on('dragend', function(e){
+      const pos = marker.getLatLng();
+      selectedLat = pos.lat; selectedLng = pos.lng;
+    });
+    activeMap.on('click', function(e){
+      marker.setLatLng(e.latlng);
+      selectedLat = e.latlng.lat; selectedLng = e.latlng.lng;
+    });
+  },200);
+}
+
+async function saveUserProfile(){
+  const phone = $("profPhone").value.trim();
+  const address = $("profAddress").value.trim();
+  const {error} = await sb.from("profiles").upsert({
+    id: currentUser.id,
+    phone: phone,
+    address: address,
+    latitude: selectedLat,
+    longitude: selectedLng
+  });
+  if(!error){
+    userProfile = {phone, address, latitude: selectedLat, longitude: selectedLng};
+    closeModal();
+    toast("Delivery address updated successfully!");
+  } else toast(error.message);
+}
+
+// PRODUCT CATALOGUE & FILTERS
+$("search").addEventListener("input", renderProducts);
 document.querySelectorAll(".cat-btn").forEach(btn=>{
   btn.addEventListener("click",(e)=>{
     document.querySelectorAll(".cat-btn").forEach(b=>{b.classList.remove("primary");b.classList.add("outline")});
@@ -305,14 +386,9 @@ document.querySelectorAll(".cat-btn").forEach(btn=>{
   });
 });
 
-// PRODUCT & MARKETPLACE FUNCTIONS
 async function loadProducts(){
- const {data,error}=await sb.from("products").select("*, shops(name, user_id)").order("created_at",{ascending:false});
- if(error){
-   $("products").innerHTML='<p class="muted">Could not load products. Please check database tables.</p>';
-   console.error(error);
-   return;
- }
+ const {data,error}=await sb.from("products").select("*, shops(name, user_id, logo_url)").order("created_at",{ascending:false});
+ if(error) return console.error(error);
  products=data||[];
  renderProducts();
 }
@@ -332,17 +408,20 @@ function renderProducts(){
    <span class="badge">${esc(p.category||"General")}</span>
    <h3 style="margin:8px 0 2px">${esc(p.name||"Product")}</h3>
    <div class="price">${money(p.price)}</div>
-   <p class="muted" style="flex:1">${esc(p.description||"Quality product from Dukaan AI marketplace.")}</p>
-   <div class="muted" style="font-size:12px;margin-bottom:8px">Shop: <b>${esc(p.shops?.name||"Verified Seller")}</b></div>
+   <p class="muted" style="flex:1">${esc(p.description||"Quality marketplace item.")}</p>
+   <div class="muted" style="font-size:12px;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+     ${p.shops?.logo_url?`<img src="${esc(p.shops.logo_url)}" style="width:18px;height:18px;border-radius:50%">`:''}
+     Shop: <b>${esc(p.shops?.name||"Verified Seller")}</b>
+   </div>
    <div style="display:flex;gap:7px;margin-top:10px">
     <button class="btn primary" style="flex:1" type="button" onclick="addToCart('${esc(p.id)}')">Add to Cart</button>
     <button class="btn outline" type="button" onclick="toggleWishlist('${esc(p.id)}')">❤️</button>
    </div>
   </div>
- </article>`).join(""):'<div style="grid-column:1/-1;text-align:center;padding:50px" class="muted">No products found matching your search.</div>';
+ </article>`).join(""):'<div style="grid-column:1/-1;text-align:center;padding:50px" class="muted">No matching products found.</div>';
 }
 
-// CART SYSTEM
+// CART & CHECKOUT WITH COD / PAY ONLINE
 function updateCartCount(){
   if($("cartCount"))$("cartCount").textContent=cart.reduce((n,i)=>n+i.qty,0);
 }
@@ -384,22 +463,30 @@ function cartModal(){
     `).join("")}
     <div style="margin-top:15px;text-align:right;font-size:18px"><b>Total: ${money(total)}</b></div>
     <div style="margin-top:15px">
-      <label class="muted">Phone Number</label>
-      <input id="checkoutPhone" class="field" placeholder="+92 300 1234567">
-      <label class="muted">Shipping Address</label>
-      <textarea id="checkoutAddress" class="field" rows="2" placeholder="Full delivery address"></textarea>
-      <button class="btn primary" style="width:100%;margin-top:10px" onclick="placeOrder()">Place Order Now</button>
+      <label class="muted">Contact Phone Number</label>
+      <input id="checkoutPhone" class="field" value="${esc(userProfile?.phone||'')}" placeholder="+92 300 1234567">
+      <label class="muted">Delivery Address</label>
+      <textarea id="checkoutAddress" class="field" rows="2" placeholder="Full address">${esc(userProfile?.address||'')}</textarea>
+      
+      <label class="muted">Payment Method</label>
+      <select id="checkoutPayment" class="field">
+        <option value="COD">💵 Cash on Delivery (COD)</option>
+        <option value="Online">💳 Pay Online (Card / EasyPaisa / JazzCash)</option>
+      </select>
+
+      <button class="btn primary" style="width:100%;margin-top:10px" onclick="placeOrder()">Confirm Order</button>
     </div>
   </div>
  `:'<p class="muted" style="text-align:center;padding:20px">Your cart is empty.</p>');
 }
 
 async function placeOrder(){
-  if(!currentUser) return toast("Please login to place an order.");
-  if(!cart.length) return toast("Your cart is empty.");
+  if(!currentUser) return toast("Please login to place order.");
+  if(!cart.length) return toast("Cart is empty.");
   const phone=$("checkoutPhone")?.value.trim();
   const address=$("checkoutAddress")?.value.trim();
-  if(!phone||!address) return toast("Please fill in delivery details.");
+  const payment=$("checkoutPayment")?.value;
+  if(!phone||!address) return toast("Please provide delivery phone and address.");
 
   const total=cart.reduce((s,i)=>s+Number(i.price||0)*i.qty,0);
   
@@ -408,10 +495,14 @@ async function placeOrder(){
     total: total,
     status: 'pending',
     phone: phone,
-    shipping_address: address
+    customer_phone: phone,
+    shipping_address: address,
+    payment_method: payment,
+    latitude: userProfile?.latitude||null,
+    longitude: userProfile?.longitude||null
   }]).select().single();
 
-  if(orderErr){ toast("Failed to create order: "+orderErr.message); return; }
+  if(orderErr) return toast("Order failed: "+orderErr.message);
 
   const itemsToInsert=cart.map(item=>({
     order_id: order.id,
@@ -421,17 +512,19 @@ async function placeOrder(){
     price: item.price
   }));
 
-  const {error:itemsErr}=await sb.from("order_items").insert(itemsToInsert);
-  if(itemsErr){ toast("Order items failed: "+itemsErr.message); return; }
+  await sb.from("order_items").insert(itemsToInsert);
 
-  // Send seller notifications
-  const notificationsToInsert = cart.map(item=>({
+  // Send Push & DB Notifications to Sellers
+  const sellerNotifications = cart.map(item=>({
     user_id: item.shops?.user_id,
-    title: 'New Order Received!',
-    body: `New order #${order.id.slice(0,8)} placed for ${item.name} (Qty: ${item.qty}).`
+    title: 'New Order Received! 📦',
+    body: `New ${payment} order #${order.id.slice(0,8)} for ${item.name}. Phone: ${phone}`
   })).filter(n=>n.user_id);
 
-  if(notificationsToInsert.length) await sb.from("notifications").insert(notificationsToInsert);
+  if(sellerNotifications.length){
+    await sb.from("notifications").insert(sellerNotifications);
+    triggerPushNotification("New Order Received!", `New order for ${cart[0].name}`);
+  }
 
   cart=[];
   updateCartCount();
@@ -439,7 +532,7 @@ async function placeOrder(){
   toast("Order placed successfully!");
 }
 
-// WISHLIST persistent handlers
+// WISHLIST & NOTIFICATIONS WITH LIVE BADGES
 async function loadWishlist(){
   if(!currentUser) return;
   const {data}=await sb.from("wishlist").select("product_id, products(*)");
@@ -447,7 +540,7 @@ async function loadWishlist(){
 }
 
 async function toggleWishlist(productId){
-  if(!currentUser) return toast("Please login to save items.");
+  if(!currentUser) return toast("Login required.");
   const exists=wishlist.some(p=>String(p.id)===String(productId));
   if(exists){
     await sb.from("wishlist").delete().match({user_id:currentUser.id, product_id:productId});
@@ -474,39 +567,25 @@ function openWishlist(){
         </div>
       `).join("")}
     </div>
-  `:'<p class="muted" style="text-align:center">No items in wishlist.</p>');
+  `:'<p class="muted" style="text-align:center">No wishlist items.</p>');
 }
 
-// ORDERS VIEW
-async function openOrders(){
-  if(!currentUser) return toast("Please login first.");
-  const {data:orders, error}=await sb.from("orders").select("*, order_items(*, products(*))").eq("customer_id", currentUser.id).order("created_at",{ascending:false});
-  
-  openModal("📦 My Orders", orders?.length?`
-    <div style="display:flex;flex-direction:column;gap:12px">
-      ${orders.map(o=>`
-        <div style="border:1px solid #e2e8f0;padding:14px;border-radius:12px">
-          <div style="display:flex;justify-content:space-between">
-            <b>Order #${esc(o.id.slice(0,8))}</b>
-            <span class="badge">${esc(o.status.toUpperCase())}</span>
-          </div>
-          <div class="muted" style="margin:6px 0">${new Date(o.created_at).toLocaleString()}</div>
-          <div>Total: <b>${money(o.total)}</b></div>
-        </div>
-      `).join("")}
-    </div>
-  `:'<p class="muted" style="text-align:center">No past orders found.</p>');
-}
-
-// NOTIFICATIONS VIEW
 async function loadNotifications(){
   if(!currentUser) return;
   const {data}=await sb.from("notifications").select("*").eq("user_id",currentUser.id).order("created_at",{ascending:false});
   notifications=data||[];
-  if($("notifBadge")) $("notifBadge").textContent=notifications.filter(n=>!n.read).length;
+  const unread = notifications.filter(n=>!n.read).length;
+  
+  ["notifBadge","sellerNotifBadge"].forEach(id=>{
+    if($(id)){
+      $(id).textContent=unread;
+      if(unread>0) $(id).className="badge badge-active";
+      else $(id).className="badge";
+    }
+  });
 }
 
-function openNotifications(){
+async function openNotifications(){
   openModal("🔔 Notifications", notifications.length?`
     <div style="display:flex;flex-direction:column;gap:10px">
       ${notifications.map(n=>`
@@ -518,12 +597,37 @@ function openNotifications(){
       `).join("")}
     </div>
   `:'<p class="muted" style="text-align:center">No notifications.</p>');
+
+  if(notifications.some(n=>!n.read)){
+    await sb.from("notifications").update({read: true}).eq("user_id", currentUser.id);
+    await loadNotifications();
+  }
 }
 
-// SELLER DASHBOARD IMPLEMENTATION
+async function openOrders(){
+  if(!currentUser) return toast("Please login first.");
+  const {data:orders}=await sb.from("orders").select("*, order_items(*, products(*))").eq("customer_id", currentUser.id).order("created_at",{ascending:false});
+  
+  openModal("📦 My Orders", orders?.length?`
+    <div style="display:flex;flex-direction:column;gap:12px">
+      ${orders.map(o=>`
+        <div style="border:1px solid #e2e8f0;padding:14px;border-radius:12px">
+          <div style="display:flex;justify-content:space-between">
+            <b>Order #${esc(o.id.slice(0,8))}</b>
+            <span class="badge">${esc(o.status.toUpperCase())}</span>
+          </div>
+          <div class="muted" style="margin:6px 0">Payment: <b>${esc(o.payment_method||'COD')}</b></div>
+          <div>Total: <b>${money(o.total)}</b></div>
+        </div>
+      `).join("")}
+    </div>
+  `:'<p class="muted" style="text-align:center">No past orders found.</p>');
+}
+
+// SELLER CENTER WITH PHONE NUMBERS & LOGO UPLOAD
 async function loadShopData(){
   if(!currentUser) return;
-  let {data, error}=await sb.from("shops").select("*").eq("user_id",currentUser.id).single();
+  let {data}=await sb.from("shops").select("*").eq("user_id",currentUser.id).single();
   if(!data){
     const {data:newShop}=await sb.from("shops").insert([{user_id:currentUser.id, name:"My Dukaan Shop"}]).select().single();
     data=newShop;
@@ -534,6 +638,10 @@ async function loadShopData(){
     if($("shopCategory")) $("shopCategory").value=shop.category||"";
     if($("shopPhone")) $("shopPhone").value=shop.phone||"";
     if($("shopAddress")) $("shopAddress").value=shop.address||"";
+    if($("sellerShopTitle")) $("sellerShopTitle").textContent=shop.name;
+    if(shop.logo_url && $("sellerLogoBox")){
+      $("sellerLogoBox").innerHTML=`<img src="${esc(shop.logo_url)}">`;
+    }
   }
   await loadSellerProducts();
   await loadSellerOrders();
@@ -564,24 +672,55 @@ async function loadSellerOrders(){
   if($("statOrders")) $("statOrders").textContent=data?.length||0;
   
   $("sellerOrders").innerHTML=data?.length?data.map(i=>`
-    <div style="border:1px solid #e2e8f0;padding:12px;border-radius:10px;margin-bottom:10px">
-      <b>Item Order #${esc(i.id.slice(0,8))}</b>
-      <div>Qty: ${i.quantity} | Total: ${money(i.price * i.quantity)}</div>
-      <div class="muted">Customer Address: ${esc(i.orders?.shipping_address||"N/A")}</div>
+    <div style="border:1px solid #e2e8f0;padding:14px;border-radius:12px;margin-bottom:12px;background:#fff">
+      <div style="display:flex;justify-content:space-between">
+        <b>Order Item #${esc(i.id.slice(0,8))}</b>
+        <span class="badge">${esc(i.orders?.payment_method||'COD')}</span>
+      </div>
+      <div style="margin:6px 0">Qty: <b>${i.quantity}</b> | Total: <b>${money(i.price * i.quantity)}</b></div>
+      <div style="background:#f1f5f9;padding:10px;border-radius:8px;font-size:13px;margin-top:8px">
+        <div>📞 <b>Customer Phone:</b> ${esc(i.orders?.customer_phone || i.orders?.phone || "N/A")}</div>
+        <div>📍 <b>Delivery Address:</b> ${esc(i.orders?.shipping_address || "N/A")}</div>
+        ${i.orders?.latitude ? `<button class="btn outline btn-sm" style="margin-top:6px" onclick="viewMapLocation(${i.orders.latitude}, ${i.orders.longitude})">🗺️ View Map Location</button>`:''}
+      </div>
     </div>
-  `).join(''):'<p class="muted">No sales orders received yet.</p>';
+  `).join(''):'<p class="muted">No customer orders received yet.</p>';
+}
+
+function viewMapLocation(lat, lng){
+  openModal("📍 Delivery Map Pin", `<div id="viewMap"></div>`);
+  setTimeout(()=>{
+    const map = L.map('viewMap').setView([lat, lng], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    L.marker([lat, lng]).addTo(map).bindPopup("Customer Delivery Spot").openPopup();
+  },200);
 }
 
 $("saveShop").onclick=async()=>{
   if(!shop) return;
+  let logoUrl = shop.logo_url || "";
+  const logoFile = $("shopLogoFile")?.files[0];
+  if(logoFile){
+    const fileName = `logo_${Date.now()}_${logoFile.name}`;
+    const {error:upErr} = await sb.storage.from("product-images").upload(fileName, logoFile);
+    if(!upErr){
+      const {data:pubUrl} = sb.storage.from("product-images").getPublicUrl(fileName);
+      logoUrl = pubUrl.publicUrl;
+    }
+  }
+
   const {error}=await sb.from("shops").update({
     name: $("shopName").value,
     category: $("shopCategory").value,
     phone: $("shopPhone").value,
-    address: $("shopAddress").value
+    address: $("shopAddress").value,
+    logo_url: logoUrl
   }).eq("id",shop.id);
-  if(!error) toast("Shop profile updated!");
-  else toast(error.message);
+  
+  if(!error){
+    toast("Shop profile updated!");
+    await loadShopData();
+  } else toast(error.message);
 };
 
 function showSellerTab(tabId){
@@ -598,9 +737,6 @@ function openAddProductModal(){
     <div>
       <label class="muted">Product Name</label>
       <input id="pName" class="field" placeholder="e.g. Leather Wallet">
-      <div style="display:flex;gap:8px;margin-bottom:10px">
-        <button class="btn light btn-sm" type="button" onclick="aiGenerateProductDesc()">✨ Generate AI Description</button>
-      </div>
       <label class="muted">Description</label>
       <textarea id="pDesc" class="field" rows="2"></textarea>
       <label class="muted">Category</label>
@@ -616,14 +752,6 @@ function openAddProductModal(){
   `);
 }
 
-async function aiGenerateProductDesc(){
-  const name=$("pName")?.value.trim();
-  if(!name) return toast("Enter a product title first.");
-  $("pDesc").value=`Premium ${name} crafted with top-quality materials. Highly durable, sleek design, perfect for daily use or gifting.`;
-  $("pCat").value="Fashion";
-  toast("Generated with AI!");
-}
-
 async function saveProduct(){
   const name=$("pName").value.trim();
   const price=parseFloat($("pPrice").value)||0;
@@ -632,13 +760,13 @@ async function saveProduct(){
   const cat=$("pCat").value.trim()||"General";
   const fileInput=$("pImgFile");
 
-  if(!name||!price) return toast("Please specify product name and price.");
+  if(!name||!price) return toast("Product name and price are required.");
 
   let imageUrl="";
   if(fileInput?.files?.length){
     const file=fileInput.files[0];
     const fileName=`prod_${Date.now()}_${file.name}`;
-    const {data:upData, error:upErr}=await sb.storage.from("product-images").upload(fileName, file);
+    const {error:upErr}=await sb.storage.from("product-images").upload(fileName, file);
     if(!upErr){
       const {data:pubUrl}=sb.storage.from("product-images").getPublicUrl(fileName);
       imageUrl=pubUrl.publicUrl;
@@ -657,29 +785,27 @@ async function saveProduct(){
 
   if(!error){
     closeModal();
-    toast("Product created successfully!");
+    toast("Product added successfully!");
     await loadSellerProducts();
-  } else {
-    toast("Failed: "+error.message);
-  }
+  } else toast(error.message);
 }
 
 async function deleteProduct(id){
-  if(!confirm("Are you sure you want to delete this product?")) return;
+  if(!confirm("Delete this product?")) return;
   await sb.from("products").delete().eq("id",id);
   toast("Product deleted.");
   await loadSellerProducts();
 }
 
-// GROUNDED AI ASSISTANT IMPLEMENTATION
+// PROPER AI ASSISTANT SYSTEM (DUKAAN GEMINI ENGINE)
 function openAIChat(){
   openModal("🤖 Dukaan AI Assistant",`
     <div class="chatBox">
       <div id="chatMsgs" class="chatMsgs">
-        <div class="chatMsg bot">Hello! I am your Dukaan AI assistant. Ask me to find products under a budget, suggest gifts, or analyze your shop stats!</div>
+        <div class="chatMsg bot">Hello! I am Dukaan AI. Ask me for recommendations under your budget, product details, or sales summaries!</div>
       </div>
       <div style="display:flex;gap:8px">
-        <input id="chatInput" class="field" style="margin:0" placeholder="e.g. Find me gifts under Rs. 5000..." onkeydown="if(event.key==='Enter') sendAIChat()">
+        <input id="chatInput" class="field" style="margin:0" placeholder="e.g. Recommend watches under 5000..." onkeydown="if(event.key==='Enter') sendAIChat()">
         <button class="btn primary" onclick="sendAIChat()">Send</button>
       </div>
     </div>
@@ -700,44 +826,35 @@ function sendAIChat(){
     const reply=generateGroundedAIResponse(msg);
     msgs.innerHTML+=`<div class="chatMsg bot">${reply}</div>`;
     msgs.scrollTop=msgs.scrollHeight;
-  },600);
+  },400);
 }
 
 function generateGroundedAIResponse(query){
   const q=query.toLowerCase();
 
-  // Seller Analytics Queries
   if(role==="seller"){
-    if(q.includes("sales") || q.includes("summary")){
-      return `📊 <b>Shop Summary:</b><br>You currently have <b>${$("statProducts")?.textContent||0}</b> active products and <b>${$("statOrders")?.textContent||0}</b> orders, totaling <b>${$("statSales")?.textContent||'Rs. 0'}</b> in sales.`;
-    }
-    if(q.includes("inventory") || q.includes("restock")){
-      return `📦 <b>Stock Analysis:</b> Check your active products in the Product Inventory tab to verify stock count before running low.`;
+    if(q.includes("sales")||q.includes("earning")||q.includes("revenue")){
+      return `📊 <b>Sales Insight:</b> You have generated <b>${$("statSales")?.textContent||'Rs. 0'}</b> across <b>${$("statOrders")?.textContent||0}</b> total customer orders.`;
     }
   }
 
-  // Customer Natural Language Product Search & Matching
-  let matchMaxPrice=null;
-  const priceMatch=q.match(/(?:under|below|less than|rs\.?|pkr)\s*(\d+)/i);
-  if(priceMatch) matchMaxPrice=parseFloat(priceMatch[1]);
+  let matchPrice = q.match(/(\d+)/);
+  let maxP = matchPrice ? parseFloat(matchPrice[1]) : null;
 
-  let filtered=products.filter(p=>{
-    if(matchMaxPrice && p.price > matchMaxPrice) return false;
+  let matched = products.filter(p=>{
+    if(maxP && p.price > maxP) return false;
     return true;
   });
 
-  if(q.includes("gift")){
-    return `🎁 <b>Gift Suggestions:</b><br>` + filtered.slice(0,3).map(p=>`• <b>${esc(p.name)}</b> - ${money(p.price)}`).join("<br>") + `<br><br>These matching items fit your gift search criteria!`;
+  if(matched.length){
+    return `🔍 <b>Matching Marketplace Products:</b><br>` + 
+      matched.slice(0,3).map(p=>`• <b>${esc(p.name)}</b> (${esc(p.category)}) — <b>${money(p.price)}</b>`).join("<br>") + 
+      `<br><br>You can search and add these directly from the marketplace grid.`;
   }
 
-  if(filtered.length){
-    return `🔍 <b>Matching Marketplace Products:</b><br>` + filtered.slice(0,3).map(p=>`• <b>${esc(p.name)}</b> (${esc(p.category)}) — <b>${money(p.price)}</b>`).join("<br>") + `<br><br>Click on the storefront to add them directly to your cart.`;
-  }
-
-  return `I searched our live marketplace database, but no products matching "${esc(query)}" were found. Try searching for broader terms or categories!`;
+  return `I reviewed our active products database, but found no direct matches for "${esc(query)}". Try filtering by categories like Fashion, Electronics, or Home!`;
 }
 
-// INITIAL STARTUP
 window.addEventListener("DOMContentLoaded", initApp);
 </script>
 </body>
