@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dukaan AI — Modern Marketplace</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#f8fafc;color:#0f172a;padding-bottom:70px}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.hide{display:none!important}
+header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid #e2e8f0;padding:12px 18px;display:flex;gap:12px;align-items:center}
+.logo{font-weight:900;font-size:20px;color:#4338ca;display:flex;align-items:center;gap:8px;cursor:pointer}
+.logoIcon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#4f46e5,#06b6d4);color:#fff;display:grid;place-items:center;font-weight:900}
+.btn{border:0;border-radius:10px;padding:10px 15px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s}
+.btn:disabled{opacity:0.6;cursor:not-allowed}
+.primary{background:#4f46e5;color:#fff}.primary:hover{background:#4338ca}
+.light{background:#e0e7ff;color:#3730a3}.outline{border:1px solid #cbd5e1;background:#fff;color:#0f172a}.outline:hover{background:#f1f5f9}
+.danger{background:#fee2e2;color:#991b1b}.btn-sm{padding:6px 10px;font-size:13px}
+.page{max-width:1200px;margin:auto;padding:20px}
+.hero{min-height:100vh;background:linear-gradient(135deg,#1e1b4b,#312e81,#2563eb);padding:60px 20px;color:#fff;display:grid;place-items:center}
+.heroInner{max-width:820px;width:100%;text-align:center}
+.hero h1{font-size:52px;margin:16px 0;font-weight:900}.hero h1 span{color:#38bdf8}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:35px}
+.role{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:28px;text-align:left;backdrop-filter:blur(10px)}
+.auth{min-height:100vh;display:grid;place-items:center;padding:20px}
+.box{background:#fff;width:min(440px,100%);padding:28px;border-radius:20px;box-shadow:0 20px 40px #0002}
+.field{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:9px;margin:6px 0 14px;outline:none;transition:border-color 0.2s}
+.field:focus{border-color:#4f46e5}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 4px 10px #00000008;transition:transform 0.2s,box-shadow 0.2s}
+.card:hover{transform:translateY(-2px);box-shadow:0 10px 20px #00000012}
+.pic{height:200px;background:#eef2ff;display:grid;place-items:center;font-size:48px;overflow:hidden;position:relative}
+.pic img{width:100%;height:100%;object-fit:cover}
+.cardBody{padding:15px;display:flex;flex-direction:column;flex:1}
+.price{font-size:20px;font-weight:900;color:#4338ca;margin:6px 0}
+.muted{color:#64748b;font-size:14px}
+.badge{background:#e0e7ff;color:#3730a3;padding:4px 8px;border-radius:7px;font-size:12px;font-weight:700;display:inline-block;width:fit-content}
+.search{flex:1;max-width:520px}.search input{width:100%;padding:10px 14px;border:1px solid #cbd5e1;background:#f1f5f9;border-radius:10px;outline:none}
+.search input:focus{background:#fff;border-color:#4f46e5}
+.modal{position:fixed;inset:0;background:#0f172a99;backdrop-filter:blur(4px);z-index:100;display:grid;place-items:center;padding:15px}
+.modalBox{background:#fff;width:min(650px,100%);max-height:90vh;overflow:auto;border-radius:20px;padding:22px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25)}
+.toast{position:fixed;left:50%;bottom:85px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:12px 20px;border-radius:30px;z-index:200;font-weight:700;box-shadow:0 10px 25px #0004}
+.mobileNav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;padding:7px;justify-content:space-around;z-index:80}
+.mobileNav button{border:0;background:none;color:#64748b;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.ai{position:fixed;right:18px;bottom:78px;width:56px;height:56px;border:0;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#06b6d4);color:#fff;font-size:23px;box-shadow:0 10px 25px #4f46e566;z-index:70;display:grid;place-items:center}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:20px}
+.stat{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:18px}
+.stat h4{margin:0;color:#64748b;font-size:12px}.stat div{font-size:27px;font-weight:900;margin-top:5px}
+.banner{background:linear-gradient(135deg,#4338ca,#2563eb);color:#fff;padding:24px;border-radius:16px;margin-bottom:20px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.form{background:#fff;padding:20px;border:1px solid #e2e8f0;border-radius:16px}
+.chat-msg{margin-bottom:12px;padding:10px 14px;border-radius:12px;max-width:85%}
+.chat-user{background:#4f46e5;color:#fff;margin-left:auto}
+.chat-ai{background:#f1f5f9;color:#0f172a;margin-right:auto;border:1px solid #e2e8f0}
+@media(max-width:768px){
+ header{padding:10px}.desktop{display:none!important}.mobileNav{display:flex}
+ .hero h1{font-size:38px}.roles{grid-template-columns:1fr}.page{padding:14px}
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.pic{height:155px}
+ .cardBody{padding:11px}.search{max-width:none}.logo{font-size:17px}
+}
+@media(max-width:430px){.grid{grid-template-columns:1fr}.pic{height:190px}}
+</style>
+</head>
+<body>
+
+<div id="landing" class="hero">
+ <div class="heroInner">
+  <div class="logoIcon" style="width:76px;height:76px;font-size:38px;margin:auto">D</div>
+  <h1>Dukaan <span>AI</span></h1>
+  <p>Smart AI-Powered Marketplace for Shoppers & Merchants.</p>
+  <div class="roles">
+   <div class="role">
+    <h2>🛒 Customer</h2>
+    <p>Discover products with intelligent search, smart cart, and order tracking.</p>
+    <button class="btn primary" style="width:100%" type="button" onclick="openAuth('customer')">Shop Now →</button>
+   </div>
+   <div class="role">
+    <h2>🏪 Seller</h2>
+    <p>Manage inventory, track live analytics, and create AI product listings.</p>
+    <button class="btn light" style="width:100%" type="button" onclick="openAuth('seller')">Manage Shop →</button>
+   </div>
+  </div>
+ </div>
+</div>
+
+<div id="auth" class="auth hide">
+ <div class="box">
+  <button class="btn outline btn-sm" type="button" onclick="backLanding()">← Back</button>
+  <h2 id="authTitle" style="margin-top:15px">Customer Login</h2>
+  <form id="authForm">
+   <label class="muted">Email</label>
+   <input id="email" class="field" type="email" autocomplete="email" required placeholder="you@example.com">
+   <label class="muted">Password</label>
+   <input id="password" class="field" type="password" autocomplete="current-password" required placeholder="••••••••">
+   <button id="loginBtn" class="btn primary" style="width:100%" type="submit">Sign In</button>
+  </form>
+  <button id="signupBtn" class="btn outline" style="width:100%;margin-top:10px" type="button">Create New Account</button>
+  <button id="forgotBtn" class="btn outline" style="width:100%;margin-top:8px" type="button">Forgot Password?</button>
+  <p id="authMsg" class="muted" style="text-align:center;margin-top:15px"></p>
+ </div>
+</div>
+
+<div id="customer" class="hide">
+ <header>
+  <div class="logo" onclick="goHome()"><div class="logoIcon">D</div><span class="desktop">Dukaan AI</span></div>
+  <div class="search"><input id="search" placeholder="Search products or ask AI ('gift under 5000')..." aria-label="Search products"></div>
+  <div class="desktop" style="display:flex;gap:8px;margin-left:auto">
+   <button class="btn outline" type="button" onclick="openNotifications()">🔔 <span id="notifBadge" class="badge">0</span></button>
+   <button class="btn outline" type="button" onclick="openWishlist()">❤️</button>
+   <button class="btn outline" type="button" onclick="openOrders()">📦 Orders</button>
+   <button id="cartBtn" class="btn primary" type="button">🛒 Cart (<span id="cartCount">0</span>)</button>
+   <button class="btn outline" type="button" onclick="logout()">Logout</button>
+  </div>
+ </header>
+ <main class="page">
+  <div class="banner">
+   <h2 style="margin:0">Welcome to Dukaan AI Marketplace</h2>
+   <p style="margin:6px 0 0">Real-time products powered by intelligent seller storefronts.</p>
+  </div>
+  <div id="cats" style="display:flex;gap:8px;overflow:auto;margin-bottom:18px;padding-bottom:5px">
+   <button class="btn primary cat-btn" type="button" data-cat="">All</button>
+   <button class="btn outline cat-btn" type="button" data-cat="Fashion">Fashion</button>
+   <button class="btn outline cat-btn" type="button" data-cat="Electronics">Electronics</button>
+   <button class="btn outline cat-btn" type="button" data-cat="Home">Home</button>
+   <button class="btn outline cat-btn" type="button" data-cat="Beauty">Beauty</button>
+  </div>
+  <div id="products" class="grid"></div>
+ </main>
+</div>
+
+<div id="seller" class="hide">
+ <header>
+  <div class="logo"><div class="logoIcon">D</div><span>Seller Center</span></div>
+  <div style="margin-left:auto;display:flex;gap:8px">
+   <button class="btn outline" type="button" onclick="openNotifications()">🔔</button>
+   <button class="btn outline" type="button" onclick="logout()">Logout</button>
+  </div>
+ </header>
+ <main class="page">
+  <div class="stats">
+   <div class="stat"><h4>TOTAL SALES</h4><div id="statSales">Rs. 0</div></div>
+   <div class="stat"><h4>TOTAL ORDERS</h4><div id="statOrders">0</div></div>
+   <div class="stat"><h4>PRODUCTS</h4><div id="statProducts">0</div></div>
+  </div>
+  <div class="tabs">
+   <button id="tabBtnProducts" class="btn primary" type="button" onclick="showSellerTab('productsTab')">Products</button>
+   <button id="tabBtnOrders" class="btn outline" type="button" onclick="showSellerTab('ordersTab')">Orders</button>
+   <button id="tabBtnProfile" class="btn outline" type="button" onclick="showSellerTab('profileTab')">Shop Profile</button>
+  </div>
+  <section id="productsTab">
+   <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px">
+    <h3 style="margin:0">Product Inventory</h3>
+    <button class="btn primary" type="button" onclick="openAddProductModal()">➕ Add Product</button>
+   </div>
+   <div id="myProducts" class="grid"></div>
+  </section>
+  <section id="ordersTab" class="hide">
+   <h3>Customer Orders</h3>
+   <div id="sellerOrders"></div>
+  </section>
+  <section id="profileTab" class="hide form">
+   <h3>Shop Settings</h3>
+   <label class="muted">Shop Name</label><input id="shopName" class="field">
+   <label class="muted">Category</label><input id="shopCategory" class="field">
+   <label class="muted">Phone</label><input id="shopPhone" class="field">
+   <label class="muted">City / Address</label><textarea id="shopAddress" class="field" rows="3"></textarea>
+   <button id="saveShop" class="btn primary" type="button" onclick="saveShopProfile()">Save Changes</button>
+  </section>
+ </main>
+</div>
+
+<button id="aiFab" class="ai hide" type="button" onclick="openAIChat()">🤖</button>
+
+<div class="mobileNav">
+ <button type="button" onclick="goHome()">🏠<span>Home</span></button>
+ <button type="button" onclick="openWishlist()">❤️<span>Wishlist</span></button>
+ <button type="button" onclick="cartModal()">🛒<span>Cart</span></button>
+ <button type="button" onclick="openOrders()">📦<span>Orders</span></button>
+ <button type="button" onclick="openNotifications()">🔔<span>Alerts</span></button>
+</div>
+
+<div id="modal" class="modal hide" role="dialog" aria-modal="true">
+ <div class="modalBox">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+   <h3 id="modalTitle" style="margin:0">Dukaan AI</h3>
+   <button class="btn outline btn-sm" type="button" onclick="closeModal()">✕</button>
+  </div>
+  <div id="modalBody"></div>
+ </div>
+</div>
+
+<div id="toast" class="toast hide"></div>
+
+<script>
+const SUPABASE_URL = "https://yrrrqagtnbcufhcswstp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_FGqvkjDrSAHG2RQxW4ErHw_29yN11YR";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let role = "customer";
+let shop = null;
+let products = [];
+let cart = [];
+let wishlist = [];
+let notifications = [];
+let currentCat = "";
+
+const $ = id => document.getElementById(id);
+const show = id => $(id)?.classList.remove("hide");
+const hide = id => $(id)?.classList.add("hide");
+const esc = v => String(v??"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money = v => "Rs. " + Number(v||0).toLocaleString();
+
+function toast(msg){
+  $("toast").textContent = msg;
+  show("toast");
+  clearTimeout(window.__toast);
+  window.__toast = setTimeout(() => hide("toast"), 2500);
+}
+
+function closeModal(){ hide("modal"); }
+function openModal(title, body){
+  $("modalTitle").textContent = title;
+  $("modalBody").innerHTML = body;
+  show("modal");
+}
+
+function goHome(){
+  if(role === "seller"){ showSellerTab("productsTab"); }
+  else { currentCat = ""; renderProducts(); }
+}
+
+function backLanding(){
+  hide("auth"); show("landing"); $("authMsg").textContent = "";
+}
+
+function openAuth(r){
+  role = r;
+  hide("landing"); show("auth");
+  $("authTitle").textContent = r === "seller" ? "Seller Login" : "Customer Login";
+  $("authMsg").textContent = "";
+  $("email").focus();
+}
+
+$("signupBtn").onclick = async () => {
+  const email = $("email").value.trim();
+  const password = $("password").value;
+  if (!email || password.length < 6) {
+    $("authMsg").textContent = "Use a valid email and password (min 6 chars).";
+    return;
+  }
+  $("signupBtn").disabled = true;
+  const { error } = await sb.auth.signUp({ email, password });
+  $("signupBtn").disabled = false;
+  $("authMsg").textContent = error ? error.message : "Account created successfully! Please sign in.";
+};
+
+$("forgotBtn").onclick = async () => {
+  const email = $("email").value.trim();
+  if (!email) { $("authMsg").textContent = "Enter your email first."; return; }
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin });
+  $("authMsg").textContent = error ? error.message : "Password reset email sent.";
+};
+
+$("authForm").onsubmit = async e => {
+  e.preventDefault();
+  const email = $("email").value.trim();
+  const password = $("password").value;
+  $("loginBtn").disabled = true;
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  $("loginBtn").disabled = false;
+  if (error) { $("authMsg").textContent = error.message; return; }
+  localStorage.setItem("dukaan_role", role);
+  await initApp();
+};
+
+async function logout(){
+  await sb.auth.signOut();
+  localStorage.removeItem("dukaan_role");
+  location.reload();
+}
+
+async function initApp(){
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    show("landing"); hide("auth"); hide("customer"); hide("seller"); hide("aiFab");
+    return;
+  }
+  hide("landing"); hide("auth");
+  role = localStorage.getItem("dukaan_role") || "customer";
+  hide("customer"); hide("seller"); show("aiFab");
+
+  if (role === "seller") {
+    show("seller");
+    await loadShopData();
+    await loadNotifications();
+  } else {
+    show("customer");
+    await loadProducts();
+    await loadWishlist();
+    await loadNotifications();
+    updateCartCount();
+  }
+}
+
+// -------------------------------------------------------------
+// CUSTOMER & PRODUCT FUNCTIONS
+// -------------------------------------------------------------
+async function loadProducts(){
+  const { data, error } = await sb.from("products").select("*").order("created_at", { ascending: false });
+  if (error) {
+    $("products").innerHTML = '<p class="muted">Unable to load products right now.</p>';
+    console.error(error);
+    return;
+  }
+  products = data || [];
+  renderProducts();
+}
+
+function renderProducts(){
+  const q = ($("search")?.value || "").trim().toLowerCase();
+  const list = products.filter(p => {
+    const text = [p.name, p.description, p.category].join(" ").toLowerCase();
+    return (!currentCat || p.category === currentCat) && (!q || text.includes(q));
+  });
+
+  $("products").innerHTML = list.length ? list.map(p => `
+    <article class="card">
+      <div class="pic">
+        ${p.image_url ? `<img src="${esc(p.image_url)}" alt="${esc(p.name)}" onerror="this.remove();this.parentElement.textContent='🛍️'">` : "🛍️"}
+      </div>
+      <div class="cardBody">
+        <span class="badge">${esc(p.category || "General")}</span>
+        <h3 style="margin:8px 0 2px">${esc(p.name || "Product")}</h3>
+        <div class="price">${money(p.price)}</div>
+        <p class="muted" style="flex:1">${esc(p.description || "Quality product on Dukaan AI.")}</p>
+        <div style="display:flex;gap:7px;margin-top:10px">
+          <button class="btn primary" style="flex:1" type="button" onclick="addToCart('${esc(p.id)}')">Add to Cart</button>
+          <button class="btn outline" type="button" onclick="toggleWishlist('${esc(p.id)}')">${wishlist.includes(p.id) ? '❤️' : '🤍'}</button>
+        </div>
+      </div>
+    </article>
+  `).join("") : '<div style="grid-column:1/-1;text-align:center;padding:50px" class="muted">No matching products found.</div>';
+}
+
+function updateCartCount(){
+  if ($("cartCount")) $("cartCount").textContent = cart.reduce((n, i) => n + i.qty, 0);
+}
+
+function addToCart(id){
+  const p = products.find(x => String(x.id) === String(id));
+  if (!p) return toast("Product not found.");
+  const item = cart.find(x => String(x.id) === String(id));
+  if (item) item.qty++; else cart.push({ ...p, qty: 1 });
+  updateCartCount();
+  toast("Added to cart.");
+}
+
+function changeCartQty(id, delta){
+  const item = cart.find(x => String(x.id) === String(id));
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) cart = cart.filter(x => String(x.id) !== String(id));
+  updateCartCount();
+  cartModal();
+}
+
+function cartModal(){
+  const total = cart.reduce((s, i) => s + Number(i.price || 0) * i.qty, 0);
+  openModal("🛒 My Cart", cart.length ? `
+    ${cart.map(i => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e2e8f0">
+        <div>
+          <b>${esc(i.name)}</b>
+          <div class="muted">${money(i.price)} × ${i.qty}</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button class="btn outline btn-sm" type="button" onclick="changeCartQty('${esc(i.id)}', -1)">−</button>
+          <b>${i.qty}</b>
+          <button class="btn outline btn-sm" type="button" onclick="changeCartQty('${esc(i.id)}', 1)">+</button>
+        </div>
+      </div>
+    `).join("")}
+    <div style="display:flex;justify-content:space-between;margin-top:18px;font-size:19px">
+      <b>Total</b><b>${money(total)}</b>
+    </div>
+    <button class="btn primary" style="width:100%;margin-top:15px" type="button" onclick="checkoutCart()">Place Order</button>
+  ` : '<p class="muted">Your cart is empty.</p>');
+}
+
+async function checkoutCart(){
+  if (!cart.length) return toast("Your cart is empty.");
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return toast("Please sign in first.");
+  
+  openModal("📦 Delivery Details", `
+    <p class="muted">Confirm delivery phone number:</p>
+    <input id="orderPhone" class="field" placeholder="03XXXXXXXXX" inputmode="tel">
+    <button class="btn primary" style="width:100%" type="button" onclick="submitOrder()">Confirm Order</button>
+  `);
+}
+
+async function submitOrder(){
+  const phone = $("orderPhone").value.trim();
+  if (!phone) return toast("Phone number is required.");
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return toast("Please sign in.");
+
+  const total = cart.reduce((s, i) => s + Number(i.price || 0) * i.qty, 0);
+  const { data: order, error } = await sb.from("orders").insert({
+    customer_id: user.id, total, status: "pending", phone
+  }).select().single();
+
+  if (error) { toast(error.message); return; }
+
+  const items = cart.map(i => ({
+    order_id: order.id,
+    product_id: i.id,
+    seller_id: i.shop_id || null,
+    quantity: i.qty,
+    price: Number(i.price || 0)
+  }));
+
+  const { error: itemError } = await sb.from("order_items").insert(items);
+  if (itemError) { toast(itemError.message); return; }
+
+  cart = [];
+  updateCartCount();
+  closeModal();
+  toast("Order placed successfully!");
+  openOrders();
+}
+
+async function loadWishlist(){
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return;
+  const { data } = await sb.from("wishlist").select("product_id").eq("user_id", user.id);
+  if (data) wishlist = data.map(w => w.product_id);
+}
+
+async function toggleWishlist(id){
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return toast("Please login to manage wishlist.");
+
+  const exists = wishlist.includes(id);
+  if (exists) {
+    await sb.from("wishlist").delete().eq("user_id", user.id).eq("product_id", id);
+    wishlist = wishlist.filter(x => x !== id);
+    toast("Removed from wishlist.");
+  } else {
+    await sb.from("wishlist").insert({ user_id: user.id, product_id: id });
+    wishlist.push(id);
+    toast("Saved to wishlist.");
+  }
+  renderProducts();
+}
+
+function openWishlist(){
+  const list = products.filter(p => wishlist.includes(p.id));
+  openModal("❤️ My Wishlist", list.length ? list.map(p => `
+    <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid #eee">
+      <span>
+        <b>${esc(p.name)}</b><br>
+        <span class="muted">${money(p.price)}</span>
+      </span>
+      <button class="btn primary btn-sm" type="button" onclick="addToCart('${esc(p.id)}')">Add to Cart</button>
+    </div>
+  `).join("") : '<p class="muted">Your wishlist is empty.</p>');
+}
+
+async function openOrders(){
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return;
+  const { data, error } = await sb.from("orders").select("*").eq("customer_id", user.id).order("created_at", { ascending: false });
+  if (error) { toast(error.message); return; }
+
+  openModal("📦 My Orders", (data || []).length ? data.map(o => `
+    <div style="padding:13px;border-bottom:1px solid #e2e8f0">
+      <b>Order #${esc(String(o.id).slice(0, 8))}</b><br>
+      Total: <b>${money(o.total)}</b><br>
+      <span class="muted">Status: <strong style="color:#4f46e5">${esc(o.status || "pending")}</strong> · Phone: ${esc(o.phone || "—")}</span>
+    </div>
+  `).join("") : '<p class="muted">No order history found.</p>');
+}
+
+// -------------------------------------------------------------
+// SELLER DASHBOARD FUNCTIONS
+// -------------------------------------------------------------
+async function loadShopData(){
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return;
+
+  let { data } = await sb.from("shops").select("*").eq("user_id", user.id).maybeSingle();
+  if (!data) {
+    const { data: newShop } = await sb.from("shops").insert({
+      user_id: user.id, name: "My Dukaan Shop", category: "General", phone: "", address: ""
+    }).select().single();
+    data = newShop;
+  }
+  shop = data;
+
+  if (shop) {
+    $("shopName").value = shop.name || "";
+    $("shopCategory").value = shop.category || "";
+    $("shopPhone").value = shop.phone || "";
+    $("shopAddress").value = shop.address || "";
+  }
+
+  await loadSellerProducts();
+  await loadSellerOrders();
+}
+
+async function loadSellerProducts(){
+  if (!shop) return;
+  const { data } = await sb.from("products").select("*").eq("shop_id", shop.id).order("created_at", { ascending: false });
+  const myProds = data || [];
+  if ($("statProducts")) $("statProducts").textContent = myProds.length;
+
+  $("myProducts").innerHTML = myProds.length ? myProds.map(p => `
+    <article class="card">
+      <div class="pic">
+        ${p.image_url ? `<img src="${esc(p.image_url)}" alt="${esc(p.name)}" onerror="this.remove();this.parentElement.textContent='🛍️'">` : "🛍️"}
+      </div>
+      <div class="cardBody">
+        <span class="badge">${esc(p.category || "General")}</span>
+        <h3 style="margin:8px 0 2px">${esc(p.name)}</h3>
+        <div class="price">${money(p.price)}</div>
+        <p class="muted">Stock: <b>${p.stock}</b></p>
+        <div style="display:flex;gap:7px;margin-top:10px">
+          <button class="btn danger btn-sm" style="flex:1" type="button" onclick="deleteProduct('${esc(p.id)}')">Delete</button>
+        </div>
+      </div>
+    </article>
+  `).join("") : '<p class="muted" style="grid-column:1/-1;text-align:center;padding:30px">No products listed yet.</p>';
+}
+
+async function loadSellerOrders(){
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return;
+
+  const { data: items } = await sb.from("order_items").select("*, orders(*)").eq("seller_id", user.id);
+  const sellerItems = items || [];
+  
+  const totalSales = sellerItems.reduce((s, i) => s + (Number(i.price) * Number(i.quantity)), 0);
+  if ($("statSales")) $("statSales").textContent = money(totalSales);
+  if ($("statOrders")) $("statOrders").textContent = sellerItems.length;
+
+  $("sellerOrders").innerHTML = sellerItems.length ? sellerItems.map(i => `
+    <div style="padding:15px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:10px">
+      <b>Item ID: ${esc(String(i.id).slice(0, 8))}</b>
+      <div>Quantity: ${i.quantity} | Revenue: <b>${money(i.price * i.quantity)}</b></div>
+      <div class="muted">Status: ${esc(i.orders?.status || 'pending')}</div>
+    </div>
+  `).join("") : '<p class="muted">No incoming customer orders.</p>';
+}
+
+function showSellerTab(tabId){
+  ["productsTab", "ordersTab", "profileTab"].forEach(t => hide(t));
+  show(tabId);
+  ["tabBtnProducts", "tabBtnOrders", "tabBtnProfile"].forEach(btn => {
+    if ($(btn)) $(btn).className = "btn outline";
+  });
+  if (tabId === "productsTab" && $("tabBtnProducts")) $("tabBtnProducts").className = "btn primary";
+  if (tabId === "ordersTab" && $("tabBtnOrders")) $("tabBtnOrders").className = "btn primary";
+  if (tabId === "profileTab" && $("tabBtnProfile")) $("tabBtnProfile").className = "btn primary";
+}
+
+async function saveShopProfile(){
+  if (!shop) return;
+  const name = $("shopName").value.trim();
+  const category = $("shopCategory").value.trim();
+  const phone = $("shopPhone").value.trim();
+  const address = $("shopAddress").value.trim();
+
+  const { error } = await sb.from("shops").update({ name, category, phone, address }).eq("id", shop.id);
+  if (error) toast(error.message);
+  else toast("Shop profile updated!");
+}
+
+function openAddProductModal(){
+  openModal("➕ Add New Product", `
+    <form id="addProductForm">
+      <label class="muted">Product Name</label>
+      <input id="pName" class="field" required>
+      <label class="muted">Price (PKR)</label>
+      <input id="pPrice" type="number" step="0.01" class="field" required>
+      <label class="muted">Stock Quantity</label>
+      <input id="pStock" type="number" class="field" value="10" required>
+      <label class="muted">Category</label>
+      <select id="pCat" class="field">
+        <option value="Fashion">Fashion</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Home">Home</option>
+        <option value="Beauty">Beauty</option>
+      </select>
+      <label class="muted">Description</label>
+      <textarea id="pDesc" class="field" rows="2"></textarea>
+      <label class="muted">Product Image</label>
+      <input id="pImg" type="file" accept="image/*" class="field">
+      <button class="btn primary" style="width:100%;margin-top:10px" type="submit">Save Product</button>
+    </form>
+  `);
+
+  $("addProductForm").onsubmit = async e => {
+    e.preventDefault();
+    if (!shop) return toast("Shop settings missing.");
+    let imageUrl = "";
+    const file = $("pImg").files[0];
+    if (file) {
+      const ext = file.name.split('.').pop();
+      const path = `${Date.now()}.${ext}`;
+      const { error: upErr } = await sb.storage.from("product-images").upload(path, file);
+      if (!upErr) {
+        const { data: pubData } = sb.storage.from("product-images").getPublicUrl(path);
+        imageUrl = pubData.publicUrl;
+      }
+    }
+
+    const { error } = await sb.from("products").insert({
+      shop_id: shop.id,
+      name: $("pName").value.trim(),
+      price: parseFloat($("pPrice").value),
+      stock: parseInt($("pStock").value),
+      category: $("pCat").value,
+      description: $("pDesc").value.trim(),
+      image_url: imageUrl
+    });
+
+    if (error) toast(error.message);
+    else {
+      toast("Product added successfully!");
+      closeModal();
+      await loadSellerProducts();
+    }
+  };
+}
+
+async function deleteProduct(id){
+  if (!confirm("Are you sure you want to delete this product?")) return;
+  const { error } = await sb.from("products").delete().eq("id", id);
+  if (error) toast(error.message);
+  else { toast("Product deleted."); await loadSellerProducts(); }
+}
+
+// -------------------------------------------------------------
+// NOTIFICATIONS & AI ASSISTANT
+// -------------------------------------------------------------
+async function loadNotifications(){
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return;
+  const { data } = await sb.from("notifications").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
+  notifications = data || [];
+  if ($("notifBadge")) $("notifBadge").textContent = notifications.length;
+}
+
+function openNotifications(){
+  openModal("🔔 Notifications", notifications.length ? notifications.map(n => `
+    <div style="padding:12px;border-bottom:1px solid #eee">
+      <b>${esc(n.title || "Notification")}</b>
+      <p class="muted" style="margin:4px 0">${esc(n.body || "")}</p>
+    </div>
+  `).join("") : '<p class="muted">No notifications.</p>');
+}
+
+function openAIChat(){
+  openModal("🤖 Dukaan AI Shopping Assistant", `
+    <div id="chatHistory" style="height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:10px;background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0">
+      <div class="chat-msg chat-ai">Hello! I am your Dukaan AI Assistant. Ask me to find products, recommend gifts, or compare items.</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <input id="aiPrompt" class="field" style="margin:0" placeholder="e.g. Find shoes under Rs. 5000">
+      <button class="btn primary" type="button" onclick="sendAIMessage()">Send</button>
+    </div>
+  `);
+}
+
+function sendAIMessage(){
+  const input = $("aiPrompt");
+  const query = input.value.trim();
+  if (!query) return;
+
+  const history = $("chatHistory");
+  history.innerHTML += `<div class="chat-msg chat-user">${esc(query)}</div>`;
+  input.value = "";
+  history.scrollTop = history.scrollHeight;
+
+  // Grounded Real Database Natural-Language Query Matching
+  const match = products.filter(p => {
+    const full = [p.name, p.description, p.category].join(" ").toLowerCase();
+    const words = query.toLowerCase().split(" ");
+    return words.some(w => full.includes(w) && w.length > 2);
+  });
+
+  setTimeout(() => {
+    let reply = "I couldn't find exact matches in our current inventory.";
+    if (match.length) {
+      reply = `I found ${match.length} relevant item(s) for you:<br><br>` + 
+        match.slice(0, 3).map(m => `• <b>${esc(m.name)}</b> - ${money(m.price)} (${esc(m.category)})`).join("<br>");
+    }
+    history.innerHTML += `<div class="chat-msg chat-ai">${reply}</div>`;
+    history.scrollTop = history.scrollHeight;
+  }, 400);
+}
+
+// -------------------------------------------------------------
+// EVENT LISTENERS & INITIALIZATION
+// -------------------------------------------------------------
+document.addEventListener("DOMContentLoaded", () => {
+  if ($("cartBtn")) $("cartBtn").onclick = cartModal;
+
+  if ($("search")) {
+    $("search").addEventListener("input", () => renderProducts());
+  }
+
+  document.querySelectorAll(".cat-btn").forEach(btn => {
+    btn.addEventListener("click", e => {
+      document.querySelectorAll(".cat-btn").forEach(b => b.className = "btn outline cat-btn");
+      e.target.className = "btn primary cat-btn";
+      currentCat = e.target.getAttribute("data-cat");
+      renderProducts();
+    });
+  });
+
+  initApp();
+});
+</script>
+</body>
+</html>
