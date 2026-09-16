@@ -1,245 +1,410 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Dukaan AI</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dukaan AI — Premium Marketplace</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:#eef2ff;color:#111827}
-body{min-height:100vh}
-button,input,select,textarea{font:inherit}
-button{cursor:pointer;touch-action:manipulation}
-.hidden{display:none!important}
-.page{min-height:100vh}
-.hero{min-height:100vh;padding:38px 18px 50px;background:linear-gradient(135deg,#4338ca,#2563eb 55%,#0f3b9d);display:flex;align-items:center;justify-content:center}
-.wrap{width:100%;max-width:900px}
-.brand{text-align:center;color:white;margin-bottom:28px}
-.logo{width:86px;height:86px;margin:auto;border-radius:24px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:48px}
-.brand h1{font-size:56px;margin:24px 0 10px;letter-spacing:-2px}
-.brand h1 span{color:#67e8f9}
-.brand p{font-size:21px;line-height:1.45;margin:0 auto;max-width:650px;color:#e0e7ff}
-.cards{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.role-card{border:0;border-radius:28px;padding:30px;text-align:left;min-height:270px;box-shadow:0 18px 45px rgba(0,0,0,.18);transition:transform .12s ease}
-.role-card:active{transform:scale(.985)}
-.customer{background:white;color:#111827}
-.seller{background:rgba(255,255,255,.12);color:white;border:1px solid rgba(255,255,255,.25)}
-.role-icon{font-size:44px}
-.role-card h2{font-size:30px;margin:24px 0 12px}
-.role-card p{font-size:18px;line-height:1.5;margin:0 0 25px;color:#64748b}
-.seller p{color:#dbeafe}
-.role-action{font-weight:700;font-size:18px;color:#4338ca}
-.seller .role-action{color:#67e8f9}
-.auth-page{min-height:100vh;padding:22px;background:#f8fafc;display:flex;align-items:center;justify-content:center}
-.auth-box{width:100%;max-width:480px;background:white;border-radius:26px;padding:28px;box-shadow:0 15px 45px rgba(15,23,42,.12)}
-.back{border:0;background:#eef2ff;color:#3730a3;border-radius:12px;padding:10px 14px;font-weight:700;margin-bottom:20px}
-.auth-box h2{font-size:30px;margin:8px 0}
-.sub{color:#64748b;margin-bottom:22px}
-label{display:block;font-weight:700;margin:14px 0 7px}
-input,select,textarea{width:100%;padding:14px 15px;border:1px solid #cbd5e1;border-radius:13px;outline:none;background:white}
-input:focus,select:focus,textarea:focus{border-color:#4f46e5;box-shadow:0 0 0 3px rgba(79,70,229,.12)}
-.primary{width:100%;border:0;border-radius:13px;padding:15px;margin-top:20px;background:#4f46e5;color:white;font-weight:800}
-.secondary{width:100%;border:1px solid #cbd5e1;border-radius:13px;padding:14px;margin-top:10px;background:white;font-weight:700}
-.msg{margin-top:14px;padding:12px;border-radius:12px;background:#eff6ff;color:#1e40af}
-.app{min-height:100vh;background:#f8fafc}
-.topbar{position:sticky;top:0;z-index:5;background:white;border-bottom:1px solid #e5e7eb;padding:14px 18px;display:flex;align-items:center;gap:12px}
-.topbar .title{font-size:22px;font-weight:900;color:#3730a3}
-.search{flex:1;max-width:600px;margin:auto}
-.search input{background:#f1f5f9;border:0}
-.content{max-width:1100px;margin:auto;padding:22px}
-.welcome{background:linear-gradient(135deg,#4338ca,#2563eb);color:white;border-radius:24px;padding:25px;margin-bottom:20px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.product{background:white;border-radius:18px;padding:16px;border:1px solid #e5e7eb}
-.product .pic{height:170px;border-radius:14px;background:#e0e7ff;display:flex;align-items:center;justify-content:center;font-size:58px}
-.product h3{margin:14px 0 7px}
-.price{font-size:20px;font-weight:900;color:#3730a3}
-.empty{background:white;border:1px dashed #cbd5e1;border-radius:18px;padding:35px;text-align:center;color:#64748b}
-@media(max-width:700px){
- .hero{padding:25px 14px 35px;align-items:flex-start}
- .brand{margin-top:25px}
- .brand h1{font-size:43px}
- .brand p{font-size:18px}
- .cards{grid-template-columns:1fr}
- .role-card{min-height:245px;padding:26px}
- .role-card h2{font-size:27px}
- .grid{grid-template-columns:1fr 1fr}
- .content{padding:14px}
-}
-@media(max-width:430px){
- .grid{grid-template-columns:1fr}
- .topbar{flex-wrap:wrap}
- .search{order:3;flex-basis:100%;max-width:none}
+*{box-sizing:border-box}
+body{margin:0;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;background:#f8fafc;color:#0f172a;padding-bottom:60px}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;transition:all 0.2s}
+.hide{display:none!important}
+header{position:sticky;top:0;z-index:20;background:#ffffff;border-bottom:1px solid #e2e8f0;padding:12px 20px;display:flex;gap:16px;align-items:center}
+.logo{font-size:22px;font-weight:900;color:#4338ca;display:flex;align-items:center;gap:8px}
+.logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#4f46e5,#06b6d4);color:#fff;display:grid;place-items:center;font-weight:900}
+.search-box{flex:1;max-width:500px;position:relative}
+.search-box input{width:100%;padding:10px 14px;border:1px solid #cbd5e1;background:#f1f5f9;border-radius:10px;outline:none}
+.btn{border:0;border-radius:10px;padding:9px 16px;font-weight:700;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.btn-sm{padding:6px 10px;font-size:13px}
+.primary{background:#4f46e5;color:#fff}.primary:hover{background:#4338ca}
+.light{background:#e0e7ff;color:#3730a3}.light:hover{background:#c7d2fe}
+.danger{background:#fee2e2;color:#991b1b}.outline{border:1px solid #cbd5e1;background:transparent}
+.page{max-width:1200px;margin:auto;padding:20px}
+.hero{min-height:90vh;background:linear-gradient(135deg,#1e1b4b,#312e81,#2563eb);padding:60px 20px;color:#fff;display:grid;place-items:center}
+.hero-inner{max-width:800px;text-align:center}
+.hero h1{font-size:52px;margin:15px 0;font-weight:900}
+.hero h1 span{color:#38bdf8}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:40px}
+.role-card{background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:30px;text-align:left;color:#fff}
+.auth{min-height:90vh;display:grid;place-items:center;padding:20px}
+.box{background:#fff;width:min(440px,100%);padding:30px;border-radius:20px;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1)}
+.box input,.box select,.box textarea,.form input,.form select,.form textarea{width:100%;padding:10px;margin:6px 0 14px;border:1px solid #cbd5e1;border-radius:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;overflow:hidden;box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);display:flex;flex-direction:column}
+.pic{height:200px;background:#f1f5f9;position:relative}
+.pic img{width:100%;height:100%;object-fit:cover}
+.card-body{padding:16px;display:flex;flex-direction:column;flex:1}
+.price{font-size:20px;font-weight:800;color:#4338ca;margin:6px 0}
+.muted{color:#64748b;font-size:14px}
+.badge{background:#e0e7ff;color:#4338ca;padding:3px 8px;border-radius:6px;font-size:12px;font-weight:700}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,0.6);backdrop-filter:blur(4px);z-index:50;display:grid;place-items:center;padding:16px}
+.modalbox{background:#fff;width:min(650px,100%);max-height:90vh;overflow-y:auto;border-radius:20px;padding:24px}
+.toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:12px 24px;border-radius:30px;z-index:100;font-weight:600}
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;padding:8px;justify-content:space-around;z-index:30}
+.mobile-nav button{background:none;border:0;display:flex;flex-direction:column;align-items:center;font-size:11px;color:#64748b}
+.ai-fab{position:fixed;bottom:85px;right:20px;width:56px;height:56px;border-radius:28px;background:linear-gradient(135deg,#4f46e5,#06b6d4);color:#fff;display:grid;place-items:center;font-size:24px;box-shadow:0 10px 25px rgba(79,70,229,0.4);z-index:40;border:none}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px}
+.stat-card{background:#fff;padding:20px;border-radius:14px;border:1px solid #e2e8f0;box-shadow:0 2px 4px rgba(0,0,0,0.02)}
+.stat-card h4{margin:0;color:#64748b;font-size:13px}
+.stat-card div{font-size:28px;font-weight:900;color:#0f172a;margin-top:6px}
+
+@media(max-width:768px){
+  header .desktop-only{display:none}
+  .mobile-nav{display:flex}
+  .hero h1{font-size:36px}
+  .roles{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
 
-<div id="landing" class="page">
-  <main class="hero">
-    <div class="wrap">
-      <section class="brand">
-        <div class="logo">🛍️</div>
-        <h1>Dukaan <span>AI</span></h1>
-        <p>A smart marketplace for customers and shops.</p>
-      </section>
-
-      <section class="cards">
-        <button type="button" class="role-card customer" id="customerBtn">
-          <div class="role-icon">🛒</div>
-          <h2>I'm a Customer</h2>
-          <p>Search products, shop, contact sellers, add to cart and order.</p>
-          <div class="role-action">Continue as Customer →</div>
-        </button>
-
-        <button type="button" class="role-card seller" id="sellerBtn">
-          <div class="role-icon">🏪</div>
-          <h2>I'm a Shopkeeper / Seller</h2>
-          <p>Create a shop and list your products on the marketplace.</p>
-          <div class="role-action">Continue as Seller →</div>
-        </button>
-      </section>
+<!-- LANDING PAGE -->
+<div id="landing" class="hero">
+  <div class="hero-inner">
+    <div class="logo-icon" style="width:72px;height:72px;font-size:36px;margin:auto">D</div>
+    <h1>Dukaan <span>AI</span></h1>
+    <p>AI-Powered Marketplace connecting buyers and smart sellers.</p>
+    <div class="roles">
+      <div class="role-card">
+        <h2>🛒 Customer</h2>
+        <p>Explore products, manage cart, track orders, chat with sellers & AI assist.</p>
+        <button class="btn primary" style="width:100%" onclick="openAuth('customer')">Shop Now →</button>
+      </div>
+      <div class="role-card">
+        <h2>🏪 Seller Dashboard</h2>
+        <p>Manage products, track sales analytics, update inventory & orders.</p>
+        <button class="btn light" style="width:100%" onclick="openAuth('seller')">Manage Shop →</button>
+      </div>
     </div>
-  </main>
-</div>
-
-<div id="auth" class="auth-page hidden">
-  <div class="auth-box">
-    <button type="button" class="back" id="backBtn">← Back</button>
-    <h2 id="authTitle">Customer Login</h2>
-    <p class="sub" id="authSub">Login or create your customer account.</p>
-
-    <form id="authForm">
-      <label>Email</label>
-      <input id="email" type="email" autocomplete="email" required placeholder="you@example.com">
-      <label>Password</label>
-      <input id="password" type="password" autocomplete="current-password" required placeholder="••••••••">
-      <button class="primary" type="submit" id="loginBtn">Login</button>
-    </form>
-
-    <button type="button" class="secondary" id="signupBtn">Create New Account</button>
-    <div id="authMsg" class="msg hidden"></div>
   </div>
 </div>
 
-<div id="app" class="app hidden">
-  <header class="topbar">
-    <div class="title">Dukaan <span style="color:#06b6d4">AI</span></div>
-    <div class="search"><input id="searchInput" type="search" placeholder="Search products, shops, categories..."></div>
-    <button type="button" class="secondary" style="width:auto;margin:0;padding:10px 13px" id="logoutBtn">Logout</button>
+<!-- AUTH -->
+<div id="auth" class="auth hide">
+  <div class="box">
+    <button class="btn outline btn-sm" onclick="hide('auth');show('landing')">← Back</button>
+    <h2 id="authTitle" style="margin-top:15px">Account Login</h2>
+    <form id="authForm">
+      <label class="muted">Email</label>
+      <input id="email" type="email" required>
+      <label class="muted">Password</label>
+      <input id="password" type="password" required>
+      <button class="btn primary" style="width:100%">Sign In</button>
+    </form>
+    <button class="btn outline" style="width:100%;margin-top:10px" id="signup">Create New Account</button>
+    <button class="btn outline" style="width:100%;margin-top:8px" id="forgot">Forgot Password?</button>
+    <p id="authMsg" class="muted" style="text-align:center;margin-top:12px"></p>
+  </div>
+</div>
+
+<!-- CUSTOMER INTERFACE -->
+<div id="customer" class="hide">
+  <header>
+    <div class="logo"><div class="logo-icon">D</div> Dukaan <b>AI</b></div>
+    <div class="search-box">
+      <input id="search" placeholder="Search products, brands, shops...">
+    </div>
+    <div class="desktop-only" style="display:flex;gap:10px;margin-left:auto">
+      <button class="btn outline" onclick="openNotifications()">🔔 <span id="notifBadge" class="badge">0</span></button>
+      <button class="btn outline" onclick="openWishlist()">❤️</button>
+      <button class="btn outline" onclick="openOrders()">📦 Orders</button>
+      <button class="btn primary" id="cartBtn">🛒 Cart (<span id="cartCount">0</span>)</button>
+      <button class="btn outline" onclick="logout()">Logout</button>
+    </div>
   </header>
-  <main class="content">
-    <section class="welcome">
-      <h2 id="welcomeTitle">Welcome to Dukaan AI</h2>
-      <p>Find products from shops in the marketplace.</p>
-    </section>
+  
+  <main class="page">
+    <div class="banner" style="background:linear-gradient(135deg,#4338ca,#2563eb);color:#fff;padding:24px;border-radius:16px;margin-bottom:20px">
+      <h2 style="margin:0">Welcome to Dukaan AI Marketplace</h2>
+      <p style="margin:6px 0 0">Discover quality products from verified sellers.</p>
+    </div>
+    
+    <div style="display:flex;gap:10px;overflow-x:auto;margin-bottom:20px" id="cats">
+      <button class="btn primary" data-cat="">All Categories</button>
+      <button class="btn outline" data-cat="Fashion">Fashion</button>
+      <button class="btn outline" data-cat="Electronics">Electronics</button>
+      <button class="btn outline" data-cat="Home">Home</button>
+      <button class="btn outline" data-cat="Beauty">Beauty</button>
+    </div>
+
     <div id="products" class="grid"></div>
   </main>
 </div>
 
+<!-- SELLER DASHBOARD -->
+<div id="seller" class="hide">
+  <header>
+    <div class="logo"><div class="logo-icon">D</div> Seller Center</div>
+    <div style="margin-left:auto;display:flex;gap:10px">
+      <button class="btn outline" onclick="openNotifications()">🔔</button>
+      <button class="btn outline" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="stats-grid">
+      <div class="stat-card"><h4>TOTAL SALES</h4><div id="statSales">Rs. 0</div></div>
+      <div class="stat-card"><h4>TOTAL ORDERS</h4><div id="statOrders">0</div></div>
+      <div class="stat-card"><h4>PRODUCTS</h4><div id="statProducts">0</div></div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-bottom:20px">
+      <button class="btn primary" onclick="showSellerTab('productsTab')">Products</button>
+      <button class="btn outline" onclick="showSellerTab('ordersTab')">Orders</button>
+      <button class="btn outline" onclick="showSellerTab('profileTab')">Shop Profile</button>
+    </div>
+
+    <!-- Products Tab -->
+    <div id="productsTab">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+        <h3>Product Inventory</h3>
+        <button class="btn primary" onclick="openAddProductModal()">➕ Add Product</button>
+      </div>
+      <div id="myProducts" class="grid"></div>
+    </div>
+
+    <!-- Orders Tab -->
+    <div id="ordersTab" class="hide">
+      <h3>Customer Orders</h3>
+      <div id="sellerOrders"></div>
+    </div>
+
+    <!-- Profile Tab -->
+    <div id="profileTab" class="hide" style="background:#fff;padding:20px;border-radius:16px;border:1px solid #e2e8f0">
+      <h3>Shop Settings</h3>
+      <div class="form">
+        <label>Shop Name</label><input id="shopName">
+        <label>Category</label><input id="shopCategory">
+        <label>Phone</label><input id="shopPhone">
+        <label>City / Address</label><textarea id="shopAddress"></textarea>
+        <button class="btn primary" id="saveShop">Save Changes</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- AI ASSISTANT FAB -->
+<button class="ai-fab" onclick="openAIChat()">🤖</button>
+
+<!-- MOBILE NAVIGATION -->
+<div class="mobile-nav">
+  <button onclick="show('customer');hide('seller')"><span>🏠</span>Home</button>
+  <button onclick="openWishlist()"><span>❤️</span>Wishlist</button>
+  <button onclick="cartModal()"><span>🛒</span>Cart</button>
+  <button onclick="openOrders()"><span>📦</span>Orders</button>
+  <button onclick="openNotifications()"><span>🔔</span>Notifs</button>
+</div>
+
+<!-- MODAL DIALOG -->
+<div id="modal" class="modal hide">
+  <div class="modalbox">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+      <h3 id="modalTitle" style="margin:0">Modal</h3>
+      <button class="btn outline btn-sm" onclick="hide('modal')">✕</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast hide"></div>
+
 <script>
-(function(){
-  "use strict";
+const URL="https://yrrrqagtnbcufhcswstp.supabase.co",KEY="sb_publishable_FGqvkjDrSAHG2RQxW4ErHw_29yN11YR";
+const sb=supabase.createClient(URL,KEY);
+let role="", shop=null, products=[], cart=[], wishlist=[], notifications=[], currentCat="";
 
-  var currentRole = "";
-  var demoProducts = [
-    {name:"Blue Shirt",price:"2,000",shop:"Demo Fashion Store",country:"Pakistan"},
-    {name:"Smart Watch",price:"5,500",shop:"Tech World",country:"UAE"},
-    {name:"Running Shoes",price:"7,900",shop:"Sport House",country:"Germany"},
-    {name:"Leather Bag",price:"4,200",shop:"Style Shop",country:"Turkey"},
-    {name:"Wireless Earbuds",price:"3,100",shop:"Mobile Hub",country:"Pakistan"},
-    {name:"Coffee Maker",price:"8,600",shop:"Home Store",country:"Italy"}
-  ];
+const $=id=>document.getElementById(id);
+const show=id=>$(id).classList.remove("hide");
+const hide=id=>$(id).classList.add("hide");
+function toast(m){$("toast").textContent=m;show("toast");setTimeout(()=>hide("toast"),2500)}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 
-  function $(id){ return document.getElementById(id); }
+// Auth Logic
+$("customerRole").onclick=()=>openAuth("customer");
+$("sellerRole").onclick=()=>openAuth("seller");
+function openAuth(r){role=r;hide("landing");show("auth");$("authTitle").textContent=r==='seller'?'Seller Login':'Customer Login'}
+$("signup").onclick=async()=>{
+  let e=$("email").value.trim(),p=$("password").value;
+  if(!e||!p){$("authMsg").textContent="Provide email and password.";return}
+  let{error}=await sb.auth.signUp({email:e,password:p});
+  $("authMsg").textContent=error?error.message:"Account created! You can now login.";
+}
+$("authForm").onsubmit=async e=>{
+  e.preventDefault();
+  let{error}=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
+  if(error){$("authMsg").textContent=error.message;return}
+  localStorage.setItem("dukaan_role",role);
+  initApp();
+}
 
-  function showAuth(role){
-    currentRole = role;
-    $("landing").classList.add("hidden");
-    $("auth").classList.remove("hidden");
-    $("app").classList.add("hidden");
+async function logout(){await sb.auth.signOut();localStorage.clear();location.reload()}
 
-    if(role === "customer"){
-      $("authTitle").textContent = "Customer Login";
-      $("authSub").textContent = "Login or create your customer account.";
-    }else{
-      $("authTitle").textContent = "Seller Login";
-      $("authSub").textContent = "Login or create your shopkeeper account.";
-    }
-    $("authMsg").classList.add("hidden");
-    window.scrollTo(0,0);
+// Core Initialization
+async function initApp(){
+  let{data:{session}}=await sb.auth.getSession();
+  if(!session){show("landing");return}
+  hide("landing");hide("auth");
+  role=localStorage.getItem("dukaan_role")||"customer";
+  if(role==="seller"){
+    show("seller");
+    loadShopData();
+  }else{
+    show("customer");
+    loadProducts();
+    loadNotifications();
   }
+}
 
-  function goBack(){
-    $("auth").classList.add("hidden");
-    $("app").classList.add("hidden");
-    $("landing").classList.remove("hidden");
-    window.scrollTo(0,0);
+// Customer Operations
+async function loadProducts(){
+  let{data}=await sb.from("products").select("*").order("created_at",{ascending:false});
+  products=data||[];
+  renderProducts();
+}
+
+function renderProducts(){
+  let q=$("search").value.toLowerCase();
+  let list=products.filter(p=>(!currentCat||p.category===currentCat)&&(!q||p.name.toLowerCase().includes(q)));
+  $("products").innerHTML=list.length?list.map(p=>`
+    <div class="card">
+      <div class="pic">${p.image_url?`<img src="${esc(p.image_url)}">`:'🛍️'}</div>
+      <div class="card-body">
+        <span class="badge">${esc(p.category||'General')}</span>
+        <h4 style="margin:8px 0 4px">${esc(p.name)}</h4>
+        <div class="price">Rs. ${Number(p.price).toLocaleString()}</div>
+        <p class="muted" style="flex:1">${esc(p.description||'')}</p>
+        <div style="display:flex;gap:6px;margin-top:10px">
+          <button class="btn primary" style="flex:1" onclick="addToCart('${p.id}')">Add to Cart</button>
+          <button class="btn outline" onclick="toggleWishlist('${p.id}')">❤️</button>
+        </div>
+      </div>
+    </div>
+  `).join(''):'<div style="grid-column:1/-1;text-align:center;padding:40px" class="muted">No products found.</div>';
+}
+
+function addToCart(id){
+  let p=products.find(x=>x.id===id), item=cart.find(x=>x.id===id);
+  item?item.qty++:cart.push({...p,qty:1});
+  $("cartCount").textContent=cart.reduce((a,b)=>a+b.qty,0);
+  toast("Added to cart!");
+}
+
+function toggleWishlist(id){
+  let idx=wishlist.indexOf(id);
+  idx>-1?wishlist.splice(idx,1):wishlist.push(id);
+  toast(idx>-1?"Removed from wishlist":"Saved to wishlist");
+}
+
+function openWishlist(){
+  let list=products.filter(p=>wishlist.includes(p.id));
+  $("modalTitle").textContent="My Wishlist";
+  $("modalBody").innerHTML=list.length?list.map(p=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #eee"><span>${esc(p.name)} - <b>Rs. ${p.price}</b></span><button class="btn primary btn-sm" onclick="addToCart('${p.id}')">Add to Cart</button></div>`).join(''):'<p class="muted">Wishlist is empty.</p>';
+  show("modal");
+}
+
+// Notifications System
+async function loadNotifications(){
+  let{data:{user}}=await sb.auth.getUser();
+  if(!user)return;
+  let{data}=await sb.from("notifications").select("*").eq("user_id",user.id).order("created_at",{ascending:false});
+  notifications=data||[];
+  $("notifBadge").textContent=notifications.length;
+}
+
+function openNotifications(){
+  $("modalTitle").textContent="Notifications";
+  $("modalBody").innerHTML=notifications.length?notifications.map(n=>`
+    <div style="padding:12px;border-bottom:1px solid #e2e8f0">
+      <strong>${esc(n.title)}</strong>
+      <p style="margin:4px 0 0" class="muted">${esc(n.body)}</p>
+    </div>
+  `).join(''):'<p class="muted">No new notifications.</p>';
+  show("modal");
+}
+
+// Dukaan AI Assistant Chatbot
+function openAIChat(){
+  $("modalTitle").textContent="🤖 Ask Dukaan AI Assistant";
+  $("modalBody").innerHTML=`
+    <div id="aiLogs" style="height:250px;overflow-y:auto;background:#f8fafc;padding:12px;border-radius:10px;margin-bottom:10px;border:1px solid #e2e8f0">
+      <div><b>Dukaan AI:</b> Hello! How can I assist you with products or shop recommendations today?</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <input id="aiInput" placeholder="Ask anything..." style="margin:0">
+      <button class="btn primary" onclick="sendAIMessage()">Send</button>
+    </div>
+  `;
+  show("modal");
+}
+
+function sendAIMessage(){
+  let msg=$("aiInput").value.trim();
+  if(!msg)return;
+  let logs=$("aiLogs");
+  logs.innerHTML+=`<div style="margin-top:8px;text-align:right"><b>You:</b> ${esc(msg)}</div>`;
+  $("aiInput").value="";
+  setTimeout(()=>{
+    logs.innerHTML+=`<div style="margin-top:8px"><b>Dukaan AI:</b> I recommend exploring top deals in our Electronics & Fashion categories!</div>`;
+    logs.scrollTop=logs.scrollHeight;
+  },600);
+}
+
+// Seller Dashboard Logic
+async function loadShopData(){
+  let{data:{user}}=await sb.auth.getUser();
+  let{data}=await sb.from("shops").select("*").eq("owner_id",user.id).maybeSingle();
+  shop=data;
+  if(shop){
+    $("shopName").value=shop.name||"";
+    $("shopCategory").value=shop.category||"";
+    $("shopPhone").value=shop.phone||"";
+    $("shopAddress").value=shop.address||"";
+    loadSellerProducts();
+    loadSellerOrders();
   }
+}
 
-  function showApp(){
-    $("landing").classList.add("hidden");
-    $("auth").classList.add("hidden");
-    $("app").classList.remove("hidden");
-    $("welcomeTitle").textContent = currentRole === "seller"
-      ? "Seller Dashboard"
-      : "Welcome to Dukaan AI";
-    renderProducts("");
-    window.scrollTo(0,0);
-  }
+async function loadSellerProducts(){
+  if(!shop)return;
+  let{data}=await sb.from("products").select("*").eq("shop_id",shop.id);
+  let list=data||[];
+  $("statProducts").textContent=list.length;
+  $("myProducts").innerHTML=list.map(p=>`
+    <div class="card">
+      <div class="pic">${p.image_url?`<img src="${esc(p.image_url)}">`:'🛍️'}</div>
+      <div class="card-body">
+        <h4>${esc(p.name)}</h4>
+        <div class="price">Rs. ${p.price}</div>
+        <p class="muted">Stock: ${p.stock}</p>
+        <button class="btn danger btn-sm" onclick="deleteProduct('${p.id}')">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
 
-  function renderProducts(query){
-    var q = String(query || "").toLowerCase().trim();
-    var list = demoProducts.filter(function(p){
-      return !q || (p.name+" "+p.shop+" "+p.country).toLowerCase().indexOf(q) !== -1;
-    });
+async function loadSellerOrders(){
+  let{data}=await sb.from("orders").select("*").order("created_at",{ascending:false});
+  let list=data||[];
+  $("statOrders").textContent=list.length;
+  let total=list.reduce((a,b)=>a+Number(b.total||0),0);
+  $("statSales").textContent=`Rs. ${total.toLocaleString()}`;
+  
+  $("sellerOrders").innerHTML=list.map(o=>`
+    <div style="background:#fff;padding:12px;border-radius:10px;border:1px solid #e2e8f0;margin-bottom:10px">
+      <strong>Order #${o.id.slice(0,8)}</strong> - Total: Rs. ${o.total}
+      <p class="muted" style="margin:4px 0">Status: <b>${o.status}</b> | Phone: ${esc(o.phone||'N/A')}</p>
+    </div>
+  `).join('')||'<p class="muted">No orders yet.</p>';
+}
 
-    if(!list.length){
-      $("products").innerHTML = '<div class="empty" style="grid-column:1/-1">No products found.</div>';
-      return;
-    }
+function showSellerTab(tabId){
+  ['productsTab','ordersTab','profileTab'].forEach(t=>hide(t));
+  show(tabId);
+}
 
-    $("products").innerHTML = list.map(function(p){
-      return '<article class="product">'
-        + '<div class="pic">🛍️</div>'
-        + '<h3>'+p.name+'</h3>'
-        + '<div class="price">Rs. '+p.price+'</div>'
-        + '<p style="color:#64748b;margin-bottom:0">'+p.shop+' · '+p.country+'</p>'
-        + '</article>';
-    }).join("");
-  }
-
-  $("customerBtn").addEventListener("click", function(){ showAuth("customer"); });
-  $("sellerBtn").addEventListener("click", function(){ showAuth("seller"); });
-  $("backBtn").addEventListener("click", goBack);
-
-  $("signupBtn").addEventListener("click", function(){
-    var email = $("email").value.trim();
-    if(!email){
-      $("authMsg").textContent = "Enter your email first, then tap Create New Account.";
-    }else{
-      $("authMsg").textContent = "Account setup is ready. Connect your Supabase Auth to create the real account.";
-    }
-    $("authMsg").classList.remove("hidden");
-  });
-
-  $("authForm").addEventListener("submit", function(e){
-    e.preventDefault();
-    var email = $("email").value.trim();
-    if(!email || !$("password").value){
-      $("authMsg").textContent = "Please enter email and password.";
-      $("authMsg").classList.remove("hidden");
-      return;
-    }
-    showApp();
-  });
-
-  $("logoutBtn").addEventListener("click", goBack);
-  $("searchInput").addEventListener("input", function(){ renderProducts(this.value); });
-
-  // Expose only the two navigation functions for compatibility with older links.
-  window.openAuth = showAuth;
-  window.goBack = goBack;
-})();
+// Initial Boot
+initApp();
 </script>
 </body>
 </html>
