@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -14,12 +15,15 @@
   <!-- SUPABASE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+
   <style>
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
+
 
     body {
       font-family: Arial, sans-serif;
@@ -28,32 +32,43 @@
       min-height: 100vh;
     }
 
+
     button,
     input,
-    select {
+    select,
+    textarea {
       font: inherit;
     }
+
 
     button {
       border: none;
       cursor: pointer;
     }
 
+
     button:disabled {
       opacity: 0.65;
       cursor: not-allowed;
     }
+
 
     .container {
       width: min(1100px, 92%);
       margin: 0 auto;
     }
 
+
+    /* =========================================
+       HEADER
+       ========================================= */
+
     header {
       background: #ffffff;
       border-bottom: 1px solid #e5e7eb;
       padding: 18px 0;
     }
+
 
     .header-inner {
       display: flex;
@@ -62,14 +77,17 @@
       gap: 20px;
     }
 
+
     .logo {
       font-size: 24px;
       font-weight: 800;
     }
 
+
     .logo span {
       color: #2563eb;
     }
+
 
     .header-btn {
       background: #2563eb;
@@ -78,10 +96,20 @@
       border-radius: 8px;
     }
 
+
+    /* =========================================
+       MAIN
+       ========================================= */
+
     main {
       min-height: calc(100vh - 150px);
-      padding: 70px 0;
+      padding: 55px 0;
     }
+
+
+    /* =========================================
+       HOME
+       ========================================= */
 
     .hero {
       max-width: 750px;
@@ -89,15 +117,18 @@
       text-align: center;
     }
 
+
     .hero h1 {
       font-size: clamp(36px, 6vw, 64px);
       line-height: 1.05;
       margin-bottom: 20px;
     }
 
+
     .hero h1 span {
       color: #2563eb;
     }
+
 
     .hero p {
       color: #6b7280;
@@ -106,12 +137,14 @@
       margin-bottom: 32px;
     }
 
+
     .actions {
       display: flex;
       justify-content: center;
       gap: 14px;
       flex-wrap: wrap;
     }
+
 
     .primary-btn,
     .secondary-btn {
@@ -120,16 +153,19 @@
       font-weight: 700;
     }
 
+
     .primary-btn {
       background: #2563eb;
       color: #ffffff;
     }
+
 
     .secondary-btn {
       background: #ffffff;
       color: #111827;
       border: 1px solid #d1d5db;
     }
+
 
     .status {
       margin-top: 45px;
@@ -140,13 +176,20 @@
       text-align: left;
     }
 
+
     .status strong {
       color: #16a34a;
     }
 
+
+    /* =========================================
+       BOXES
+       ========================================= */
+
     .auth-box,
-    .dashboard-box {
-      width: min(480px, 100%);
+    .dashboard-box,
+    .marketplace-box {
+      width: min(900px, 100%);
       margin: auto;
       background: #ffffff;
       border: 1px solid #e5e7eb;
@@ -155,11 +198,19 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
     }
 
+
+    .auth-box {
+      width: min(480px, 100%);
+    }
+
+
     .auth-box h2,
-    .dashboard-box h2 {
+    .dashboard-box h2,
+    .marketplace-box h2 {
       margin-bottom: 10px;
       font-size: 28px;
     }
+
 
     .auth-box > p,
     .dashboard-box > p {
@@ -167,6 +218,7 @@
       line-height: 1.6;
       margin-bottom: 24px;
     }
+
 
     .back-btn {
       background: transparent;
@@ -176,9 +228,15 @@
       font-weight: 700;
     }
 
+
+    /* =========================================
+       FORMS
+       ========================================= */
+
     .form-group {
       margin-bottom: 18px;
     }
+
 
     .form-group label {
       display: block;
@@ -186,8 +244,10 @@
       font-weight: 700;
     }
 
+
     .form-group input,
-    .form-group select {
+    .form-group select,
+    .form-group textarea {
       width: 100%;
       padding: 12px 13px;
       border: 1px solid #d1d5db;
@@ -196,15 +256,25 @@
       background: #ffffff;
     }
 
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+
     .form-group input:focus,
-    .form-group select:focus {
+    .form-group select:focus,
+    .form-group textarea:focus {
       border-color: #2563eb;
     }
+
 
     .auth-submit {
       width: 100%;
       margin-top: 5px;
     }
+
 
     .auth-message {
       display: none;
@@ -212,6 +282,7 @@
       line-height: 1.5;
       font-size: 14px;
     }
+
 
     .auth-switch {
       display: flex;
@@ -222,15 +293,154 @@
       font-size: 14px;
     }
 
+
     .auth-switch button {
       background: transparent;
       color: #2563eb;
       font-weight: 700;
     }
 
-    .dashboard-box .primary-btn {
-      margin-top: 8px;
+
+    /* =========================================
+       SELLER
+       ========================================= */
+
+    .seller-section {
+      margin-top: 30px;
+      padding-top: 25px;
+      border-top: 1px solid #e5e7eb;
     }
+
+
+    .seller-section h3 {
+      margin-bottom: 18px;
+      font-size: 21px;
+    }
+
+
+    .store-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 25px;
+      background: #f9fafb;
+    }
+
+
+    .store-card h3 {
+      margin-bottom: 8px;
+    }
+
+
+    .store-card p {
+      color: #6b7280;
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+
+    .product-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 18px;
+      background: #ffffff;
+    }
+
+
+    .product-card h4 {
+      font-size: 18px;
+      margin-bottom: 7px;
+    }
+
+
+    .product-card .category {
+      color: #2563eb;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+
+    .product-card .description {
+      color: #6b7280;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+
+    .product-price {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+
+    /* =========================================
+       MARKETPLACE
+       ========================================= */
+
+    .marketplace-header {
+      margin-bottom: 25px;
+    }
+
+
+    .marketplace-header p {
+      color: #6b7280;
+      margin-top: 6px;
+    }
+
+
+    .section-title {
+      font-size: 21px;
+      margin-bottom: 16px;
+    }
+
+
+    .store-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 35px;
+    }
+
+
+    .market-store-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 18px;
+      background: #ffffff;
+    }
+
+
+    .market-store-card h3 {
+      margin-bottom: 8px;
+    }
+
+
+    .market-store-card p {
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-top: 5px;
+    }
+
+
+    .empty-message {
+      color: #6b7280;
+      padding: 20px 0;
+    }
+
+
+    /* =========================================
+       FOOTER
+       ========================================= */
 
     footer {
       text-align: center;
@@ -239,48 +449,75 @@
       font-size: 14px;
     }
 
-    @media (max-width: 600px) {
+
+    /* =========================================
+       MOBILE
+       ========================================= */
+
+    @media (max-width: 700px) {
+
       main {
-        padding: 50px 0;
+        padding: 40px 0;
       }
+
 
       .header-inner {
         gap: 10px;
       }
 
+
       .logo {
         font-size: 20px;
       }
+
 
       .header-btn {
         padding: 9px 13px;
       }
 
+
       .hero p {
         font-size: 16px;
       }
 
+
       .actions {
         flex-direction: column;
       }
+
 
       .primary-btn,
       .secondary-btn {
         width: 100%;
       }
 
+
       .auth-box,
-      .dashboard-box {
+      .dashboard-box,
+      .marketplace-box {
         padding: 22px;
       }
+
+
+      .product-list,
+      .store-grid {
+        grid-template-columns: 1fr;
+      }
+
     }
+
   </style>
+
 </head>
 
 
 <body>
 
-  <!-- HEADER -->
+
+  <!-- =========================================
+       HEADER
+       ========================================= -->
+
   <header>
 
     <div class="container header-inner">
@@ -288,6 +525,7 @@
       <div class="logo">
         Dukaan <span>AI</span>
       </div>
+
 
       <button
         id="headerAuthButton"
@@ -306,7 +544,10 @@
   <main>
 
 
-    <!-- HOME PAGE -->
+    <!-- =========================================
+         HOME PAGE
+         ========================================= -->
+
     <section
       id="homePage"
     >
@@ -320,10 +561,12 @@
             <span>Dukaan</span>
           </h1>
 
+
           <p>
             A modern AI-powered marketplace
             for customers and sellers.
           </p>
+
 
           <div class="actions">
 
@@ -335,6 +578,7 @@
               Create Account
             </button>
 
+
             <button
               class="secondary-btn"
               type="button"
@@ -345,11 +589,12 @@
 
           </div>
 
+
           <div class="status">
 
             System Status:
             <strong>
-              Authentication Ready
+              Marketplace Ready
             </strong>
 
           </div>
@@ -361,7 +606,11 @@
     </section>
 
 
-    <!-- AUTH PAGE -->
+
+    <!-- =========================================
+         AUTH PAGE
+         ========================================= -->
+
     <section
       id="authPage"
       style="display:none"
@@ -402,6 +651,7 @@
               Full Name
             </label>
 
+
             <input
               id="fullName"
               type="text"
@@ -419,6 +669,7 @@
             <label for="email">
               Email
             </label>
+
 
             <input
               id="email"
@@ -438,6 +689,7 @@
               Password
             </label>
 
+
             <input
               id="password"
               type="password"
@@ -449,7 +701,7 @@
           </div>
 
 
-          <!-- ACCOUNT ROLE -->
+          <!-- ROLE -->
 
           <div
             id="roleField"
@@ -461,11 +713,13 @@
               Account Type
             </label>
 
+
             <select id="accountRole">
 
               <option value="customer">
                 Customer
               </option>
+
 
               <option value="seller">
                 Seller
@@ -504,6 +758,7 @@
               Don't have an account?
             </span>
 
+
             <button
               id="switchButton"
               type="button"
@@ -521,7 +776,10 @@
     </section>
 
 
-    <!-- CUSTOMER PAGE -->
+
+    <!-- =========================================
+         CUSTOMER PAGE
+         ========================================= -->
 
     <section
       id="customerPage"
@@ -530,19 +788,50 @@
 
       <div class="container">
 
-        <div class="dashboard-box">
+        <div class="marketplace-box">
 
-          <h2>
-            Welcome,
-            <span id="customerName">
-              Customer
-            </span>
-          </h2>
+          <div class="marketplace-header">
 
-          <p>
-            Your Dukaan AI customer account
-            is ready.
-          </p>
+            <h2>
+              Welcome,
+              <span id="customerName">
+                Customer
+              </span>
+            </h2>
+
+
+            <p>
+              Discover stores and products on Dukaan AI.
+            </p>
+
+          </div>
+
+
+          <!-- STORES -->
+
+          <h3 class="section-title">
+            Stores
+          </h3>
+
+
+          <div
+            id="customerStores"
+            class="store-grid"
+          ></div>
+
+
+          <!-- PRODUCTS -->
+
+          <h3 class="section-title">
+            Products
+          </h3>
+
+
+          <div
+            id="customerProducts"
+            class="product-list"
+          ></div>
+
 
           <button
             class="primary-btn"
@@ -559,7 +848,10 @@
     </section>
 
 
-    <!-- SELLER PAGE -->
+
+    <!-- =========================================
+         SELLER PAGE
+         ========================================= -->
 
     <section
       id="sellerPage"
@@ -577,15 +869,251 @@
             </span>
           </h2>
 
+
           <p>
-            Your Dukaan AI seller account
-            is ready.
+            Manage your store and products.
           </p>
+
+
+          <!-- =====================================
+               CREATE STORE
+               ===================================== -->
+
+          <div
+            id="createStoreArea"
+            class="seller-section"
+          >
+
+            <h3>
+              Create Your Store
+            </h3>
+
+
+            <div class="form-group">
+
+              <label for="storeName">
+                Store Name
+              </label>
+
+
+              <input
+                id="storeName"
+                type="text"
+                placeholder="Enter your store name"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="storeCategory">
+                Category
+              </label>
+
+
+              <input
+                id="storeCategory"
+                type="text"
+                placeholder="e.g. Electronics, Fashion, Grocery"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="storePhone">
+                Phone
+              </label>
+
+
+              <input
+                id="storePhone"
+                type="text"
+                placeholder="Enter store phone number"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="storeAddress">
+                Address
+              </label>
+
+
+              <input
+                id="storeAddress"
+                type="text"
+                placeholder="Enter store address"
+              >
+
+            </div>
+
+
+            <button
+              id="createStoreButton"
+              class="primary-btn"
+              type="button"
+              onclick="createStore()"
+            >
+              Create Store
+            </button>
+
+
+            <p
+              id="storeMessage"
+              class="auth-message"
+            ></p>
+
+          </div>
+
+
+
+          <!-- =====================================
+               EXISTING STORE
+               ===================================== -->
+
+          <div
+            id="existingStoreArea"
+            class="seller-section"
+            style="display:none"
+          >
+
+            <div
+              id="sellerStoreCard"
+              class="store-card"
+            ></div>
+
+
+            <!-- ===================================
+                 ADD PRODUCT
+                 =================================== -->
+
+            <h3>
+              Add Product
+            </h3>
+
+
+            <div class="form-group">
+
+              <label for="productName">
+                Product Name
+              </label>
+
+
+              <input
+                id="productName"
+                type="text"
+                placeholder="Enter product name"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="productDescription">
+                Description
+              </label>
+
+
+              <textarea
+                id="productDescription"
+                placeholder="Describe your product"
+              ></textarea>
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="productCategory">
+                Category
+              </label>
+
+
+              <input
+                id="productCategory"
+                type="text"
+                placeholder="e.g. Mobile, Shoes, Grocery"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="productPrice">
+                Price
+              </label>
+
+
+              <input
+                id="productPrice"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="Enter price"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="productImage">
+                Image URL
+              </label>
+
+
+              <input
+                id="productImage"
+                type="text"
+                placeholder="Optional image URL"
+              >
+
+            </div>
+
+
+            <button
+              id="addProductButton"
+              class="primary-btn"
+              type="button"
+              onclick="addProduct()"
+            >
+              Add Product
+            </button>
+
+
+            <p
+              id="productMessage"
+              class="auth-message"
+            ></p>
+
+
+            <!-- SELLER PRODUCTS -->
+
+            <h3 style="margin-top:30px;">
+              Your Products
+            </h3>
+
+
+            <div
+              id="sellerProducts"
+              class="product-list"
+            ></div>
+
+          </div>
+
 
           <button
             class="primary-btn"
             type="button"
             onclick="logoutUser()"
+            style="margin-top:30px;"
           >
             Logout
           </button>
@@ -596,26 +1124,38 @@
 
     </section>
 
-
   </main>
 
 
+
+  <!-- =========================================
+       FOOTER
+       ========================================= -->
+
   <footer>
+
     © 2026 Dukaan AI. All rights reserved.
+
   </footer>
 
+
+
+  <!-- =========================================
+       JAVASCRIPT
+       ========================================= -->
 
   <script>
 
     "use strict";
 
 
-    /* ============================================
+    /* ==========================================
        SUPABASE CONFIG
-       ============================================ */
+       ========================================== */
 
     const SUPABASE_URL =
       "https://yrrrqagtnbcufhcswstp.supabase.co";
+
 
     const SUPABASE_ANON_KEY =
       "sb_publishable_FGqvkjDrSAHG2RQxW4ErHw_29yN11YR";
@@ -637,18 +1177,22 @@
       );
 
 
-    /* ============================================
+    /* ==========================================
        STATE
-       ============================================ */
+       ========================================== */
 
     let authMode = "login";
 
     let redirectInProgress = false;
 
+    let currentUser = null;
 
-    /* ============================================
+    let currentStore = null;
+
+
+    /* ==========================================
        PAGE HELPERS
-       ============================================ */
+       ========================================== */
 
     function hideAllPages() {
 
@@ -656,13 +1200,16 @@
         "homePage"
       ).style.display = "none";
 
+
       document.getElementById(
         "authPage"
       ).style.display = "none";
 
+
       document.getElementById(
         "customerPage"
       ).style.display = "none";
+
 
       document.getElementById(
         "sellerPage"
@@ -674,6 +1221,7 @@
     function showHome() {
 
       hideAllPages();
+
 
       document.getElementById(
         "homePage"
@@ -704,6 +1252,7 @@
 
       authMode = mode;
 
+
       hideAllPages();
 
 
@@ -719,9 +1268,9 @@
     }
 
 
-    /* ============================================
+    /* ==========================================
        AUTH UI
-       ============================================ */
+       ========================================== */
 
     function updateAuthUI() {
 
@@ -802,9 +1351,9 @@
     }
 
 
-    /* ============================================
+    /* ==========================================
        AUTH MESSAGE
-       ============================================ */
+       ========================================== */
 
     function showAuthMessage(
       message,
@@ -851,9 +1400,63 @@
     }
 
 
-    /* ============================================
+    function showStoreMessage(
+      message,
+      isError = true
+    ) {
+
+      const element =
+        document.getElementById(
+          "storeMessage"
+        );
+
+
+      element.textContent =
+        message;
+
+
+      element.style.display =
+        "block";
+
+
+      element.style.color =
+        isError
+          ? "#dc2626"
+          : "#16a34a";
+
+    }
+
+
+    function showProductMessage(
+      message,
+      isError = true
+    ) {
+
+      const element =
+        document.getElementById(
+          "productMessage"
+        );
+
+
+      element.textContent =
+        message;
+
+
+      element.style.display =
+        "block";
+
+
+      element.style.color =
+        isError
+          ? "#dc2626"
+          : "#16a34a";
+
+    }
+
+
+    /* ==========================================
        SUBMIT AUTH
-       ============================================ */
+       ========================================== */
 
     async function submitAuth() {
 
@@ -967,9 +1570,9 @@
     }
 
 
-    /* ============================================
+    /* ==========================================
        SIGNUP
-       ============================================ */
+       ========================================== */
 
     async function signupUser(
       email,
@@ -1003,9 +1606,11 @@
       } =
         await supabaseClient.auth.signUp({
 
-          email: email,
+          email:
+            email,
 
-          password: password,
+          password:
+            password,
 
           options: {
 
@@ -1062,9 +1667,9 @@
     }
 
 
-    /* ============================================
+    /* ==========================================
        LOGIN
-       ============================================ */
+       ========================================== */
 
     async function loginUser(
       email,
@@ -1113,9 +1718,9 @@
     }
 
 
-    /* ============================================
+    /* ==========================================
        LOAD USER PROFILE
-       ============================================ */
+       ========================================== */
 
     async function loadUserAndRedirect(
       user
@@ -1133,6 +1738,10 @@
 
       redirectInProgress =
         true;
+
+
+      currentUser =
+        user;
 
 
       try {
@@ -1204,6 +1813,11 @@
           ).style.display =
             "block";
 
+
+          await loadSellerStore(
+            user.id
+          );
+
         } else {
 
           document.getElementById(
@@ -1216,6 +1830,9 @@
             "customerPage"
           ).style.display =
             "block";
+
+
+          await loadCustomerMarketplace();
 
         }
 
@@ -1247,9 +1864,897 @@
     }
 
 
-    /* ============================================
+    /* ==========================================
+       CREATE STORE
+       ========================================== */
+
+    async function createStore() {
+
+      showStoreMessage(
+        "",
+        false
+      );
+
+
+      if (!currentUser) {
+
+        showStoreMessage(
+          "Please log in again."
+        );
+
+        return;
+
+      }
+
+
+      const name =
+        document.getElementById(
+          "storeName"
+        ).value.trim();
+
+
+      const category =
+        document.getElementById(
+          "storeCategory"
+        ).value.trim();
+
+
+      const phone =
+        document.getElementById(
+          "storePhone"
+        ).value.trim();
+
+
+      const address =
+        document.getElementById(
+          "storeAddress"
+        ).value.trim();
+
+
+      if (!name) {
+
+        showStoreMessage(
+          "Please enter your store name."
+        );
+
+        return;
+
+      }
+
+
+      if (!category) {
+
+        showStoreMessage(
+          "Please enter your store category."
+        );
+
+        return;
+
+      }
+
+
+      const button =
+        document.getElementById(
+          "createStoreButton"
+        );
+
+
+      button.disabled =
+        true;
+
+
+      button.textContent =
+        "Creating...";
+
+
+      try {
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient
+            .from("shops")
+            .insert({
+
+              user_id:
+                currentUser.id,
+
+              name:
+                name,
+
+              category:
+                category,
+
+              phone:
+                phone || null,
+
+              address:
+                address || null
+
+            })
+            .select()
+            .single();
+
+
+        if (error) {
+
+          throw error;
+
+        }
+
+
+        currentStore =
+          data;
+
+
+        showStoreMessage(
+          "Store created successfully!",
+          false
+        );
+
+
+        document.getElementById(
+          "storeName"
+        ).value = "";
+
+
+        document.getElementById(
+          "storeCategory"
+        ).value = "";
+
+
+        document.getElementById(
+          "storePhone"
+        ).value = "";
+
+
+        document.getElementById(
+          "storeAddress"
+        ).value = "";
+
+
+        await loadSellerStore(
+          currentUser.id
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Create store error:",
+          error
+        );
+
+
+        showStoreMessage(
+          error?.message ||
+          "Could not create store."
+        );
+
+      } finally {
+
+        button.disabled =
+          false;
+
+
+        button.textContent =
+          "Create Store";
+
+      }
+
+    }
+
+
+    /* ==========================================
+       LOAD SELLER STORE
+       ========================================== */
+
+    async function loadSellerStore(
+      userId
+    ) {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("shops")
+          .select("*")
+          .eq("user_id", userId)
+          .order(
+            "created_at",
+            {
+              ascending: true
+            }
+          )
+          .limit(1)
+          .maybeSingle();
+
+
+      if (error) {
+
+        console.error(
+          "Load seller store error:",
+          error
+        );
+
+        return;
+
+      }
+
+
+      if (!data) {
+
+        currentStore =
+          null;
+
+
+        document.getElementById(
+          "createStoreArea"
+        ).style.display =
+          "block";
+
+
+        document.getElementById(
+          "existingStoreArea"
+        ).style.display =
+          "none";
+
+
+        return;
+
+      }
+
+
+      currentStore =
+        data;
+
+
+      document.getElementById(
+        "createStoreArea"
+      ).style.display =
+        "none";
+
+
+      document.getElementById(
+        "existingStoreArea"
+      ).style.display =
+        "block";
+
+
+      renderSellerStore(
+        data
+      );
+
+
+      await loadSellerProducts(
+        data.id
+      );
+
+    }
+
+
+    /* ==========================================
+       RENDER SELLER STORE
+       ========================================== */
+
+    function renderSellerStore(
+      store
+    ) {
+
+      const element =
+        document.getElementById(
+          "sellerStoreCard"
+        );
+
+
+      element.innerHTML = `
+
+        <h3>
+          ${escapeHtml(store.name)}
+        </h3>
+
+        <p>
+          <strong>Category:</strong>
+          ${escapeHtml(store.category || "Not specified")}
+        </p>
+
+        <p>
+          <strong>Phone:</strong>
+          ${escapeHtml(store.phone || "Not specified")}
+        </p>
+
+        <p>
+          <strong>Address:</strong>
+          ${escapeHtml(store.address || "Not specified")}
+        </p>
+
+      `;
+
+    }
+
+
+    /* ==========================================
+       ADD PRODUCT
+       ========================================== */
+
+    async function addProduct() {
+
+      showProductMessage(
+        "",
+        false
+      );
+
+
+      if (!currentUser) {
+
+        showProductMessage(
+          "Please log in again."
+        );
+
+        return;
+
+      }
+
+
+      if (!currentStore) {
+
+        showProductMessage(
+          "Please create your store first."
+        );
+
+        return;
+
+      }
+
+
+      const name =
+        document.getElementById(
+          "productName"
+        ).value.trim();
+
+
+      const description =
+        document.getElementById(
+          "productDescription"
+        ).value.trim();
+
+
+      const category =
+        document.getElementById(
+          "productCategory"
+        ).value.trim();
+
+
+      const priceValue =
+        document.getElementById(
+          "productPrice"
+        ).value;
+
+
+      const imageUrl =
+        document.getElementById(
+          "productImage"
+        ).value.trim();
+
+
+      if (!name) {
+
+        showProductMessage(
+          "Please enter the product name."
+        );
+
+        return;
+
+      }
+
+
+      if (!priceValue) {
+
+        showProductMessage(
+          "Please enter the product price."
+        );
+
+        return;
+
+      }
+
+
+      const price =
+        Number(priceValue);
+
+
+      if (
+        Number.isNaN(price) ||
+        price < 0
+      ) {
+
+        showProductMessage(
+          "Please enter a valid price."
+        );
+
+        return;
+
+      }
+
+
+      const button =
+        document.getElementById(
+          "addProductButton"
+        );
+
+
+      button.disabled =
+        true;
+
+
+      button.textContent =
+        "Adding...";
+
+
+      try {
+
+        const {
+          error
+        } =
+          await supabaseClient
+            .from("products")
+            .insert({
+
+              shop_id:
+                currentStore.id,
+
+              name:
+                name,
+
+              description:
+                description || null,
+
+              category:
+                category || null,
+
+              price:
+                price,
+
+              image_url:
+                imageUrl || null
+
+            });
+
+
+        if (error) {
+
+          throw error;
+
+        }
+
+
+        showProductMessage(
+          "Product added successfully!",
+          false
+        );
+
+
+        document.getElementById(
+          "productName"
+        ).value = "";
+
+
+        document.getElementById(
+          "productDescription"
+        ).value = "";
+
+
+        document.getElementById(
+          "productCategory"
+        ).value = "";
+
+
+        document.getElementById(
+          "productPrice"
+        ).value = "";
+
+
+        document.getElementById(
+          "productImage"
+        ).value = "";
+
+
+        await loadSellerProducts(
+          currentStore.id
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Add product error:",
+          error
+        );
+
+
+        showProductMessage(
+          error?.message ||
+          "Could not add product."
+        );
+
+      } finally {
+
+        button.disabled =
+          false;
+
+
+        button.textContent =
+          "Add Product";
+
+      }
+
+    }
+
+
+    /* ==========================================
+       LOAD SELLER PRODUCTS
+       ========================================== */
+
+    async function loadSellerProducts(
+      storeId
+    ) {
+
+      const element =
+        document.getElementById(
+          "sellerProducts"
+        );
+
+
+      element.innerHTML =
+        "<p class='empty-message'>Loading products...</p>";
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("products")
+          .select("*")
+          .eq("shop_id", storeId)
+          .order(
+            "created_at",
+            {
+              ascending: false
+            }
+          );
+
+
+      if (error) {
+
+        console.error(
+          "Load seller products error:",
+          error
+        );
+
+
+        element.innerHTML =
+          "<p class='empty-message'>Could not load products.</p>";
+
+        return;
+
+      }
+
+
+      if (!data || data.length === 0) {
+
+        element.innerHTML =
+          "<p class='empty-message'>No products yet. Add your first product above.</p>";
+
+        return;
+
+      }
+
+
+      element.innerHTML =
+        data
+          .map(
+            function (product) {
+
+              return renderProductCard(
+                product
+              );
+
+            }
+          )
+          .join("");
+
+    }
+
+
+    /* ==========================================
+       CUSTOMER MARKETPLACE
+       ========================================== */
+
+    async function loadCustomerMarketplace() {
+
+      await loadCustomerStores();
+
+      await loadCustomerProducts();
+
+    }
+
+
+    /* ==========================================
+       CUSTOMER STORES
+       ========================================== */
+
+    async function loadCustomerStores() {
+
+      const element =
+        document.getElementById(
+          "customerStores"
+        );
+
+
+      element.innerHTML =
+        "<p class='empty-message'>Loading stores...</p>";
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("shops")
+          .select("*")
+          .order(
+            "created_at",
+            {
+              ascending: false
+            }
+          );
+
+
+      if (error) {
+
+        console.error(
+          "Load customer stores error:",
+          error
+        );
+
+
+        element.innerHTML =
+          "<p class='empty-message'>Could not load stores.</p>";
+
+        return;
+
+      }
+
+
+      if (!data || data.length === 0) {
+
+        element.innerHTML =
+          "<p class='empty-message'>No stores available yet.</p>";
+
+        return;
+
+      }
+
+
+      element.innerHTML =
+        data
+          .map(
+            function (store) {
+
+              return `
+
+                <div class="market-store-card">
+
+                  <h3>
+                    ${escapeHtml(store.name)}
+                  </h3>
+
+                  <p>
+                    <strong>Category:</strong>
+                    ${escapeHtml(store.category || "General")}
+                  </p>
+
+                  <p>
+                    <strong>Phone:</strong>
+                    ${escapeHtml(store.phone || "Not available")}
+                  </p>
+
+                  <p>
+                    <strong>Address:</strong>
+                    ${escapeHtml(store.address || "Not available")}
+                  </p>
+
+                </div>
+
+              `;
+
+            }
+          )
+          .join("");
+
+    }
+
+
+    /* ==========================================
+       CUSTOMER PRODUCTS
+       ========================================== */
+
+    async function loadCustomerProducts() {
+
+      const element =
+        document.getElementById(
+          "customerProducts"
+        );
+
+
+      element.innerHTML =
+        "<p class='empty-message'>Loading products...</p>";
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("products")
+          .select("*")
+          .order(
+            "created_at",
+            {
+              ascending: false
+            }
+          );
+
+
+      if (error) {
+
+        console.error(
+          "Load customer products error:",
+          error
+        );
+
+
+        element.innerHTML =
+          "<p class='empty-message'>Could not load products.</p>";
+
+        return;
+
+      }
+
+
+      if (!data || data.length === 0) {
+
+        element.innerHTML =
+          "<p class='empty-message'>No products available yet.</p>";
+
+        return;
+
+      }
+
+
+      element.innerHTML =
+        data
+          .map(
+            function (product) {
+
+              return renderProductCard(
+                product
+              );
+
+            }
+          )
+          .join("");
+
+    }
+
+
+    /* ==========================================
+       PRODUCT CARD
+       ========================================== */
+
+    function renderProductCard(
+      product
+    ) {
+
+      const image =
+        product.image_url
+          ? `
+
+            <img
+              src="${escapeHtml(product.image_url)}"
+              alt="${escapeHtml(product.name)}"
+              style="
+                width:100%;
+                height:180px;
+                object-fit:cover;
+                border-radius:9px;
+                margin-bottom:14px;
+              "
+            >
+
+          `
+          : "";
+
+
+      const price =
+        Number(product.price || 0)
+          .toLocaleString(
+            "en-PK",
+            {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            }
+          );
+
+
+      return `
+
+        <div class="product-card">
+
+          ${image}
+
+          <div class="category">
+            ${escapeHtml(product.category || "General")}
+          </div>
+
+          <h4>
+            ${escapeHtml(product.name)}
+          </h4>
+
+          <div class="description">
+            ${escapeHtml(product.description || "No description available.")}
+          </div>
+
+          <div class="product-price">
+            Rs. ${price}
+          </div>
+
+        </div>
+
+      `;
+
+    }
+
+
+    /* ==========================================
+       HTML ESCAPE
+       ========================================== */
+
+    function escapeHtml(
+      value
+    ) {
+
+      return String(
+        value ?? ""
+      )
+        .replace(
+          /&/g,
+          "&amp;"
+        )
+        .replace(
+          /</g,
+          "&lt;"
+        )
+        .replace(
+          />/g,
+          "&gt;"
+        )
+        .replace(
+          /"/g,
+          "&quot;"
+        )
+        .replace(
+          /'/g,
+          "&#039;"
+        );
+
+    }
+
+
+    /* ==========================================
        LOGOUT
-       ============================================ */
+       ========================================== */
 
     async function logoutUser() {
 
@@ -1267,6 +2772,14 @@
           throw error;
 
         }
+
+
+        currentUser =
+          null;
+
+
+        currentStore =
+          null;
 
 
         showHome();
@@ -1288,11 +2801,13 @@
     }
 
 
-    /* ============================================
+    /* ==========================================
        AUTH ERROR
-       ============================================ */
+       ========================================== */
 
-    function getAuthError(error) {
+    function getAuthError(
+      error
+    ) {
 
       const message =
         String(
@@ -1346,7 +2861,7 @@
       ) {
 
         return (
-          "Too many attempts. Please wait a little and try again."
+          "Too many attempts. Please try again later."
         );
 
       }
@@ -1360,9 +2875,9 @@
     }
 
 
-    /* ============================================
+    /* ==========================================
        EXISTING SESSION
-       ============================================ */
+       ========================================== */
 
     async function checkExistingSession() {
 
@@ -1412,9 +2927,9 @@
     }
 
 
-    /* ============================================
+    /* ==========================================
        AUTH STATE LISTENER
-       ============================================ */
+       ========================================== */
 
     supabaseClient.auth.onAuthStateChange(
       function (event) {
@@ -1426,6 +2941,15 @@
           redirectInProgress =
             false;
 
+
+          currentUser =
+            null;
+
+
+          currentStore =
+            null;
+
+
           showHome();
 
         }
@@ -1434,9 +2958,9 @@
     );
 
 
-    /* ============================================
+    /* ==========================================
        START APP
-       ============================================ */
+       ========================================== */
 
     document.addEventListener(
       "DOMContentLoaded",
