@@ -1750,11 +1750,11 @@
           data,
           error
         } =
-          await supabaseClient
-            .from("profiles")
-            .select("*")
-            .eq("id", user.id)
-            .maybeSingle();
+        await supabaseClient
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
+          .maybeSingle();
 
 
         if (error) {
@@ -1957,12 +1957,19 @@
             .from("shops")
             .insert({
 
+              /* REQUIRED BY SHOPS TABLE */
               user_id:
                 currentUser.id,
 
+              /* MAIN SHOP NAME */
+              shop_name:
+                name,
+
+              /* EXISTING FRONTEND FIELD */
               name:
                 name,
 
+              /* SHOP CATEGORY */
               category:
                 category,
 
@@ -1970,7 +1977,11 @@
                 phone || null,
 
               address:
-                address || null
+                address || null,
+
+              /* OPTIONAL DESCRIPTION */
+              description:
+                null
 
             })
             .select()
@@ -2148,10 +2159,16 @@
         );
 
 
+      const displayName =
+        store.name ||
+        store.shop_name ||
+        "My Store";
+
+
       element.innerHTML = `
 
         <h3>
-          ${escapeHtml(store.name)}
+          ${escapeHtml(displayName)}
         </h3>
 
         <p>
@@ -2542,12 +2559,18 @@
           .map(
             function (store) {
 
+              const displayName =
+                store.name ||
+                store.shop_name ||
+                "Store";
+
+
               return `
 
                 <div class="market-store-card">
 
                   <h3>
-                    ${escapeHtml(store.name)}
+                    ${escapeHtml(displayName)}
                   </h3>
 
                   <p>
