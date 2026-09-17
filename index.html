@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dukaania — All-in-One Dukaan Operating System</title>
+<title>Dukaania — Login & Operating System</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -25,57 +25,93 @@
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
 body { background: #f1f5f9; color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-/* SIDEBAR LAYOUT */
+/* AUTH SCREEN (LOGIN & SIGNUP) */
+.auth-wrapper {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: var(--bg-dark); z-index: 9999; display: flex;
+    justify-content: center; align-items: center;
+}
+.auth-box {
+    background: #fff; padding: 35px 30px; border-radius: 12px;
+    width: 380px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+.auth-box h2 { color: var(--primary); margin-bottom: 8px; font-size: 26px; }
+.auth-subtext { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+
+/* FORM ELEMENTS */
+.form-group { text-align: left; margin-bottom: 15px; }
+.form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 5px; color: var(--text-main); }
+.form-input { width: 100%; padding: 11px; border: 1px solid var(--border); border-radius: 6px; outline: none; font-size: 14px; }
+.form-input:focus { border-color: var(--primary); }
+
+.btn-auth {
+    width: 100%; padding: 11px; background: var(--primary); color: white;
+    border: none; border-radius: 6px; font-weight: 600; cursor: pointer;
+    font-size: 14px; margin-top: 5px; transition: 0.2s;
+}
+.btn-auth:hover { background: var(--primary-dark); }
+.auth-toggle { margin-top: 15px; font-size: 13px; color: var(--text-muted); cursor: pointer; }
+.auth-toggle b { color: var(--primary); }
+
+/* SIDEBAR & MAIN APP LAYOUT */
 .sidebar { width: 260px; background: var(--sidebar-bg); color: #fff; display: flex; flex-direction: column; justify-content: space-between; z-index: 100; flex-shrink: 0; }
-.brand { padding: 20px; font-size: 22px; font-weight: bold; color: #38bdf8; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #334155; }
+.brand { padding: 20px; font-size: 20px; font-weight: bold; color: #38bdf8; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #334155; }
 .nav-list { list-style: none; padding: 15px 10px; overflow-y: auto; flex: 1; }
 .nav-item { padding: 12px 15px; margin-bottom: 4px; border-radius: 8px; cursor: pointer; color: #94a3b8; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; transition: 0.2s; }
 .nav-item:hover, .nav-item.active { background: var(--primary); color: #fff; }
 
-/* MAIN CONTAINER */
 .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
 .top-header { background: #fff; border-bottom: 1px solid var(--border); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-.header-actions { display: flex; align-items: center; gap: 15px; }
 .btn-action { background: var(--primary); color: white; border: none; padding: 9px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+.btn-sm { padding: 4px 8px; font-size: 12px; border-radius: 4px; border: none; cursor: pointer; }
+.btn-success { background: var(--success); color: white; }
+.btn-danger { background: var(--danger); color: white; }
 
 .content-area { padding: 25px; flex: 1; }
 .view-panel { display: none; }
 .view-panel.active { display: block; }
 
-/* KPI CARDS */
 .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px; }
-.kpi-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.kpi-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
 .kpi-card h4 { font-size: 12px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
 .kpi-card .val { font-size: 24px; font-weight: bold; color: var(--bg-dark); }
 
-/* DATA TABLES */
-.data-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); margin-top: 15px; }
-.data-table th, .data-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13px; }
-.data-table th { background: #f8fafc; font-weight: 600; color: var(--text-muted); }
-
-/* POS SCREEN LAYOUT */
-.pos-container { display: flex; gap: 20px; height: calc(100vh - 140px); }
-.pos-products { flex: 2; overflow-y: auto; }
-.pos-cart { flex: 1; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
-.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-.p-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 12px; cursor: pointer; text-align: center; transition: 0.2s; }
-.p-card:hover { border-color: var(--primary); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-
-/* MODALS */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
-.modal-box { background: #fff; padding: 25px; border-radius: 12px; width: 450px; max-width: 90%; position: relative; }
-.modal-close { position: absolute; top: 15px; right: 20px; cursor: pointer; font-weight: bold; font-size: 18px; color: var(--text-muted); }
-.form-input { width: 100%; padding: 10px; margin: 8px 0 15px 0; border: 1px solid var(--border); border-radius: 6px; outline: none; }
-
-/* AI ENGINE CHAT */
-.ai-widget { background: #fff; border: 1px solid var(--border); border-radius: 12px; height: 500px; display: flex; flex-direction: column; }
-.ai-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-.msg-bubble { padding: 12px 16px; border-radius: 10px; max-width: 80%; font-size: 14px; line-height: 1.4; }
-.msg-bubble.user { background: var(--primary); color: white; align-self: flex-end; }
-.msg-bubble.ai { background: #f1f5f9; color: var(--bg-dark); align-self: flex-start; border: 1px solid var(--border); }
+/* FLOATING AI CHAT WIDGET */
+.ai-widget { position: fixed; bottom: 20px; right: 20px; z-index: 1000; width: 340px; background: #fff; border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; }
+.ai-header { background: var(--primary); color: #fff; padding: 12px 15px; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
+.ai-chat-body { height: 260px; padding: 12px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
+.msg-bubble { padding: 8px 12px; border-radius: 8px; max-width: 85%; word-break: break-word; }
+.msg-bubble.user { background: var(--primary); color: #fff; align-self: flex-end; }
+.msg-bubble.ai { background: #fff; border: 1px solid var(--border); color: var(--text-main); align-self: flex-start; }
+.ai-input-area { padding: 10px; border-top: 1px solid var(--border); display: flex; gap: 6px; background: #fff; }
+.ai-input-area input { flex: 1; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; outline: none; font-size: 13px; }
 </style>
 </head>
 <body>
+
+<!-- AUTH OVERLAY (LOGIN / SIGNUP) -->
+<div class="auth-wrapper" id="authScreen">
+    <div class="auth-box">
+        <h2><i class="fa-solid fa-store"></i> Dukaania</h2>
+        <p class="auth-subtext" id="authSubtext">Sign in to access your dashboard</p>
+        
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="authEmail" placeholder="e.g. shop@dukaania.com" class="form-input">
+        </div>
+        
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="authPassword" placeholder="••••••••" class="form-input" onkeypress="if(event.key==='Enter') handleAuth()">
+        </div>
+
+        <button class="btn-auth" id="authBtn" onclick="handleAuth()">Login</button>
+        
+        <div class="auth-toggle" onclick="toggleAuthMode()">
+            <span id="authToggleText">Don't have an account? <b>Sign Up</b></span>
+        </div>
+    </div>
+</div>
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
@@ -85,397 +121,300 @@ body { background: #f1f5f9; color: var(--text-main); display: flex; height: 100v
             <li class="nav-item active" onclick="navigate('dashboard', this)"><i class="fa-solid fa-chart-line"></i> Dashboard</li>
             <li class="nav-item" onclick="navigate('pos', this)"><i class="fa-solid fa-cart-shopping"></i> POS / Sale</li>
             <li class="nav-item" onclick="navigate('products', this)"><i class="fa-solid fa-boxes-stacked"></i> Inventory</li>
-            <li class="nav-item" onclick="navigate('khata', this)"><i class="fa-solid fa-book-bookmark"></i> Udhaar Khata</li>
-            <li class="nav-item" onclick="navigate('expenses', this)"><i class="fa-solid fa-wallet"></i> Expenses</li>
-            <li class="nav-item" onclick="navigate('ai', this)"><i class="fa-solid fa-robot"></i> Dukaania AI</li>
         </ul>
     </div>
-    <div style="padding: 15px; border-top: 1px solid #334155; font-size: 12px; color: #94a3b8;">
-        Backend: <span style="color:var(--success); font-weight:bold;">Supabase Connected</span>
+    <div style="padding: 15px; border-top: 1px solid #334155; font-size: 12px; color: #94a3b8; display:flex; justify-content:space-between; align-items:center;">
+        <span id="userEmailLabel">User Active</span>
+        <button class="btn-sm btn-danger" onclick="handleLogout()" title="Logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
     </div>
 </aside>
 
-<!-- MAIN CONTAINER -->
+<!-- MAIN APP DISPLAY -->
 <div class="main-wrapper">
-    <header class="top-header">
-        <h3 id="page-title">Main Dashboard</h3>
+    <header class="top-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <!-- LEFT SIDE: SVG LOGO + BRAND NAME -->
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <img src="logo.svg" alt="Dukaania Logo" style="height: 38px; width: auto; object-fit: contain;">
+            <h2 style="font-size: 20px; font-weight: 700; color: #1e293b; margin: 0;">Dukaania</h2>
+        </div>
+
+        <!-- RIGHT SIDE: ACTION BUTTON -->
         <div class="header-actions">
-            <button class="btn-action" onclick="navigate('pos')"><i class="fa-solid fa-plus"></i> Quick Sale</button>
+            <button class="btn-action" onclick="navigate('pos')"><i class="fa-solid fa-plus"></i> New Sale</button>
         </div>
     </header>
 
     <div class="content-area">
-        
-        <!-- DASHBOARD VIEW -->
         <section id="view-dashboard" class="view-panel active">
             <div class="kpi-grid">
                 <div class="kpi-card"><h4>Total Orders</h4><div class="val" id="dash-orders">0</div></div>
                 <div class="kpi-card"><h4>Total Products</h4><div class="val" id="dash-products">0</div></div>
                 <div class="kpi-card"><h4>Pending Udhaar</h4><div class="val" style="color:var(--danger);" id="dash-udhaar">Rs. 0</div></div>
-                <div class="kpi-card"><h4>Total Expenses</h4><div class="val" style="color:var(--danger);" id="dash-expenses">Rs. 0</div></div>
             </div>
             <div style="background:#fff; padding:20px; border-radius:12px; border:1px solid var(--border);">
-                <h4>Sales Overview Analytics</h4>
+                <h4>Sales Analytics</h4>
                 <canvas id="salesChart" height="80" style="margin-top:15px;"></canvas>
             </div>
         </section>
 
-        <!-- POS / SALES MODULE -->
         <section id="view-pos" class="view-panel">
-            <div class="pos-container">
-                <div class="pos-products">
-                    <input type="text" id="posSearch" placeholder="Search product..." class="form-input" onkeyup="renderPOSProducts()">
-                    <div class="product-grid" id="posGrid"></div>
-                </div>
-                <div class="pos-cart">
-                    <div>
-                        <h3>Current Cart</h3>
-                        <div id="cartItems" style="margin-top:15px; max-height:250px; overflow-y:auto;"></div>
-                    </div>
-                    <div>
-                        <hr style="margin:15px 0;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:bold; font-size:18px;">
-                            <span>Total:</span>
-                            <span id="cartTotal">Rs. 0</span>
-                        </div>
-                        <select id="posCustomer" class="form-input"></select>
-                        <select id="posPayment" class="form-input">
-                            <option value="Cash">Cash</option>
-                            <option value="Card">Card</option>
-                            <option value="Udhaar">Udhaar (Khata)</option>
-                        </select>
-                        <button class="btn-action" style="width:100%; justify-content:center; padding:12px;" onclick="checkoutPOS()">Complete Sale & Sync</button>
-                    </div>
-                </div>
-            </div>
+            <h3>POS Screen Ready</h3>
         </section>
 
-        <!-- INVENTORY MODULE -->
         <section id="view-products" class="view-panel">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3>Stock Inventory</h3>
-                <button class="btn-action" onclick="openModal('prodModal')"><i class="fa-solid fa-plus"></i> Add Product</button>
-            </div>
-            <table class="data-table">
-                <thead>
-                    <tr><th>Name</th><th>Price</th><th>Stock Qty</th><th>Status</th></tr>
-                </thead>
-                <tbody id="inventoryTable"></tbody>
-            </table>
+            <h3>Inventory Ready</h3>
         </section>
-
-        <!-- KHATA / UDHAAR MODULE -->
-        <section id="view-khata" class="view-panel">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3>Customers Udhaar Khata</h3>
-                <button class="btn-action" onclick="openModal('custModal')"><i class="fa-solid fa-plus"></i> Add Customer</button>
-            </div>
-            <table class="data-table">
-                <thead>
-                    <tr><th>Customer Name</th><th>Phone</th><th>Total Udhaar Balance</th></tr>
-                </thead>
-                <tbody id="khataTable"></tbody>
-            </table>
-        </section>
-
-        <!-- EXPENSES MODULE -->
-        <section id="view-expenses" class="view-panel">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3>Shop Expenses</h3>
-                <button class="btn-action" onclick="openModal('expModal')"><i class="fa-solid fa-plus"></i> Add Expense</button>
-            </div>
-            <table class="data-table">
-                <thead>
-                    <tr><th>Title/Category</th><th>Amount</th></tr>
-                </thead>
-                <tbody id="expenseTable"></tbody>
-            </table>
-        </section>
-
-        <!-- DUKAANIA AI ENGINE -->
-        <section id="view-ai" class="view-panel">
-            <h3>Dukaania Smart AI Assistant</h3>
-            <div class="ai-widget">
-                <div class="ai-messages" id="aiChat">
-                    <div class="msg-bubble ai">Assalam-o-Alaikum! Main aapka Supabase Live Connected AI Assistant hoon. Poochiyen: "Total stock kitna hai?" ya "Mera kitna udhaar baki hai?"</div>
-                </div>
-                <div style="padding:15px; border-top:1px solid var(--border); display:flex; gap:10px;">
-                    <input type="text" id="aiInput" class="form-input" style="margin:0;" placeholder="Type your query here...">
-                    <button class="btn-action" onclick="runAI()">Ask AI</button>
-                </div>
-            </div>
-        </section>
-
     </div>
 </div>
 
-<!-- MODALS -->
-<div class="modal-overlay" id="prodModal">
-    <div class="modal-box">
-        <span class="modal-close" onclick="closeModal('prodModal')">&times;</span>
-        <h3>Add New Product</h3>
-        <input type="text" id="npName" placeholder="Product Title" class="form-input">
-        <input type="number" id="npPrice" placeholder="Selling Price" class="form-input">
-        <input type="number" id="npStock" placeholder="Stock Quantity" class="form-input">
-        <button class="btn-action" style="width:100%; justify-content:center;" onclick="saveProduct()">Save to Supabase</button>
+<!-- FLOATING DUKAANIA AI ASSISTANT -->
+<div class="ai-widget">
+    <div class="ai-header">
+        <span><i class="fa-solid fa-robot"></i> Dukaania AI</span>
+        <i class="fa-solid fa-sparkles"></i>
+    </div>
+    <div class="ai-chat-body" id="aiChat">
+        <div class="msg-bubble ai">Hello! Main aapka Dukaania Assistant hoon. Kisi product ka naam likhein ya shop status poochen.</div>
+    </div>
+    <div class="ai-input-area">
+        <input type="text" id="aiInput" placeholder="e.g. Milk dikhao, low stock..." onkeypress="if(event.key==='Enter') runAI()">
+        <button class="btn-sm btn-action" onclick="runAI()"><i class="fa-solid fa-paper-plane"></i></button>
     </div>
 </div>
-
-<div class="modal-overlay" id="custModal">
-    <div class="modal-box">
-        <span class="modal-close" onclick="closeModal('custModal')">&times;</span>
-        <h3>Add Customer</h3>
-        <input type="text" id="ncName" placeholder="Customer Name" class="form-input">
-        <input type="text" id="ncPhone" placeholder="Phone Number" class="form-input">
-        <button class="btn-action" style="width:100%; justify-content:center;" onclick="saveCustomer()">Save Customer</button>
+<!-- REALTIME CUSTOMER-MERCHANT CHAT WIDGET -->
+<div class="ai-widget" style="bottom: 380px; height: 260px; border-color: var(--primary);">
+    <div class="ai-header" style="background: #0f172a;">
+        <span><i class="fa-solid fa-comments"></i> Shop Live Chat</span>
+        <span id="activeChatTarget" style="font-size: 11px; opacity: 0.8;">Customer Direct</span>
+    </div>
+    <div class="ai-chat-body" id="liveChatBox" style="height: 160px;">
+        <div class="msg-bubble ai">Khushamdeed! Aap yahan shopkeeper se direct chat kar sakte hain.</div>
+    </div>
+    <div class="ai-input-area">
+        <input type="text" id="liveChatInput" placeholder="Type a message..." onkeypress="if(event.key==='Enter') sendLiveMessage()">
+        <button class="btn-sm btn-action" onclick="sendLiveMessage()"><i class="fa-solid fa-paper-plane"></i></button>
     </div>
 </div>
-
-<div class="modal-overlay" id="expModal">
-    <div class="modal-box">
-        <span class="modal-close" onclick="closeModal('expModal')">&times;</span>
-        <h3>Add Expense</h3>
-        <input type="text" id="exTitle" placeholder="Expense Title" class="form-input">
-        <input type="number" id="exAmount" placeholder="Amount (PKR)" class="form-input">
-        <button class="btn-action" style="width:100%; justify-content:center;" onclick="saveExpense()">Save Expense</button>
-    </div>
-</div>
-
 <script>
-// --- SUPABASE CONFIGURATION ---
+// --- SUPABASE SETUP ---
 const SUPABASE_URL = "https://yrrrqagtnbcufhcswstp.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_FGqvkjDrSAHG2RQxW4ErHw_29yN11YR";
-
-// Fix: Changed variable name to dbClient to prevent conflict with global 'supabase' window object
 const dbClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// --- REAL-TIME LIVE CHAT SYSTEM ---
+let currentUserId = null;
 
+async function initLiveChat() {
+    const { data: { session } } = await dbClient.auth.getSession();
+    if (!session) return;
+    currentUserId = session.user.id;
+
+    dbClient
+        .channel('public:messages')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+            appendLiveMessage(payload.new);
+        })
+        .subscribe();
+}
+
+async function sendLiveMessage() {
+    const input = document.getElementById('liveChatInput');
+    const content = input.value.trim();
+    if (!content || !currentUserId) return;
+
+    const { error } = await dbClient
+        .from('messages')
+        .insert([{ sender_id: currentUserId, text: content, created_at: new Date() }]);
+
+    if (error) {
+        console.error("Chat error:", error.message);
+    } else {
+        input.value = '';
+    }
+}
+
+function appendLiveMessage(msg) {
+    const chatBox = document.getElementById('liveChatBox');
+    const isMe = msg.sender_id === currentUserId;
+    const bubbleClass = isMe ? 'user' : 'ai';
+    
+    chatBox.innerHTML += `<div class="msg-bubble ${bubbleClass}">${msg.text}</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// Page load par live chat active karne ke liye
+initLiveChat();
+let isSignUpMode = false;
 let productsList = [];
 let customersList = [];
-let currentCart = [];
 
-// FETCH REAL-TIME DATA FROM SUPABASE
-async function loadData() {
-    try {
-        // 1. Fetch Products
-        const { data: prods } = await dbClient.from('products').select('*');
-        productsList = prods || [];
-        renderProducts();
-
-        // 2. Fetch Customers
-        const { data: custs } = await dbClient.from('customers').select('*');
-        customersList = custs || [];
-        renderCustomers();
-
-        // 3. Fetch Expenses
-        const { data: exps } = await dbClient.from('expenses').select('*');
-        renderExpenses(exps || []);
-
-        // 4. Fetch Orders
-        const { data: orders } = await dbClient.from('orders').select('*');
-        
-        // Update KPI Dashboard
-        document.getElementById('dash-products').textContent = productsList.length;
-        document.getElementById('dash-orders').textContent = (orders || []).length;
-        
-        const udhaarTotal = customersList.reduce((sum, c) => sum + (Number(c.total_udhaar) || 0), 0);
-        document.getElementById('dash-udhaar').textContent = 'Rs. ' + udhaarTotal;
-
-        const expTotal = (exps || []).reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
-        document.getElementById('dash-expenses').textContent = 'Rs. ' + expTotal;
-    } catch(err) {
-        console.error("Error loading data:", err);
+// --- AUTH LOGIC (LOGIN & SIGNUP) ---
+async function checkSession() {
+    const { data: { session } } = await dbClient.auth.getSession();
+    if (session) {
+        document.getElementById('authScreen').style.display = 'none';
+        document.getElementById('userEmailLabel').textContent = session.user.email;
+        loadData();
+    } else {
+        document.getElementById('authScreen').style.display = 'flex';
     }
 }
 
-function renderProducts() {
-    const invT = document.getElementById('inventoryTable');
-    invT.innerHTML = productsList.map(p => `
-        <tr>
-            <td><b>${p.name}</b></td>
-            <td>Rs. ${p.price || p.selling_price || 0}</td>
-            <td>${p.stock || 0}</td>
-            <td>${(p.stock || 0) < 5 ? '<span style="color:red; font-weight:bold;">Low Stock</span>' : 'Normal'}</td>
-        </tr>
-    `).join('');
+function toggleAuthMode() {
+    isSignUpMode = !isSignUpMode;
+    const subtext = document.getElementById('authSubtext');
+    const btn = document.getElementById('authBtn');
+    const toggleText = document.getElementById('authToggleText');
 
-    renderPOSProducts();
+    if (isSignUpMode) {
+        subtext.textContent = "Create a new account for your shop";
+        btn.textContent = "Sign Up";
+        toggleText.innerHTML = "Already have an account? <b>Login</b>";
+    } else {
+        subtext.textContent = "Sign in to access your dashboard";
+        btn.textContent = "Login";
+        toggleText.innerHTML = "Don't have an account? <b>Sign Up</b>";
+    }
 }
 
-function renderCustomers() {
-    const khataT = document.getElementById('khataTable');
-    khataT.innerHTML = customersList.map(c => `
-        <tr>
-            <td><b>${c.name}</b></td>
-            <td>${c.phone || 'N/A'}</td>
-            <td style="color:red; font-weight:bold;">Rs. ${c.total_udhaar || 0}</td>
-        </tr>
-    `).join('');
+async function handleAuth() {
+    const email = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value.trim();
 
-    const select = document.getElementById('posCustomer');
-    select.innerHTML = '<option value="">Select Customer (Optional)</option>' + 
-        customersList.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-}
-
-function renderExpenses(exps) {
-    const expT = document.getElementById('expenseTable');
-    expT.innerHTML = exps.map(e => `<tr><td>${e.title}</td><td>Rs. ${e.amount}</td></tr>`).join('');
-}
-
-// POS LOGIC
-function renderPOSProducts() {
-    const searchEl = document.getElementById('posSearch');
-    const query = searchEl ? searchEl.value.toLowerCase() : '';
-    const grid = document.getElementById('posGrid');
-    const filtered = productsList.filter(p => p.name && p.name.toLowerCase().includes(query));
-
-    grid.innerHTML = filtered.map(p => `
-        <div class="p-card" onclick="addToCart('${p.id}')">
-            <b>${p.name}</b>
-            <p style="color:var(--primary); font-weight:bold; margin-top:5px;">Rs. ${p.price || p.selling_price || 0}</p>
-            <p style="font-size:11px; color:var(--text-muted);">Stock: ${p.stock || 0}</p>
-        </div>
-    `).join('');
-}
-
-function addToCart(id) {
-    const prod = productsList.find(p => p.id === id);
-    if (!prod) return;
-    const existing = currentCart.find(c => c.id === id);
-    if(existing) existing.qty++;
-    else currentCart.push({ ...prod, qty: 1 });
-    renderCart();
-}
-
-function renderCart() {
-    const cDiv = document.getElementById('cartItems');
-    cDiv.innerHTML = currentCart.map(c => `
-        <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px;">
-            <span>${c.name} (x${c.qty})</span>
-            <b>Rs. ${(c.price || c.selling_price || 0) * c.qty}</b>
-        </div>
-    `).join('');
-
-    const total = currentCart.reduce((acc, c) => acc + ((c.price || c.selling_price || 0) * c.qty), 0);
-    document.getElementById('cartTotal').textContent = 'Rs. ' + total;
-}
-
-async function checkoutPOS() {
-    if(currentCart.length === 0) return alert('Cart is empty!');
-    const total = currentCart.reduce((acc, c) => acc + ((c.price || c.selling_price || 0) * c.qty), 0);
-    const payMethod = document.getElementById('posPayment').value;
-    const custId = document.getElementById('posCustomer').value;
-
-    // 1. Save Order to Supabase
-    await dbClient.from('orders').insert([{
-        total_amount: total,
-        payment_method: payMethod,
-        customer_id: custId || null
-    }]);
-
-    // 2. Handle Udhaar
-    if(payMethod === 'Udhaar' && custId) {
-        const cust = customersList.find(c => c.id === custId);
-        if(cust) {
-            const newBal = (Number(cust.total_udhaar) || 0) + total;
-            await dbClient.from('customers').update({ total_udhaar: newBal }).eq('id', custId);
-        }
+    if (!email || !password) {
+        return alert("Aap email aur password dono enter karein.");
     }
 
-    currentCart = [];
-    renderCart();
-    loadData();
-    alert('Sale completed and synced with Supabase!');
-}
-
-// SAVE ACTIONS TO SUPABASE
-async function saveProduct() {
-    const name = document.getElementById('npName').value;
-    const price = Number(document.getElementById('npPrice').value);
-    const stock = Number(document.getElementById('npStock').value);
-
-    await dbClient.from('products').insert([{ name, price, stock }]);
-    closeModal('prodModal');
-    loadData();
-}
-
-async function saveCustomer() {
-    const name = document.getElementById('ncName').value;
-    const phone = document.getElementById('ncPhone').value;
-
-    await dbClient.from('customers').insert([{ name, phone, total_udhaar: 0 }]);
-    closeModal('custModal');
-    loadData();
-}
-
-async function saveExpense() {
-    const title = document.getElementById('exTitle').value;
-    const amount = Number(document.getElementById('exAmount').value);
-
-    await dbClient.from('expenses').insert([{ title, amount }]);
-    closeModal('expModal');
-    loadData();
-}
-
-// AI ENGINE
-function runAI() {
-    const input = document.getElementById('aiInput');
-    const txt = input.value.toLowerCase();
-    if(!txt.trim()) return;
-
-    const chat = document.getElementById('aiChat');
-    chat.innerHTML += `<div class="msg-bubble user">${input.value}</div>`;
-    input.value = '';
-
-    setTimeout(() => {
-        let reply = "";
-        if(txt.includes('stock')) {
-            reply = `Aap ke pas kul ${productsList.length} products system me registered hain.`;
-        } else if(txt.includes('udhaar')) {
-            const sum = customersList.reduce((a, b) => a + (Number(b.total_udhaar) || 0), 0);
-            reply = `Total market udhaar **Rs. ${sum}** hai.`;
+    if (isSignUpMode) {
+        const { data, error } = await dbClient.auth.signUp({ email, password });
+        if (error) {
+            alert("Sign Up Error: " + error.message);
         } else {
-            reply = "Main Supabase live database se connected hoon. Aap live inventory ya customer balance ke baare me pooch sakte hain.";
+            alert("Account ban gaya hai! Ab aap Login kar sakte hain.");
+            toggleAuthMode();
         }
-        chat.innerHTML += `<div class="msg-bubble ai">${reply}</div>`;
-        chat.scrollTop = chat.scrollHeight;
-    }, 300);
+    } else {
+        const { data, error } = await dbClient.auth.signInWithPassword({ email, password });
+        if (error) {
+            alert("Login Failed: " + error.message);
+        } else {
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('userEmailLabel').textContent = data.user.email;
+            loadData();
+        }
+    }
+}
+
+async function handleLogout() {
+    await dbClient.auth.signOut();
+    document.getElementById('authScreen').style.display = 'flex';
+    document.getElementById('authEmail').value = '';
+    document.getElementById('authPassword').value = '';
+}
+
+dbClient.auth.onAuthStateChange((event, session) => {
+    if (session) {
+        document.getElementById('authScreen').style.display = 'none';
+        document.getElementById('userEmailLabel').textContent = session.user.email;
+    } else {
+        document.getElementById('authScreen').style.display = 'flex';
+    }
+});
+
+function loadData() {
+    console.log("App loaded successfully after auth verification.");
 }
 
 function navigate(v, el) {
     document.querySelectorAll('.view-panel').forEach(e => e.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
     document.getElementById('view-' + v).classList.add('active');
-    
-    // Header title update
-    const titleMap = {
-        'dashboard': 'Main Dashboard',
-        'pos': 'POS / Sale Station',
-        'products': 'Stock Inventory',
-        'khata': 'Udhaar Khata',
-        'expenses': 'Shop Expenses',
-        'ai': 'Dukaania AI Assistant'
-    };
-    if(document.getElementById('page-title')) {
-        document.getElementById('page-title').textContent = titleMap[v] || 'Dashboard';
-    }
-
-    if(el) {
-        el.classList.add('active');
-    } else {
-        const navItems = document.querySelectorAll('.nav-item');
-        navItems.forEach(item => {
-            if(item.getAttribute('onclick') && item.getAttribute('onclick').includes(`'${v}'`)) {
-                item.classList.add('active');
-            }
-        });
-    }
+    if(el) el.classList.add('active');
 }
 
-function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+function addToCart(productId) {
+    alert("Item added to cart! (Product ID: " + productId + ")");
+}
 
-// Init
-loadData();
+// --- ADVANCED SHOP & PRODUCT FINDER AI ENGINE ---
+async function runAI() {
+    const input = document.getElementById('aiInput');
+    const query = input.value.trim().toLowerCase();
+    if(!query) return;
+
+    const chat = document.getElementById('aiChat');
+    
+    chat.innerHTML += `<div class="msg-bubble user">${input.value}</div>`;
+    input.value = '';
+    chat.scrollTop = chat.scrollHeight;
+
+    const loadingId = 'ai-loading-' + Date.now();
+    chat.innerHTML += `<div class="msg-bubble ai" id="${loadingId}"><i class="fa-solid fa-spinner fa-spin"></i> Checking shop records...</div>`;
+    chat.scrollTop = chat.scrollHeight;
+
+    setTimeout(() => {
+        const loadingEl = document.getElementById(loadingId);
+        let reply = "";
+
+        const matchedProducts = productsList.filter(p => 
+            p.name && p.name.toLowerCase().includes(query.replace(/(dikhao|hai|kya|show|search|find|chahiye|me)/g, '').trim())
+        );
+
+        if (matchedProducts.length > 0 && (query.includes('dikhao') || query.includes('hai') || query.includes('find') || query.includes('search') || matchedProducts.some(p => query.includes(p.name.toLowerCase())))) {
+            let cardsHTML = `<p>Mujhe aapki shop mein <b>${matchedProducts.length}</b> product(s) mile hain:</p><div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">`;
+            
+            matchedProducts.forEach(p => {
+                const isLowStock = (p.stock || 0) <= 0;
+                cardsHTML += `
+                    <div style="background:#fff; border:1px solid var(--border); border-radius:8px; padding:10px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="font-weight:bold; color:var(--text-main);">${p.name}</div>
+                            <div style="font-size:12px; color:var(--primary); font-weight:600;">Rs. ${p.price || p.selling_price || 0} | <span style="color:${isLowStock ? 'red' : 'green'};">Stock: ${p.stock || 0}</span></div>
+                        </div>
+                        <button class="btn-sm btn-success" onclick="addToCart('${p.id}'); navigate('pos');" ${isLowStock ? 'disabled style="opacity:0.5;"' : ''}>
+                            <i class="fa-solid fa-cart-plus"></i> Add
+                        </button>
+                    </div>`;
+            });
+            cardsHTML += `</div>`;
+            if (loadingEl) loadingEl.innerHTML = cardsHTML;
+
+        } else if (query.includes('stock') || query.includes('inventory') || query.includes('maal')) {
+            if (query.includes('low') || query.includes('khatam') || query.includes('kam')) {
+                const lowStockList = productsList.filter(p => (p.stock || 0) < 5);
+                if(lowStockList.length === 0) {
+                    reply = "Bhai, filhal kisi bhi product ka stock dangerously low nahi hai!";
+                } else {
+                    reply = `<b>Low Stock Alert:</b> In ${lowStockList.length} items ka stock 5 se kam hai:<br>• ` + 
+                            lowStockList.map(p => `${p.name} (${p.stock} remaining)`).join('<br>• ');
+                }
+            } else {
+                const totalItems = productsList.reduce((sum, p) => sum + (Number(p.stock) || 0), 0);
+                reply = `Shop mein total <b>${productsList.length} unique products</b> hain, aur kul milakar <b>${totalItems} items</b> stock mein available hain.`;
+            }
+            if (loadingEl) loadingEl.innerHTML = reply;
+
+        } else if (query.includes('udhaar') || query.includes('khata') || query.includes('baki')) {
+            const pendingCusts = customersList.filter(c => (Number(c.total_udhaar) || 0) > 0);
+            const totalUdhaar = pendingCusts.reduce((sum, c) => sum + Number(c.total_udhaar), 0);
+            
+            reply = `Market mein kul <b>Rs. ${totalUdhaar}</b> ka udhaar baki hai (${pendingCusts.length} customers par).<br>`;
+            if(pendingCusts.length > 0) {
+                reply += `<br><b>Top Pending Udhaardars:</b><br>• ` + 
+                         pendingCusts.slice(0, 5).map(c => `${c.name}: Rs. ${c.total_udhaar}`).join('<br>• ');
+            }
+            if (loadingEl) loadingEl.innerHTML = reply;
+
+        } else {
+            reply = "Main aapka Shop AI Assistant hoon! Aap mujhse kisi product ka naam pooch sakte hain (e.g. <i>'Milk dikhao'</i>), low stock ki list maang sakte hain, ya total udhaar report pooch sakte hain.";
+            if (loadingEl) loadingEl.innerHTML = reply;
+        }
+
+        chat.scrollTop = chat.scrollHeight;
+    }, 400);
+}
+
+// Initial Check
+checkSession();
 </script>
 </body>
 </html>
