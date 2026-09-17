@@ -63,7 +63,8 @@ body { background: #f1f5f9; color: var(--text-main); display: flex; height: 100v
 
 /* MODALS */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
-.modal-box { background: #fff; padding: 25px; border-radius: 12px; width: 450px; max-width: 90%; }
+.modal-box { background: #fff; padding: 25px; border-radius: 12px; width: 450px; max-width: 90%; position: relative; }
+.modal-close { position: absolute; top: 15px; right: 20px; cursor: pointer; font-weight: bold; font-size: 18px; color: var(--text-muted); }
 .form-input { width: 100%; padding: 10px; margin: 8px 0 15px 0; border: 1px solid var(--border); border-radius: 6px; outline: none; }
 
 /* AI ENGINE CHAT */
@@ -211,6 +212,7 @@ body { background: #f1f5f9; color: var(--text-main); display: flex; height: 100v
 <!-- MODALS -->
 <div class="modal-overlay" id="prodModal">
     <div class="modal-box">
+        <span class="modal-close" onclick="closeModal('prodModal')">&times;</span>
         <h3>Add New Product</h3>
         <input type="text" id="npName" placeholder="Product Title" class="form-input">
         <input type="number" id="npPrice" placeholder="Selling Price" class="form-input">
@@ -221,6 +223,7 @@ body { background: #f1f5f9; color: var(--text-main); display: flex; height: 100v
 
 <div class="modal-overlay" id="custModal">
     <div class="modal-box">
+        <span class="modal-close" onclick="closeModal('custModal')">&times;</span>
         <h3>Add Customer</h3>
         <input type="text" id="ncName" placeholder="Customer Name" class="form-input">
         <input type="text" id="ncPhone" placeholder="Phone Number" class="form-input">
@@ -230,6 +233,7 @@ body { background: #f1f5f9; color: var(--text-main); display: flex; height: 100v
 
 <div class="modal-overlay" id="expModal">
     <div class="modal-box">
+        <span class="modal-close" onclick="closeModal('expModal')">&times;</span>
         <h3>Add Expense</h3>
         <input type="text" id="exTitle" placeholder="Expense Title" class="form-input">
         <input type="number" id="exAmount" placeholder="Amount (PKR)" class="form-input">
@@ -239,10 +243,11 @@ body { background: #f1f5f9; color: var(--text-main); display: flex; height: 100v
 
 <script>
 // --- SUPABASE CONFIGURATION ---
-const SUPABASE_URL = "https://yrrrqagtnbcufhcswstp.supabase.co"; // Replace with Project URL
-const SUPABASE_ANON_KEY = "sb_publishable_FGqvkjDrSAHG2RQxW4ErHw_29yN11YR"; // Replace with Anon Key
+const SUPABASE_URL = "https://yrrrqagtnbcufhcswstp.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_FGqvkjDrSAHG2RQxW4ErHw_29yN11YR";
 
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Fix: Changed variable name to dbClient to prevent conflict with global 'supabase' window object
+const dbClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let productsList = [];
 let customersList = [];
@@ -250,32 +255,36 @@ let currentCart = [];
 
 // FETCH REAL-TIME DATA FROM SUPABASE
 async function loadData() {
-    // 1. Fetch Products
-    const { data: prods } = await supabase.from('products').select('*');
-    productsList = prods || [];
-    renderProducts();
+    try {
+        // 1. Fetch Products
+        const { data: prods } = await dbClient.from('products').select('*');
+        productsList = prods || [];
+        renderProducts();
 
-    // 2. Fetch Customers
-    const { data: custs } = await supabase.from('customers').select('*');
-    customersList = custs || [];
-    renderCustomers();
+        // 2. Fetch Customers
+        const { data: custs } = await dbClient.from('customers').select('*');
+        customersList = custs || [];
+        renderCustomers();
 
-    // 3. Fetch Expenses
-    const { data: exps } = await supabase.from('expenses').select('*');
-    renderExpenses(exps || []);
+        // 3. Fetch Expenses
+        const { data: exps } = await dbClient.from('expenses').select('*');
+        renderExpenses(exps || []);
 
-    // 4. Fetch Orders
-    const { data: orders } = await supabase.from('orders').select('*');
-    
-    // Update KPI Dashboard
-    document.getElementById('dash-products').textContent = productsList.length;
-    document.getElementById('dash-orders').textContent = (orders || []).length;
-    
-    const udhaarTotal = customersList.reduce((sum, c) => sum + (Number(c.total_udhaar) || 0), 0);
-    document.getElementById('dash-udhaar').textContent = 'Rs. ' + udhaarTotal;
+        // 4. Fetch Orders
+        const { data: orders } = await dbClient.from('orders').select('*');
+        
+        // Update KPI Dashboard
+        document.getElementById('dash-products').textContent = productsList.length;
+        document.getElementById('dash-orders').textContent = (orders || []).length;
+        
+        const udhaarTotal = customersList.reduce((sum, c) => sum + (Number(c.total_udhaar) || 0), 0);
+        document.getElementById('dash-udhaar').textContent = 'Rs. ' + udhaarTotal;
 
-    const expTotal = (exps || []).reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
-    document.getElementById('dash-expenses').textContent = 'Rs. ' + expTotal;
+        const expTotal = (exps || []).reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+        document.getElementById('dash-expenses').textContent = 'Rs. ' + expTotal;
+    } catch(err) {
+        console.error("Error loading data:", err);
+    }
 }
 
 function renderProducts() {
@@ -314,9 +323,10 @@ function renderExpenses(exps) {
 
 // POS LOGIC
 function renderPOSProducts() {
-    const query = document.getElementById('posSearch').value.toLowerCase();
+    const searchEl = document.getElementById('posSearch');
+    const query = searchEl ? searchEl.value.toLowerCase() : '';
     const grid = document.getElementById('posGrid');
-    const filtered = productsList.filter(p => p.name.toLowerCase().includes(query));
+    const filtered = productsList.filter(p => p.name && p.name.toLowerCase().includes(query));
 
     grid.innerHTML = filtered.map(p => `
         <div class="p-card" onclick="addToCart('${p.id}')">
@@ -329,6 +339,7 @@ function renderPOSProducts() {
 
 function addToCart(id) {
     const prod = productsList.find(p => p.id === id);
+    if (!prod) return;
     const existing = currentCart.find(c => c.id === id);
     if(existing) existing.qty++;
     else currentCart.push({ ...prod, qty: 1 });
@@ -355,7 +366,7 @@ async function checkoutPOS() {
     const custId = document.getElementById('posCustomer').value;
 
     // 1. Save Order to Supabase
-    await supabase.from('orders').insert([{
+    await dbClient.from('orders').insert([{
         total_amount: total,
         payment_method: payMethod,
         customer_id: custId || null
@@ -364,8 +375,10 @@ async function checkoutPOS() {
     // 2. Handle Udhaar
     if(payMethod === 'Udhaar' && custId) {
         const cust = customersList.find(c => c.id === custId);
-        const newBal = (Number(cust.total_udhaar) || 0) + total;
-        await supabase.from('customers').update({ total_udhaar: newBal }).eq('id', custId);
+        if(cust) {
+            const newBal = (Number(cust.total_udhaar) || 0) + total;
+            await dbClient.from('customers').update({ total_udhaar: newBal }).eq('id', custId);
+        }
     }
 
     currentCart = [];
@@ -380,7 +393,7 @@ async function saveProduct() {
     const price = Number(document.getElementById('npPrice').value);
     const stock = Number(document.getElementById('npStock').value);
 
-    await supabase.from('products').insert([{ name, price, stock }]);
+    await dbClient.from('products').insert([{ name, price, stock }]);
     closeModal('prodModal');
     loadData();
 }
@@ -389,7 +402,7 @@ async function saveCustomer() {
     const name = document.getElementById('ncName').value;
     const phone = document.getElementById('ncPhone').value;
 
-    await supabase.from('customers').insert([{ name, phone, total_udhaar: 0 }]);
+    await dbClient.from('customers').insert([{ name, phone, total_udhaar: 0 }]);
     closeModal('custModal');
     loadData();
 }
@@ -398,7 +411,7 @@ async function saveExpense() {
     const title = document.getElementById('exTitle').value;
     const amount = Number(document.getElementById('exAmount').value);
 
-    await supabase.from('expenses').insert([{ title, amount }]);
+    await dbClient.from('expenses').insert([{ title, amount }]);
     closeModal('expModal');
     loadData();
 }
@@ -432,7 +445,30 @@ function navigate(v, el) {
     document.querySelectorAll('.view-panel').forEach(e => e.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
     document.getElementById('view-' + v).classList.add('active');
-    if(el) el.classList.add('active');
+    
+    // Header title update
+    const titleMap = {
+        'dashboard': 'Main Dashboard',
+        'pos': 'POS / Sale Station',
+        'products': 'Stock Inventory',
+        'khata': 'Udhaar Khata',
+        'expenses': 'Shop Expenses',
+        'ai': 'Dukaania AI Assistant'
+    };
+    if(document.getElementById('page-title')) {
+        document.getElementById('page-title').textContent = titleMap[v] || 'Dashboard';
+    }
+
+    if(el) {
+        el.classList.add('active');
+    } else {
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            if(item.getAttribute('onclick') && item.getAttribute('onclick').includes(`'${v}'`)) {
+                item.classList.add('active');
+            }
+        });
+    }
 }
 
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
