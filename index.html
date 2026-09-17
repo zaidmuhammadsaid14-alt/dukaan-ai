@@ -1,10 +1,11 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DukaanLink - Local Bazaar</title>
+    <!-- Supabase CDN Script -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -130,7 +131,7 @@
         <div id="userRoleBadge" style="font-size: 12px; background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 15px;">Please Login</div>
     </header>
 
-    <!-- STEP 0: LOGIN SCREEN (Gmail Login) -->
+    <!-- STEP 0: LOGIN SCREEN -->
     <div id="loginScreen" class="container">
         <div class="card">
             <h2>Welcome to DukaanLink 🚀</h2>
@@ -143,7 +144,7 @@
         </div>
     </div>
 
-    <!-- STEP 1: ROLE SELECTION SCREEN (Hidden initially) -->
+    <!-- STEP 1: ROLE SELECTION SCREEN -->
     <div id="roleSelectionScreen" class="container hidden">
         <div class="card">
             <h2>Select Your Role</h2>
@@ -161,7 +162,7 @@
         </div>
     </div>
 
-    <!-- STEP 2: SELLER DASHBOARD (Hidden by default) -->
+    <!-- STEP 2: SELLER DASHBOARD -->
     <div id="sellerDashboard" class="container" style="max-width: 600px; display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0 15px 0;">
             <h3 style="margin:0;">Seller Dashboard 🏪</h3>
@@ -176,19 +177,19 @@
         <button onclick="logout()" style="background: #dc3545; margin-top: 20px;" class="btn">Logout</button>
     </div>
 
-    <!-- STEP 3: ADD PRODUCT FORM (Hidden by default) -->
+    <!-- STEP 3: ADD PRODUCT FORM -->
     <div id="addProductScreen" class="container" style="max-width: 500px; display: none;">
         <div class="card" style="text-align: left;">
             <h3 style="margin-top: 0; margin-bottom: 15px;">Upload New Product 📦</h3>
             
             <div class="form-group">
-                <label>Product Image</label>
-                <input type="file" accept="image/*">
+                <label>Product Title</label>
+                <input type="text" id="prodTitle" placeholder="e.g. Summer T-Shirt">
             </div>
 
             <div class="form-group">
                 <label>Category</label>
-                <select>
+                <select id="prodCategory">
                     <option>Apparel / Clothing</option>
                     <option>Footwear</option>
                     <option>Groceries</option>
@@ -198,35 +199,60 @@
 
             <div class="form-group">
                 <label>Price (PKR)</label>
-                <input type="number" placeholder="e.g. 799">
+                <input type="number" id="prodPrice" placeholder="e.g. 799">
             </div>
 
             <div class="form-group">
                 <label>Stock Quantity</label>
-                <input type="number" placeholder="e.g. 50">
+                <input type="number" id="prodStock" placeholder="e.g. 50">
             </div>
 
             <div class="form-group">
                 <label>Delivery Duration (Days)</label>
-                <input type="text" placeholder="e.g. 2-3 Days">
+                <input type="text" id="prodDelivery" placeholder="e.g. 2-3 Days">
             </div>
 
-            <button class="btn" onclick="alert('Product Uploaded Successfully!'); showSellerDashboard();">Publish Product</button>
+            <button class="btn" onclick="publishProduct()">Publish Product to Database</button>
             <button onclick="showSellerDashboard()" style="background: #6c757d; color: white;" class="btn">Cancel</button>
         </div>
     </div>
 
-    <!-- JavaScript Logic -->
+    <!-- JavaScript & Supabase Integration -->
     <script>
-        function loginWithGoogle() {
-            // Yahan baad mein Supabase Google Auth ka code aayega
-            // Filhal demo ke tor par direct role selection screen khol rahe hain
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('roleSelectionScreen').style.display = 'block';
-            document.getElementById('userRoleBadge').innerText = 'Select Role';
+        // Supabase Initialization
+        const SUPABASE_URL = 'https://yrrrqagtnbcufhcswstp.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_FGqvkjDrSAHG2RQxW4ErHw_29yN11YR';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function loginWithGoogle() {
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+            });
+            if (error) {
+                alert('Login Error: ' + error.message);
+            }
         }
 
-        function selectRole(role) {
+        window.onload = async function() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('roleSelectionScreen').style.display = 'block';
+                document.getElementById('userRoleBadge').innerText = 'Select Role';
+            }
+        }
+
+        async function selectRole(role) {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                await supabase.from('profiles').upsert({
+                    id: user.id,
+                    email: user.email,
+                    full_name: user.user_metadata.full_name || 'User',
+                    role: role
+                });
+            }
+
             document.getElementById('roleSelectionScreen').style.display = 'none';
             if (role === 'seller') {
                 document.getElementById('userRoleBadge').innerText = 'Seller Mode';
@@ -247,7 +273,45 @@
             document.getElementById('sellerDashboard').style.display = 'block';
         }
 
-        function logout() {
+        async function publishProduct() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                alert('Please login first!');
+                return;
+            }
+
+            const title = document.getElementById('prodTitle').value;
+            const category = document.getElementById('prodCategory').value;
+            const price = document.getElementById('prodPrice').value;
+            const stock = document.getElementById('prodStock').value;
+            const delivery = document.getElementById('prodDelivery').value;
+
+            if (!title || !price || !stock) {
+                alert('Please fill all required fields!');
+                return;
+            }
+
+            const { data, error } = await supabase.from('products').insert([
+                {
+                    seller_id: user.id,
+                    title: title,
+                    category: category,
+                    price: parseFloat(price),
+                    stock: parseInt(stock),
+                    delivery_duration: delivery
+                }
+            ]);
+
+            if (error) {
+                alert('Error adding product: ' + error.message);
+            } else {
+                alert('Product Published Successfully to Supabase Database! 🚀');
+                showSellerDashboard();
+            }
+        }
+
+        async function logout() {
+            await supabase.auth.signOut();
             document.getElementById('sellerDashboard').style.display = 'none';
             document.getElementById('loginScreen').style.display = 'block';
             document.getElementById('userRoleBadge').innerText = 'Please Login';
