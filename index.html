@@ -3,179 +3,452 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DukaanLink - Local Bazaar</title>
+    <title>Daraz Marketplace - DukaanLink</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --primary-color: #f85606; --bg-color: #f4f5f7; --text-main: #212121; --text-gray: #757575; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-main); padding-bottom: 60px; }
-        header { background-color: var(--primary-color); color: white; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
-        .logo-area { font-weight: bold; font-size: 20px; }
-        .mode-badge { background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 12px; font-size: 12px; }
-        .container { padding: 16px; max-width: 800px; margin: 0 auto; }
+        :root {
+            --primary-orange: #f85606;
+            --bg-gray: #f4f5f7;
+            --text-dark: #212121;
+            --text-gray: #757575;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-gray);
+            color: var(--text-dark);
+            padding-bottom: 70px;
+        }
+        /* Top Search Header */
+        .daraz-header {
+            background-color: var(--primary-orange);
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .search-box {
+            flex: 1;
+            background: white;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 4px;
+            gap: 8px;
+        }
+        .search-box input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+        }
+        .search-btn {
+            background: #ffe1d2;
+            color: var(--primary-orange);
+            border: none;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Categories Icon Grid */
+        .categories-row {
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 5px;
+            margin-bottom: 10px;
+            overflow-x: auto;
+        }
+        .cat-item {
+            text-align: center;
+            font-size: 11px;
+            color: #444;
+            min-width: 60px;
+            cursor: pointer;
+        }
+        .cat-icon {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+
+        /* Flash Sale / Banner */
+        .promo-banner {
+            background: white;
+            margin: 0 10px 10px 10px;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary-orange);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        /* Product Grid (Daraz Style) */
+        .product-section {
+            padding: 0 10px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 12px 4px;
+            color: #333;
+        }
+        .daraz-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        .daraz-card {
+            background: white;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+        }
+        .card-img {
+            width: 100%;
+            height: 140px;
+            background: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+            font-size: 12px;
+        }
+        .card-body {
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .card-title {
+            font-size: 12px;
+            color: #333;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .card-price {
+            color: var(--primary-orange);
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .free-delivery-badge {
+            background: #fff3ee;
+            color: var(--primary-orange);
+            font-size: 9px;
+            padding: 2px 4px;
+            border-radius: 2px;
+            width: fit-content;
+            font-weight: bold;
+        }
+
+        /* Screens & Views */
+        .container { padding: 16px; max-width: 600px; margin: 0 auto; }
         .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        .google-btn { background: white; color: #444; border: 1px solid #ddd; padding: 12px; border-radius: 6px; width: 100%; font-weight: 600; cursor: pointer; }
-        .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-        .role-box { background: white; padding: 20px; border-radius: 8px; text-align: center; cursor: pointer; border: 2px solid #eee; }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-top: 15px; }
-        .product-card { background: white; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .product-img-placeholder { width: 100%; height: 140px; background: #e0e0e0; display: flex; align-items: center; justify-content: center; color: #888; font-size: 12px; }
-        .product-info { padding: 10px; }
-        .product-title { font-size: 13px; font-weight: 500; }
-        .product-price { color: var(--primary-color); font-size: 16px; font-weight: bold; }
-        .btn { background-color: var(--primary-color); color: white; padding: 12px; border: none; border-radius: 4px; width: 100%; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        .btn { background-color: var(--primary-orange); color: white; padding: 12px; border: none; border-radius: 4px; width: 100%; font-weight: 600; cursor: pointer; margin-top: 10px; }
         .btn-success { background-color: #008800; }
         input, select { width: 100%; padding: 10px; margin: 6px 0 12px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
         .hidden { display: none !important; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-top: 1px solid #ddd; display: flex; justify-content: space-around; padding: 8px 0; z-index: 1000; }
-        .nav-item { text-align: center; font-size: 11px; color: var(--text-gray); cursor: pointer; }
-        .nav-item.active { color: var(--primary-color); font-weight: bold; }
+
+        /* Bottom Navigation Bar (Daraz Style) */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: space-around;
+            padding: 6px 0;
+            z-index: 1000;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+        }
+        .nav-tab {
+            text-align: center;
+            font-size: 10px;
+            color: var(--text-gray);
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        .nav-tab.active {
+            color: var(--primary-orange);
+            font-weight: bold;
+        }
+        .nav-tab span {
+            display: block;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
-    <header>
-        <div class="logo-area">🛒 DukaanLink</div>
-        <div class="header-right"><span id="userRoleBadge" class="mode-badge">Guest</span></div>
-    </header>
 
-    <div id="loginScreen" class="container">
-        <div class="card" style="margin-top: 40px; text-align: center;">
-            <h2>Welcome to DukaanLink</h2>
-            <p style="color: #666; font-size: 14px; margin-bottom: 25px;">Connect with your local bazaar.</p>
-            <button class="google-btn" onclick="loginWithGoogle()">Continue with Google</button>
+    <!-- MAIN APP VIEW (Daraz Home Screen) -->
+    <div id="homeScreen">
+        <!-- Top Search Header -->
+        <div class="daraz-header">
+            <div class="search-box">
+                <span>🔍</span>
+                <input type="text" placeholder="Search in Daraz...">
+            </div>
+            <button class="search-btn" onclick="openLogin()">Login</button>
+        </div>
+
+        <!-- Categories Row -->
+        <div class="categories-row">
+            <div class="cat-item"><div class="cat-icon">🪙</div>Daraz Coins</div>
+            <div class="cat-item"><div class="cat-icon">🎁</div>Daraz Land</div>
+            <div class="cat-item"><div class="cat-icon">💡</div>Pay Utilities</div>
+            <div class="cat-item"><div class="cat-icon">🏷️</div>Vouchers</div>
+            <div class="cat-item"><div class="cat-icon">🛍️</div>Buy Any 3</div>
+        </div>
+
+        <!-- Promo Banner -->
+        <div class="promo-banner">
+            ⚡ Flash Sale Live - Up to 80% OFF!
+        </div>
+
+        <!-- Product Feed Grid -->
+        <div class="product-section">
+            <div class="section-title">Just For You 🔥</div>
+            <div id="darazProductFeed" class="daraz-grid">
+                <!-- Products loaded dynamically -->
+            </div>
         </div>
     </div>
-    <div id="roleSelectionScreen" class="container hidden" style="margin-top: 40px;">
+
+    <!-- LOGIN / ROLE SCREEN -->
+    <div id="authScreen" class="container hidden" style="margin-top: 50px;">
         <div class="card" style="text-align: center;">
-            <h2>Choose Your Experience</h2>
-            <div class="role-grid">
-                <div class="role-box" onclick="selectRole('customer')">
-                    <span style="font-size: 28px;">🛍️</span><h3>Customer</h3>
-                </div>
-                <div class="role-box" onclick="selectRole('seller')">
-                    <span style="font-size: 28px;">🏪</span><h3>Seller</h3>
-                </div>
-            </div>
+            <h2>Welcome to Daraz</h2>
+            <p style="color: #666; font-size: 13px; margin-bottom: 20px;">Discover the endless possibilities</p>
+            <button class="btn" onclick="loginWithGoogle()">Continue with Google</button>
+            <button class="btn" style="background-color: #757575;" onclick="showHome()">Back to Home</button>
         </div>
     </div>
 
-    <div id="customerHome" class="hidden">
-        <div style="background: white; padding: 10px 16px;"><input type="text" placeholder="Search in DukaanLink..." style="margin:0;"></div>
-        <div class="container">
-            <h3 style="font-size: 16px; margin: 10px 0 15px 0;">Just For You 🌟</h3>
-            <div id="customerProductFeed" class="product-grid"></div>
-            <div id="customerEmptyState" class="hidden" style="text-align: center; padding: 40px; background: white; border-radius: 8px;">
-                <h3>No Products Available</h3>
-                <p style="color:#777; font-size:13px;">Sellers haven't uploaded any products yet.</p>
-            </div>
+    <!-- ROLE SELECTION (Customer vs Seller) -->
+    <div id="roleScreen" class="container hidden" style="margin-top: 50px;">
+        <div class="card" style="text-align: center;">
+            <h2>Choose Your Portal</h2>
+            <p style="color: #666; font-size: 13px;">Select how you want to use the app:</p>
+            <button class="btn" onclick="selectRole('customer')">🛍️ Customer Shopping Mode</button>
+            <button class="btn btn-success" onclick="selectRole('seller')">🏪 Seller Shop Dashboard</button>
         </div>
     </div>
 
+    <!-- SELLER DASHBOARD -->
     <div id="sellerDashboard" class="container hidden">
         <div style="display: flex; justify-content: space-between; align-items: center; margin: 15px 0;">
             <h3 style="margin:0;">Seller Dashboard</h3>
-            <button onclick="showAddProduct()" class="btn btn-success" style="width: auto; margin:0; padding: 8px 14px;">+ Add Product</button>
+            <button onclick="showAddProduct()" class="btn btn-success" style="width: auto; margin:0; padding: 6px 12px; font-size:12px;">+ Add Product</button>
         </div>
         <div class="card">
             <h4>Your Store Inventory</h4>
-            <div id="sellerProductsList"><p style="color: #777; font-size: 13px;">Loading...</p></div>
+            <div id="sellerProductsList"><p style="color:#777; font-size:12px;">Loading...</p></div>
         </div>
         <button onclick="logout()" class="btn" style="background-color: #d32f2f;">Logout</button>
     </div>
 
+    <!-- ADD PRODUCT SCREEN -->
     <div id="addProductScreen" class="container hidden">
         <div class="card">
-            <h3 style="margin-top: 0;">Upload New Product 📦</h3>
-            <label>Product Title</label><input type="text" id="prodTitle" placeholder="e.g. Hoodie">
-            <label>Category</label>
-            <select id="prodCategory">
-                <option>Apparel & Clothing</option>
-                <option>Footwear</option>
-                <option>Groceries & Essentials</option>
-                <option>Electronics</option>
-            </select>
-            <label>Price (Rs.)</label><input type="number" id="prodPrice" placeholder="899">
-            <label>Stock</label><input type="number" id="prodStock" placeholder="25">
-            <label>Delivery Duration</label><input type="text" id="prodDelivery" placeholder="2-3 Days">
-            <button class="btn" onclick="publishProduct()">Publish</button>
+            <h3 style="margin-top: 0;">Upload Product 📦</h3>
+            <label>Product Title</label><input type="text" id="prodTitle" placeholder="e.g. Smart Watch">
+            <label>Price (Rs.)</label><input type="number" id="prodPrice" placeholder="1499">
+            <label>Stock</label><input type="number" id="prodStock" placeholder="20">
+            <button class="btn" onclick="publishProduct()">Publish Product</button>
             <button onclick="showSellerDashboard()" class="btn" style="background-color: #757575;">Cancel</button>
         </div>
     </div>
 
-    <div id="bottomNav" class="bottom-nav hidden">
-        <div class="nav-item active"><span>🏠</span>Home</div>
-        <div class="nav-item"><span>👤</span>Account</div>
+    <!-- ACCOUNT / PROFILE SCREEN (When Logged in as Customer) -->
+    <div id="accountScreen" class="container hidden">
+        <div class="card" style="text-align: center;">
+            <div style="font-size: 40px; margin-bottom: 10px;">👤</div>
+            <h3 id="userEmailDisplay">My Account</h3>
+            <p style="color:var(--primary-orange); font-weight:bold;" id="userRoleDisplay">Customer</p>
+            <button onclick="switchToSeller()" class="btn btn-success" style="margin-top:10px;">Switch to Seller Dashboard</button>
+            <button onclick="logout()" class="btn" style="background-color: #d32f2f; margin-top:10px;">Logout</button>
+        </div>
     </div>
+
+    <!-- CART SCREEN -->
+    <div id="cartScreen" class="container hidden">
+        <div class="card" style="text-align: center; padding: 40px 20px;">
+            <span style="font-size: 40px;">🛒</span>
+            <h3>There are no items in this cart</h3>
+            <button class="btn" onclick="switchTab('home')" style="width: auto; padding: 10px 20px; margin-top: 15px;">CONTINUE SHOPPING</button>
+        </div>
+    </div>
+
+    <!-- MESSAGES SCREEN -->
+    <div id="messageScreen" class="container hidden">
+        <div class="card" style="text-align: center; padding: 40px 20px;">
+            <span style="font-size: 40px;">💬</span>
+            <h3>No Messages Yet</h3>
+            <p style="color:#777; font-size:12px;">Chat with sellers will appear here.</p>
+        </div>
+    </div>
+    <!-- Daraz Bottom Navigation Bar -->
+    <div class="bottom-nav">
+        <button class="nav-tab active" onclick="switchTab('home')">
+            <span>🏠</span>Home
+        </button>
+        <button class="nav-tab" onclick="switchTab('messages')">
+            <span>💬</span>Messages
+        </button>
+        <button class="nav-tab" style="color: var(--primary-orange);">
+            <span>💯</span>Authentic
+        </button>
+        <button class="nav-tab" onclick="switchTab('cart')">
+            <span>🛒</span>Cart
+        </button>
+        <button class="nav-tab" onclick="switchTab('account')">
+            <span>👤</span>Account
+        </button>
+    </div>
+
     <script>
         const SUPABASE_URL = 'https://yrrrqagtnbcufhcswstp.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_FGqvkjDrSAHG2RQxW4ErHw_29yN11YR';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        window.onload = async function() {
+            loadDarazProducts();
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                checkUserProfile(session.user);
+            }
+        }
+
+        async function loadDarazProducts() {
+            const feed = document.getElementById('darazProductFeed');
+            feed.innerHTML = '<p style="color:#777; font-size:12px; grid-column:span 2; text-align:center;">Loading products...</p>';
+
+            const { data: products } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
+            
+            if (!products || products.length === 0) {
+                feed.innerHTML = '<div style="grid-column:span 2; text-align:center; padding:20px; background:white; border-radius:4px;"><p style="color:#777; font-size:12px; margin:0;">No items available right now.</p></div>';
+                return;
+            }
+
+            feed.innerHTML = '';
+            products.forEach(p => {
+                feed.innerHTML += `
+                    <div class="daraz-card">
+                        <div class="card-img">No Image</div>
+                        <div class="card-body">
+                            <div class="card-title">${p.title}</div>
+                            <div class="card-price">Rs. ${p.price}</div>
+                            <div class="free-delivery-badge">FREE DELIVERY</div>
+                        </div>
+                    </div>`;
+            });
+        }
+
         async function loginWithGoogle() {
             await supabaseClient.auth.signInWithOAuth({ provider: 'google' });
         }
 
-        window.onload = async function() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                const { data: profile } = await supabaseClient.from('profiles').select('role').eq('id', session.user.id).single();
-                if (profile && profile.role) {
-                    applyRoleView(profile.role);
-                } else {
-                    document.getElementById('loginScreen').classList.add('hidden');
-                    document.getElementById('roleSelectionScreen').classList.remove('hidden');
-                    document.getElementById('userRoleBadge').innerText = 'Select Role';
-                }
+        async function checkUserProfile(user) {
+            const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+            if (profile && profile.role) {
+                window.currentUserRole = profile.role;
+                window.currentUserEmail = user.email;
+            } else {
+                hideAllScreens();
+                document.getElementById('roleScreen').classList.remove('hidden');
             }
+        }
+
+        function openLogin() {
+            supabaseClient.auth.getSession().then(({ data: { session } }) => {
+                if (session) {
+                    checkUserProfile(session.user).then(() => {
+                        switchTab('account');
+                    });
+                } else {
+                    hideAllScreens();
+                    document.getElementById('authScreen').classList.remove('hidden');
+                }
+            });
         }
 
         async function selectRole(role) {
             const { data: { user } } = await supabaseClient.auth.getUser();
             if (user) {
                 await supabaseClient.from('profiles').upsert({ id: user.id, email: user.email, full_name: user.user_metadata.full_name || 'User', role: role });
+                window.currentUserRole = role;
+                window.currentUserEmail = user.email;
             }
-            applyRoleView(role);
-        }
-
-        function applyRoleView(role) {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('roleSelectionScreen').classList.add('hidden');
-            document.getElementById('bottomNav').classList.remove('hidden');
-
             if (role === 'seller') {
-                document.getElementById('userRoleBadge').innerText = 'Seller Mode';
-                document.getElementById('sellerDashboard').classList.remove('hidden');
-                loadSellerProducts();
+                showSellerDashboard();
             } else {
-                document.getElementById('userRoleBadge').innerText = 'Customer Mode';
-                document.getElementById('customerHome').classList.remove('hidden');
-                loadCustomerFeed();
+                switchTab('home');
             }
         }
 
-        async function loadCustomerFeed() {
-            const feed = document.getElementById('customerProductFeed');
-            const empty = document.getElementById('customerEmptyState');
-            feed.innerHTML = '<p style="color:#777; text-align:center;">Loading...</p>';
+        function switchTab(tabName) {
+            hideAllScreens();
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
 
-            const { data: products } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
-            if (!products || products.length === 0) {
-                feed.innerHTML = '';
-                empty.classList.remove('hidden');
-                return;
+            if (tabName === 'home') {
+                document.getElementById('homeScreen').classList.remove('hidden');
+                loadDarazProducts();
+            } else if (tabName === 'messages') {
+                document.getElementById('messageScreen').classList.remove('hidden');
+            } else if (tabName === 'cart') {
+                document.getElementById('cartScreen').classList.remove('hidden');
+            } else if (tabName === 'account') {
+                supabaseClient.auth.getSession().then(({ data: { session } }) => {
+                    if (!session) {
+                        openLogin();
+                    } else {
+                        document.getElementById('accountScreen').classList.remove('hidden');
+                        document.getElementById('userEmailDisplay').innerText = session.user.email;
+                        document.getElementById('userRoleDisplay').innerText = window.currentUserRole ? window.currentUserRole.toUpperCase() : 'CUSTOMER';
+                    }
+                });
             }
-            empty.classList.add('hidden');
-            feed.innerHTML = '';
-            products.forEach(p => {
-                feed.innerHTML += `
-                    <div class="product-card">
-                        <div class="product-img-placeholder">No Image</div>
-                        <div class="product-info">
-                            <div class="product-title">${p.title}</div>
-                            <div class="product-price">Rs. ${p.price}</div>
-                            <div style="font-size:11px; color:#777;">Stock: ${p.stock}</div>
-                        </div>
-                    </div>`;
-            });
+        }
+
+        function hideAllScreens() {
+            document.getElementById('homeScreen').classList.add('hidden');
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('roleScreen').classList.add('hidden');
+            document.getElementById('sellerDashboard').classList.add('hidden');
+            document.getElementById('addProductScreen').classList.add('hidden');
+            document.getElementById('accountScreen').classList.add('hidden');
+            document.getElementById('cartScreen').classList.add('hidden');
+            document.getElementById('messageScreen').classList.add('hidden');
+        }
+
+        function showHome() { switchTab('home'); }
+
+        function showSellerDashboard() {
+            hideAllScreens();
+            document.getElementById('sellerDashboard').classList.remove('hidden');
+            loadSellerProducts();
+        }
+
+        function switchToSeller() {
+            showSellerDashboard();
+        }
+
+        function showAddProduct() {
+            hideAllScreens();
+            document.getElementById('addProductScreen').classList.remove('hidden');
         }
 
         async function loadSellerProducts() {
@@ -185,40 +458,27 @@
 
             const { data: products } = await supabaseClient.from('products').select('*').eq('seller_id', user.id).order('created_at', { ascending: false });
             if (!products || products.length === 0) {
-                list.innerHTML = '<p style="color:#777; font-size:13px;">No products added yet.</p>';
+                list.innerHTML = '<p style="color:#777; font-size:12px; margin:0;">No products added yet.</p>';
                 return;
             }
             let html = '';
             products.forEach(p => {
-                html += `<div style="padding:8px; background:#f9f9f9; border-radius:4px; margin-bottom:6px; border:1px solid #eee;"><strong>${p.title}</strong><br><span style="color:var(--primary-color);">Rs. ${p.price}</span></div>`;
+                html += `<div style="padding:8px; background:#f9f9f9; border-radius:4px; margin-bottom:6px; border:1px solid #eee; font-size:12px;"><strong>${p.title}</strong><br><span style="color:var(--primary-orange);">Rs. ${p.price}</span></div>`;
             });
             list.innerHTML = html;
-        }
-
-        function showAddProduct() {
-            document.getElementById('sellerDashboard').classList.add('hidden');
-            document.getElementById('addProductScreen').classList.remove('hidden');
-        }
-
-        function showSellerDashboard() {
-            document.getElementById('addProductScreen').classList.add('hidden');
-            document.getElementById('sellerDashboard').classList.remove('hidden');
-            loadSellerProducts();
         }
 
         async function publishProduct() {
             const { data: { user } } = await supabaseClient.auth.getUser();
             const title = document.getElementById('prodTitle').value;
-            const category = document.getElementById('prodCategory').value;
             const price = document.getElementById('prodPrice').value;
             const stock = document.getElementById('prodStock').value;
-            const delivery = document.getElementById('prodDelivery').value;
 
-            if (!title || !price || !stock) { alert('Fill required fields!'); return; }
+            if (!title || !price || !stock) { alert('Fill all fields!'); return; }
 
-            const { error } = await supabaseClient.from('products').insert([{ seller_id: user.id, title, category, price: parseFloat(price), stock: parseInt(stock), delivery_duration: delivery }]);
+            const { error } = await supabaseClient.from('products').insert([{ seller_id: user.id, title, price: parseFloat(price), stock: parseInt(stock) }]);
             if (error) alert('Error: ' + error.message);
-            else { alert('Published Successfully! 🚀'); showSellerDashboard(); }
+            else { alert('Product Published Successfully! 🚀'); showSellerDashboard(); }
         }
 
         async function logout() {
