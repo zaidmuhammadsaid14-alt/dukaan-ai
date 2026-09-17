@@ -219,13 +219,13 @@
 
     <!-- JavaScript & Supabase Integration -->
     <script>
-        // Supabase Initialization
+        // Supabase Initialization (Fixed variable name)
         const SUPABASE_URL = 'https://yrrrqagtnbcufhcswstp.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_FGqvkjDrSAHG2RQxW4ErHw_29yN11YR';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function loginWithGoogle() {
-            const { data, error } = await supabase.auth.signInWithOAuth({
+            const { data, error } = await supabaseClient.auth.signInWithOAuth({
                 provider: 'google',
             });
             if (error) {
@@ -234,7 +234,7 @@
         }
 
         window.onload = async function() {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('roleSelectionScreen').style.display = 'block';
@@ -243,9 +243,9 @@
         }
 
         async function selectRole(role) {
-            const { data: { user } } = await supabase.auth.getUser();
+            const { data: { user } } = await supabaseClient.auth.getUser();
             if (user) {
-                await supabase.from('profiles').upsert({
+                await supabaseClient.from('profiles').upsert({
                     id: user.id,
                     email: user.email,
                     full_name: user.user_metadata.full_name || 'User',
@@ -274,7 +274,7 @@
         }
 
         async function publishProduct() {
-            const { data: { user } } = await supabase.auth.getUser();
+            const { data: { user } } = await supabaseClient.auth.getUser();
             if (!user) {
                 alert('Please login first!');
                 return;
@@ -291,7 +291,7 @@
                 return;
             }
 
-            const { data, error } = await supabase.from('products').insert([
+            const { data, error } = await supabaseClient.from('products').insert([
                 {
                     seller_id: user.id,
                     title: title,
@@ -311,7 +311,7 @@
         }
 
         async function logout() {
-            await supabase.auth.signOut();
+            await supabaseClient.auth.signOut();
             document.getElementById('sellerDashboard').style.display = 'none';
             document.getElementById('loginScreen').style.display = 'block';
             document.getElementById('userRoleBadge').innerText = 'Please Login';
