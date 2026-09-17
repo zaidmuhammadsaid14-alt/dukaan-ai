@@ -3,370 +3,343 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dukaania — Shop Smarter</title>
-<link rel="icon" type="image/png" href="data:image/jpeg;base64,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9vDqvsEro4o2vef16LnG/G9xDR9vL/ANrfX29f3u43a50x/wB2f5STh5409yPEf2eI/J0110X41LiTvcdOHe0f/wA5e/0q+e9V/aP32N4e8A91p4e1T9/t4R50vvO9nh4j+zh1KqC56vM4f9A495yHn4Aag6m5Xm8Q66aL3mBswLlh63eS3OsdUWxgIie3UykA8mtPMdxOnpXh/R6u93ePAa9+/u4eI+P6i9j2e4x0mGS1L3dYsytwIsb27SNeStY3glPicDKeMfaB+YNr3vxtytkud/4vXepH1Gq/Y0G3S/yGj1A6j4tevgvx9M2IqtzRJT3S4O66sc8+vuHxLz+i/TZZG/Rze13m1+jX6e91f/AOp19X+1V3143G1kE28b/eJ48f3u489ddLd3Cdh/2cbv1+V/535rG/x22xT71P3i3C4tfIag3tlflwWd4Mz8f0sQiZaLgQ0aaPgd/pC+arxnmiti7Sst1TRNOn263sL/36xjE58rmwx3iSbc97+7L2/wA8E/H3d463s7jY2jUunY9o/wAJva9/e/Tf33q/X4p2sxFj+ip53yAAtscwQNDy3288uPFS2j2GwmWQOnijI4/tQcxfhvjjxt3W0XmPp1v0u+43f3fXh3d3eP8At8X1C44iuM2vstcag/v0X14YwjcMW43osM4fa6ur64kxR6aBoGrnvdycGtAJPoX6vOGbhhi93DD94axtdRTGCUAebr3jwI4jwKgIkn3OkLju+a6I1sPSbhb/AKi2m5I/xce65eixrmBcaS1/34d2kZpI2Th/O01H/wC36Vj32erfvv4P3i92+m8uunl3m6f5m953ve9+j/vvg+fX2e/f/vv4fX/fX+f37vne1/S19L2m3O88E234a2eE/8Afv3m0fE2m9vdSOnwfI7G1/fL93k3s53493Jdz7O133v/AOv96+755fP9/wBvHhrp/erse0uL/aN7T+00/P3965fP4H9/p/vfXhrp/e/0fX4D4X4/38/B8X3v3vx813S+v3f21/4a8e+63t4d+/4fh6a3X44eO/8Agf79N4e4933a234D+274vX5/u473P/pvd3v4TfO4639+e/S9yq9p+0P4A8d7T3uOnA6fD3fO6i3Xf9U5P7f8a792/u17z1vv+74f2S63e9f4veO9vvvffx3i69eXp7lXoF439395vvfe468/dfUfS9vdXoI/m+P+7/p++3e/wC2f3v7/f1+/wB79b/G/M70t/e/v1266e74fA9zve/v376269eXpXp/v34fe/vdff4b/Gfve/vf43xfvfC+/wAfi8D07vvvvdP81f37/fe4/e/0mvd/2X/e+14979eP3vf4eXp5a9xI4Ivhf4Xm35639TfS19AunfPbf6e8Pqbf1vd6a8d3ve5y/43+/S4+/fv168fe99e53ne/vd54uP1f37uPePffX9/X19eX/AG/e6fe/pL4fP+0636L+y2/p9/8AT9+6vneN7T9Nf82v031/j+8d3/a4f/X4+4X29+/+/wD/ANf6evd/p6a3e6/p73ff3a6f4S4H+8f4P3m/fvefxf62n/3d3j473uN/v/u1u99/P/S9232m1vbfvvp5X0v4eH4e/A/5P/p667/vfr3Xmvd6eH/x8feL8/8AG/f+l+v333q+z9e3fe9+n+/ve3+9+X36/P8Atp/0/vL6v+k9/v3/ANeO97/6f3v3fve/vfh7vfO4u10/3f3m+/vv53/vfvdv83+P+74u+/mvd/2b3m9/E4+76a13p/f95/v/AK34v/m939/m9/f33u/S3/3e97qf4Nf3/u3vfzfw8O/h2ef4f1+v8q5r13X/f9r3O9xvfW++/S2383u+/ve117397vf3v+n75fb+9/N/X4d73/eN4X7/fe01/S8O/f8AJ++vX/m94Xp++4a8dP8AGa6ce/3r/fe4X6H/ACe9Xp4/i9+/vd4/m98v3v15f4Xm/F97967Xmvg9v1p3tfD/AH43v7/924A6fj7vf+v/AIn67y+f+9a8/vd/m7vxL6fvdfe2O/X2+3/S/S3f03e/9fX148fX/r4++943vfO6f362+X15fvd6f3z3+/fv5+/vvefU34b3X0/B+/8AV/3v3f3fX963eX9+vvPvvf4b23d5uvPvfX3/AO9/pL32+/4enT0fxeHfv8e/h7ve73ve636+/X2a/D6d4+A+P33X9/2ve93q97xXh4X4fvvxX43++8/H2uvvvu1s/wCk2O409/73d74N9e7/AO/2n5H4n4+a++/0uvf/AH6ce/v9+/fe4v7vvN47n+k15fe++/f9/v8Av3fv9+9z19e93b/S3++f2e+f7+9Xf6Ld4eXvft3ff9543e+/e94p/e/N4P4++4N09+/m666fe++3ue/Xp+/X3fve/W34b3f309/9/wBv9/u/7/vvhP8Af7v19/Hve983Ucdz2vO3uO/5Hvvvdfe3u39f/p7zeA6+X14b3ff22919vO1v37vfe468+/v/AKXv973fXm9f8319P/r15/v++vS797n1/fr2+vvfe48eHvN/v9ffvL2u937xvvf53e6c/wDRf9L43vf95/nfd7/vvve5+/fvd6e5+a6A/Hpr4/vfD3f3++X+/e56e+/e7u/x7vfXm93/AHfefX9/3fS2O93vf955vS+H02v1Pte309/u+Xpff46e49H09+3p2eXvvddfxevX367/AG147/473fvvvd9ee9fvd/mve8e+/wB2vvdXvf53p/vfe83f9/11797f1fXve47/AA9O/d3+/X3vvd4+3+/6X6X/AJ/r69493vvd/S/m+148eXme/e913/53n6++/wDf/u9/n6fC33X/AGP8468u3++4deu/3/e673fvvceHvvea/wA57f7++/G9/d+/3m3/AEvef9m4+/8Ae7++/pfe8NfD3f3+vvc/Xmvd5+vvfdN7fffe6e3Xz/2eA/fvdNfL397jxd5vn+G/y3p3++/36938Xvvvdfe4/e/Dvv4O/l/2j0/A4ce9ff1vdfi8Pv/AOf8fHvfG+9z++/e4+/+/vvff575uvm6d/4ve4Xv4+vvfX+6+/m/f757f4fv++463ffy9+/3+/vvb/veHvfvd5vv4b9eevv2m8Xvne6/3/f3+9v++27v+O3uO4014d/4vudfvdfe+/b43X3i3/pde78d3ve+/h43u/f33uXN5+l8/vv4O+/G97q8L9e+vv6e53e4cOfuP5vvf53vv82+vA/vv4H++0+/X4fe5/53m4++/A/v3X+l73f9fvd++/u53ud6+/H7/A/F7z934vd993+f3veG+fvdOPmePq43+v/AHvd58d7i3/f/fN3j3+/ve14+/v/AFe91vv3vvdfff8Ae93y+/fvdOHfv4A/e74a6e3++vXg/u/O83X4u5f2e96d/Adf33e3vfP8d+34vh77e408+/H5m/3+5XvfM999913+m8AdfN3fO4N93f2/E1vvX1vve85vudfF3vdOHf+M66+1+/m159d33v9lvdO7+/Xvf03d59e35v1PmeO887m55v4m8v75/Pffve48eG99/71vd9efj/AH7/AH3Xq46cf5vv19+94bvvf13m63+143uXud9+9+/4e+3vEad+/vd5+/3v84u210/vv0v/AHa11XGvE7v4n3q9vX911/N87w/1/i9LreXFveev3vd4/O8fO4O629X8fG4+H3p1f+Lvd4097vLqfB5uunLxfxfG2vvev5vxf23vfve46+N3zfe63/i8G+/f11p3+u93f2fxfvd7vL4/eddf5/S6XW2p48e7vvX1++Xm+19Ovd3Xmvh9/4P3v6d8x152vP8d53e3v4ce4cfve/S91XqO997e+833/AIvh8/Xp+M9d+/m++vvudOHvXvd33ff9/e+/ve14Xp4/i97vL5mvu+p/pLre7f57y3m63fB+77n4+O93+50N/Xvfvj5vUceHv+/e+/d8P5vdOHvN3y+fvdfi++0814+/fv/AAvLvfud/m9eO+/e6833/f4Lfe589Nf0vX3vfvdOPedeb/vvd11/f9e+3l4fe5489fveGvnffvvdN7q7fxfd75fD5/vd/Xgfe7mvd/vfe7uvud+f1+/y++/6bXh46/2eI7vd+1/e3p48fP9a/Xf3dPfH29Pf+P3z9eL+L1/fd/31ve5bvf419e7o/f6vvd8fe4X548/f3vvd+f19Pvd7hveevr4ePve25eL3vdO7ffr4ve4L1vdO+X6fH/dvd+G/f+NfNve74Xmff6+l46+9/e3z9fdL5fvc/Tff/ev8Lvd3f8Pvd/33vvf53fe8/e5+eP894X7/fe8L6e++/E11++99vf9p99vE/2++f/AAvd743vf+M4m+/S17v03fe/T++/d8/p9a+vv/vvvh4NfO93x5734/D8X+f371a3ve++Gvf+/ffx8fe663l36+u+/f8fe9dfL/G95ud/v/e983vvd9e/49/j/O6XvfveHv119ffxe31++/3v331fX3/e/d9N3vdNfevB/f8Anc3Xm6283U8fve88ffvO/f8Ae96X97m892/3a+bvv4eb73vX6PvdNee+3v8Ae7+9d/2nhfud83mfe07/AAvM++4a73fe/Tf++vP9+6a1/G+/4fE+vrq3veevh8bXnff/AM1vfd3eI6/P3e/8bvff2/v99p75u8fL/ve9++/h3vve+/d+/wC94++eL4N3g/T+553n++/h799vvH+/Xvfve79O/e66e++H01+O8D+S3m/ve+bvv/e/fvS+Lze91+c9++33+/e53Xvfvvve/N4N/v7+/O797x18/wBXd+N9573e8N5u+/G95e/4O/z9dbf5vxe93w1572vh7fvdOHvdPveG4613/E33/fvd3p/A++118/3m/wC69vvN73Wv+bvdNePn8efve/ze7e5++/S23vv933+/4H3m9ve5+/e++/e4+/N/e6+b++/d9OHf36+d373v4eI7+Xf3f3vd4a9++3jrrre5+/wAfe8N15vxfe+Mffv19m3/e/veHvnd9/wC33m8fvvS+L9+/3/37d7j5vf5m+8/e3/T5/v19d7vfvd/vf6Wvv197vd3vv4e+/Nvv5u8/ff0N8/h754A/fef7vfP6en/b6++f++d/p/0+91157m93u9a+/jxvvd7+/v23v9L/S2+/3v8Av/u97XvvveF5/C9/w8/3e52/ve673h++13f41vL5++31fLzffp5urvd/f6f0/e9NfvdOHm+/d++X3e+ePn+95d+/fN11v/S3vd9+vud6/vd/mv1vN4N/vfL/G3e11f/ff2291q+/j++3uunm8D3/2m13++81/T1e7v/ff97/N833vh4fe7u+/fv4/S6+vT+p3fe9897vv37y7/N/Xp5/v2u9+/m7/AHzv+N7vx83eI7v++4++/v3++/h9+m91+8uH/fe5vL755utvd3e973+/m63d/v2unx+7e3+/v33++3e/Xf77y73vd3q/A++8ve56a+/X+f4O/4ffvd3fe/D3eGvDx+/S93/vvP+8b53fe7/v37775re+vud61vf6Xvf31/33e9p99vvffvPve518/q+/S19/s++/S/fe99+91vv/ve9a139NfFv5nvd5a3X6Ld898/Adfd3e7+/f7++d4Ovvvfe8146++/wCPu93d8/ze+fe5v/S83fA++/p5/m6fe+/81e/ze9953++/A++/f3+/ff2vM++3ue93vv473vvdP0v/AH8O++/e3m6a6cddffO/vf6fve74e++O/v4bve81/S3d++/79e/6bXxe6/t+O++/u173Pvdfe+301+/f7+ffv9fxe3vd/C/fe5b3u+/j3eO4++6/f+/ze+/0u+96++5ve53u/79vxe++/S++114e9vfS/e+/vvvdOvd39fxe/Xm33vf/e8+8fe6feN/f8A4++e94a+++/j4fe+Nvf5unfvv333Xud/vdN697+p3eO5d++v95f4/N9/Dffw83/f1vL++/XveD4O4/D368O/ff03f53T/ALa95/S73vef9353vfE8773+l97v13vefe/m+/pL53ePvcNf4P8AnedvudXf4vN1+fveOvv3vvvv3ve6feN74+++/fe6efw+/wfe/fe80/S8Xvve+f1vve7346+/fudfe5X3743/AIp14a9P33X9/m+/f++fvvL2/v1ve61/e9959ePffL3/AI++3ePud4O67v3vd7vd63++/wCfe+/jvvf6Xf5vh3/433uG/f7xvu+O4b/fv3m/e8d/e/S91vfevB8O/f8Afffd6ffu3X3y79/0vg75vve9/f5uvm6fe9/4/Bvuv/fvvn+f1e679/dffw8Hfe++7/8A31vI83ff4b9f0ve+16ef1vf3/vO7/vfG/p309fvv33v9N7x33++/vud/u+G/p4vd/A81e9vv3vf4e/pfe+/e11++/e30+G+/a+bvf9+/4++d3+Xzff948Nf/s//2Q==">
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
+<title>Dukaania — Har Cheez, Aap Ke Liye</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-/* CSS Styles */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-}
-header {
-    background-color: #333;
-    color: #fff;
-    padding: 10px 0;
-    text-align: center;
-}
-header h1 {
-    margin: 0;
-}
-nav ul {
-    list-style-type: none;
-    padding: 0;
-}
-nav ul li {
-    display: inline;
-    margin: 0 15px;
-}
-nav ul li a {
-    color: #fff;
-    text-decoration: none;
-    font-weight: bold;
-}
-.hero {
-    background-image: url('https://via.placeholder.com/1200x400');
-    background-size: cover;
-    background-position: center;
-    color: #fff;
-    text-align: center;
-    padding: 100px 0;
-}
-.hero h2 {
-    font-size: 2.5em;
-    margin: 0;
-}
-.hero p {
-    font-size: 1.2em;
-}
-.hero .btn {
-    background-color: #ff5722;
-    color: #fff;
-    padding: 10px 20px;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 1em;
-}
-.features {
-    display: flex;
-    justify-content: space-around;
-    padding: 20px;
-    background-color: #fff;
-}
-.feature-item {
-    text-align: center;
-    width: 30%;
-}
-.feature-item i {
-    font-size: 3em;
-    color: #ff5722;
-}
-.feature-item h3 {
-    margin-top: 10px;
-}
-footer {
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    padding: 10px 0;
-    position: fixed;
-    width: 100%;
-    bottom: 0;
+/* --- BASE & VARIABLES --- */
+:root {
+    --primary: #2563eb;
+    --primary-light: #eff6ff;
+    --accent: #ff5722;
+    --bg: #f8fafc;
+    --text-dark: #0f172a;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
 }
 
-/* =========================================================
-   INSTAGRAM STYLE AUTHENTICATION MODAL CSS
-   ========================================================= */
-.auth-btn {
-    background-color: #0095f6;
-    color: white;
-    padding: 7px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    border: none;
-    font-weight: 600;
-}
-.auth-btn:hover {
-    background-color: #0081d6;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background-color: var(--bg); color: var(--text-dark); }
 
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.65);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
+/* --- LANDING PAGE STYLES --- */
+#landing-page { display: block; }
+.navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 50px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.brand-logo-img { height: 45px; object-fit: contain; }
+.nav-links a { margin-left: 20px; text-decoration: none; color: var(--text-dark); font-weight: 500; }
+.btn-login { background: var(--primary); color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; }
 
-.insta-box {
-    background: #ffffff;
-    width: 350px;
-    padding: 30px 25px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    text-align: center;
-    position: relative;
-    box-sizing: border-box;
-}
+.hero-section { text-align: center; padding: 100px 20px; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; }
+.hero-section h1 { font-size: 2.5rem; margin-bottom: 15px; }
+.hero-section p { color: #94a3b8; font-size: 1.1rem; margin-bottom: 25px; }
+.hero-btn { background: var(--accent); color: white; border: none; padding: 12px 30px; border-radius: 6px; font-size: 1rem; cursor: pointer; font-weight: 600; }
 
-.close-modal {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 20px;
-    cursor: pointer;
-    color: #8e8e8e;
-}
+/* --- DASHBOARD LAYOUT (Post-Login) --- */
+#dashboard { display: none; min-height: 100vh; background: #f1f5f9; }
+.app-container { display: flex; }
 
-.insta-logo {
-    font-family: 'Billabong', 'Grand Hotel', cursive, sans-serif;
-    font-size: 36px;
-    margin-bottom: 20px;
-    color: #262626;
-    letter-spacing: 1px;
-}
+/* Sidebar */
+.sidebar { width: 260px; background: #fff; border-right: 1px solid var(--border); min-height: 100vh; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
+.sidebar-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 30px; }
+.nav-menu { list-style: none; }
+.nav-item { margin-bottom: 5px; }
+.nav-item a { display: flex; align-items: center; gap: 12px; padding: 12px 15px; color: var(--text-muted); text-decoration: none; border-radius: 8px; font-weight: 500; transition: 0.2s; }
+.nav-item.active a, .nav-item a:hover { background: var(--primary-light); color: var(--primary); }
+.badge { background: #ef4444; color: white; font-size: 11px; padding: 2px 7px; border-radius: 10px; margin-left: auto; }
 
-.insta-input-group {
-    position: relative;
-    margin-bottom: 8px;
-}
+/* Main Content Area */
+.main-content { flex: 1; padding: 25px; }
+.top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+.search-box { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 8px 15px; width: 400px; display: flex; align-items: center; gap: 10px; }
+.search-box input { border: none; outline: none; width: 100%; font-size: 14px; }
+.user-profile { display: flex; align-items: center; gap: 15px; }
+.user-avatar { width: 38px; height: 38px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
 
-.insta-input {
-    width: 100%;
-    padding: 10px 35px 10px 10px;
-    border: 1px solid #dbdbdb;
-    border-radius: 3px;
-    background: #fafafa;
-    font-size: 12px;
-    outline: none;
-    box-sizing: border-box;
-}
+/* Dashboard Widgets */
+.banner { background: linear-gradient(90deg, #dbeafe 0%, #eff6ff 100%); border-radius: 16px; padding: 30px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border: 1px solid #bfdbfe; }
+.banner h2 { font-size: 24px; color: #1e3a8a; margin-bottom: 8px; }
+.banner p { color: #3b82f6; font-size: 14px; margin-bottom: 15px; }
 
-.insta-input:focus {
-    border-color: #a8a8a8;
-}
+.section-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+.categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 15px; margin-bottom: 30px; }
+.cat-card { background: white; border-radius: 12px; padding: 15px; text-align: center; border: 1px solid var(--border); cursor: pointer; }
+.cat-card i { font-size: 24px; color: var(--primary); margin-bottom: 8px; }
 
-.toggle-pwd {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 12px;
-    font-weight: 600;
-    color: #262626;
-    cursor: pointer;
-    user-select: none;
-}
+.stores-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+.store-card { background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+.store-img { height: 100px; background: #cbd5e1; background-size: cover; background-position: center; }
+.store-info { padding: 15px; }
 
-.insta-btn {
-    width: 100%;
-    background-color: #0095f6;
-    border: none;
-    color: white;
-    padding: 7px;
-    border-radius: 4px;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    margin-top: 10px;
-}
+/* MODALS (Login, Chat, Address) */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+.modal-box { background: white; width: 380px; padding: 25px; border-radius: 12px; position: relative; }
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 5px; color: var(--text-muted); }
+.form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; outline: none; }
 
-.insta-btn:disabled {
-    background-color: #b2dffc;
-    cursor: default;
-}
+/* Live Chat Widget */
+.chat-btn { position: fixed; bottom: 25px; right: 25px; background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 30px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; }
+.chat-window { display: none; position: fixed; bottom: 80px; right: 25px; width: 320px; height: 400px; background: white; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); flex-direction: column; z-index: 999; }
+.chat-header { background: var(--primary); color: white; padding: 12px; border-top-left-radius: 12px; border-top-right-radius: 12px; display: flex; justify-content: space-between; }
+.chat-body { flex: 1; padding: 15px; overflow-y: auto; background: #f8fafc; font-size: 13px; }
+.chat-footer { padding: 10px; display: flex; gap: 5px; border-top: 1px solid var(--border); }
 
-.divider {
-    display: flex;
-    align-items: center;
-    margin: 15px 0;
-    color: #8e8e8e;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.divider::before, .divider::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: #dbdbdb;
-}
-
-.divider span {
-    padding: 0 10px;
-}
-
-.switch-form {
-    margin-top: 20px;
-    border-top: 1px solid #dbdbdb;
-    padding-top: 15px;
-    font-size: 14px;
-    color: #262626;
-}
-
-.switch-form a {
-    color: #0095f6;
-    text-decoration: none;
-    font-weight: 600;
-}
+/* Email Toast Popup */
+.email-toast { position: fixed; top: 20px; right: -400px; width: 350px; background: #ffffff; border-left: 5px solid #22c55e; box-shadow: 0 4px 15px rgba(0,0,0,0.15); border-radius: 6px; padding: 15px; transition: 0.5s ease; z-index: 2000; }
+.email-toast.active { right: 20px; }
 </style>
 </head>
 <body>
 
-<header>
-    <h1>Dukaania</h1>
-    <nav>
-        <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Shop</a></li>
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Contact</a></li>
-            <li><button class="auth-btn" onclick="openModal()">Log In</button></li>
-        </ul>
+<!-- EMAIL WELCOME NOTIFICATION SIMULATION -->
+<div class="email-toast" id="emailToast">
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px;">
+        <i class="fa-solid fa-envelope-open-text" style="color:#22c55e;"></i>
+        <strong style="font-size:14px;">New Email Received!</strong>
+    </div>
+    <p style="font-size:12px; color:#475569;" id="emailToastBody">Welcome to Dukaania! Your account is active now.</p>
+</div>
+
+<!-- ================= 1. LANDING PAGE ================= -->
+<div id="landing-page">
+    <nav class="navbar">
+        <img src="https://via.placeholder.com/150x50?text=Dukaania+Logo" alt="Dukaania Logo" class="brand-logo-img">
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">Shop</a>
+            <a href="#">About Us</a>
+            <a href="#">Contact</a>
+            <button class="btn-login" onclick="openModal('authModal')">Log In / Register</button>
+        </div>
     </nav>
-</header>
 
-<section class="hero">
-    <h2>Welcome to Dukaania</h2>
-    <p>Your one-stop shop for everything you need. Shop smarter, live better.</p>
-    <a href="#" class="btn">Shop Now</a>
-</section>
+    <section class="hero-section">
+        <h1>Welcome to Dukaania</h1>
+        <p>Har Cheez, Aap Ke Liye. Your local marketplace for everything you need.</p>
+        <button class="hero-btn" onclick="openModal('authModal')">Shop Now</button>
+    </section>
+</div>
 
-<section class="features">
-    <div class="feature-item">
-        <i class="fas fa-truck"></i>
-        <h3>Fast Delivery</h3>
-        <p>Get your items delivered quickly and efficiently.</p>
-    </div>
-    <div class="feature-item">
-        <i class="fas fa-undo"></i>
-        <h3>Easy Returns</h3>
-        <p>Hassle-free return policy for all products.</p>
-    </div>
-    <div class="feature-item">
-        <i class="fas fa-lock"></i>
-        <h3>Secure Payment</h3>
-        <p>100% secure payment processing.</p>
-    </div>
-</section>
+<!-- ================= 2. MAIN DASHBOARD (Image 2 Style) ================= -->
+<div id="dashboard">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div>
+                <div class="sidebar-logo">
+                    <img src="https://via.placeholder.com/120x40?text=Dukaania" alt="Dukaania" class="brand-logo-img">
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item active"><a href="#"><i class="fa-solid fa-house"></i> Home</a></li>
+                    <li class="nav-item"><a href="#"><i class="fa-solid fa-store"></i> Stores</a></li>
+                    <li class="nav-item"><a href="#"><i class="fa-solid fa-box-open"></i> Products</a></li>
+                    <li class="nav-item"><a href="#"><i class="fa-solid fa-cart-shopping"></i> Cart <span class="badge">2</span></a></li>
+                    <li class="nav-item"><a href="#"><i class="fa-solid fa-heart"></i> Wishlist</a></li>
+                    <li class="nav-item"><a href="#"><i class="fa-solid fa-bag-shopping"></i> My Orders</a></li>
+                    <li class="nav-item" onclick="openModal('addressModal')"><a href="#"><i class="fa-solid fa-location-dot"></i> Customer Address</a></li>
+                </ul>
+            </div>
+            <div class="nav-item">
+                <a href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            </div>
+        </aside>
 
-<!-- =========================================================
-     INSTAGRAM AUTHENTICATION MODAL (HTML)
-     ========================================================= -->
+        <!-- Content Area -->
+        <main class="main-content">
+            <!-- Header Top Bar -->
+            <header class="top-bar">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass" style="color:#94a3b8;"></i>
+                    <input type="text" placeholder="Search for products, stores, or categories...">
+                </div>
+                <div class="user-profile">
+                    <i class="fa-regular fa-bell" style="font-size: 18px; cursor:pointer;"></i>
+                    <div class="user-avatar" id="avatarLetter">U</div>
+                    <span id="userNameDisplay" style="font-weight:600; font-size:14px;">User</span>
+                </div>
+            </header>
+
+            <!-- Promo Banner -->
+            <section class="banner">
+                <div>
+                    <span style="font-size:12px; font-weight:600; color:#2563eb; background:#fff; padding:4px 10px; border-radius:12px;">Welcome to Dukaania</span>
+                    <h2 style="margin-top:10px;">Discover Amazing Products & Local Stores</h2>
+                    <p>Shop from your favorite local stores, support small businesses — all in one place.</p>
+                    <button class="hero-btn" style="background:#2563eb; font-size:13px; padding:8px 18px;">Explore Stores &rarr;</button>
+                </div>
+            </section>
+
+            <!-- Shop Categories -->
+            <div class="section-title">
+                <span>Shop by Category</span>
+                <a href="#" style="font-size:13px; color:var(--primary); text-decoration:none;">View all &rarr;</a>
+            </div>
+            <section class="categories">
+                <div class="cat-card"><i class="fa-solid fa-shirt"></i><br><span style="font-size:12px;">Fashion</span></div>
+                <div class="cat-card"><i class="fa-solid fa-laptop"></i><br><span style="font-size:12px;">Electronics</span></div>
+                <div class="cat-card"><i class="fa-solid fa-couch"></i><br><span style="font-size:12px;">Home</span></div>
+                <div class="cat-card"><i class="fa-solid fa-pump-soap"></i><br><span style="font-size:12px;">Beauty</span></div>
+                <div class="cat-card"><i class="fa-solid fa-football"></i><br><span style="font-size:12px;">Sports</span></div>
+                <div class="cat-card"><i class="fa-solid fa-book"></i><br><span style="font-size:12px;">Books</span></div>
+            </section>
+
+            <!-- Featured Stores -->
+            <div class="section-title">
+                <span>Featured Stores</span>
+                <a href="#" style="font-size:13px; color:var(--primary); text-decoration:none;">View all &rarr;</a>
+            </div>
+            <section class="stores-grid">
+                <div class="store-card">
+                    <div class="store-img" style="background-image:url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=300');"></div>
+                    <div class="store-info">
+                        <strong>ZK Fashion</strong>
+                        <p style="font-size:12px; color:var(--text-muted);">Fashion & Clothing</p>
+                        <button onclick="toggleChat('ZK Fashion')" style="margin-top:10px; width:100%; border:1px solid var(--primary); color:var(--primary); background:none; padding:6px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px;">Chat with Shop</button>
+                    </div>
+                </div>
+                <div class="store-card">
+                    <div class="store-img" style="background-image:url('https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=300');"></div>
+                    <div class="store-info">
+                        <strong>TechWorld</strong>
+                        <p style="font-size:12px; color:var(--text-muted);">Electronics & Gadgets</p>
+                        <button onclick="toggleChat('TechWorld')" style="margin-top:10px; width:100%; border:1px solid var(--primary); color:var(--primary); background:none; padding:6px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px;">Chat with Shop</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<!-- ================= 3. MODALS & POPUPS ================= -->
+
+<!-- Auth Modal (Login/Signup) -->
 <div class="modal-overlay" id="authModal">
-    <div class="insta-box">
-        <span class="close-modal" onclick="closeModal()">&times;</span>
-        <div class="insta-logo">Dukaania</div>
-        
-        <!-- Login Form -->
-        <form id="loginForm" onsubmit="handleAuth(event, 'login')">
-            <div class="insta-input-group">
-                <input type="text" class="insta-input" placeholder="Phone number, username, or email" required>
+    <div class="modal-box">
+        <span style="position:absolute; right:15px; top:10px; cursor:pointer;" onclick="closeModal('authModal')">&times;</span>
+        <h3 style="margin-bottom:15px; text-align:center;">Login to Dukaania</h3>
+        <form onsubmit="handleAuth(event)">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="custName" placeholder="John Doe" required>
             </div>
-            <div class="insta-input-group">
-                <input type="password" id="loginPassword" class="insta-input" placeholder="Password" required>
-                <span class="toggle-pwd" onclick="togglePassword('loginPassword', this)">Show</span>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="custEmail" placeholder="user@example.com" required>
             </div>
-            <button type="submit" class="insta-btn">Log In</button>
-            <div class="divider"><span>OR</span></div>
-            <a href="#" style="color:#385185; font-size:12px; font-weight:600; text-decoration:none;">Forgot password?</a>
-            <div class="switch-form">
-                Don't have an account? <a href="#" onclick="switchForm('signup')">Sign up</a>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" placeholder="••••••••" required>
             </div>
-        </form>
-
-        <!-- Sign Up Form (Initially Hidden) -->
-        <form id="signupForm" style="display: none;" onsubmit="handleAuth(event, 'signup')">
-            <p style="color: #8e8e8e; font-weight: 600; font-size: 14px; margin-bottom: 15px;">Sign up to see photos and videos from your friends.</p>
-            <div class="insta-input-group">
-                <input type="email" class="insta-input" placeholder="Mobile Number or Email" required>
-            </div>
-            <div class="insta-input-group">
-                <input type="text" class="insta-input" placeholder="Full Name" required>
-            </div>
-            <div class="insta-input-group">
-                <input type="text" class="insta-input" placeholder="Username" required>
-            </div>
-            <div class="insta-input-group">
-                <input type="password" id="signupPassword" class="insta-input" placeholder="Password" minlength="6" required>
-                <span class="toggle-pwd" onclick="togglePassword('signupPassword', this)">Show</span>
-            </div>
-            <button type="submit" class="insta-btn">Sign Up</button>
-            <div class="switch-form">
-                Have an account? <a href="#" onclick="switchForm('login')">Log in</a>
-            </div>
+            <button type="submit" class="hero-btn" style="width:100%; background:var(--primary);">Login / Sign Up</button>
         </form>
     </div>
 </div>
 
-<footer>
-    <p>&copy; 2026 Dukaania. All rights reserved.</p>
-</footer>
+<!-- Customer Address Modal -->
+<div class="modal-overlay" id="addressModal">
+    <div class="modal-box" style="width:450px;">
+        <span style="position:absolute; right:15px; top:10px; cursor:pointer;" onclick="closeModal('addressModal')">&times;</span>
+        <h3 style="margin-bottom:15px;">Customer Delivery Address</h3>
+        <form onsubmit="saveAddress(event)">
+            <div class="form-group">
+                <label>Street / House No / Building</label>
+                <input type="text" id="addrStreet" placeholder="House #123, Block A" required>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <div class="form-group" style="flex:1;">
+                    <label>City</label>
+                    <input type="text" id="addrCity" placeholder="Lahore / Karachi / Islamabad" required>
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label>Pincode / Postal Code</label>
+                    <input type="text" id="addrZip" placeholder="54000" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Phone Number (For Delivery)</label>
+                <input type="tel" id="addrPhone" placeholder="+92 300 1234567" required>
+            </div>
+            <button type="submit" class="hero-btn" style="width:100%; background:var(--primary);">Save Address</button>
+        </form>
+    </div>
+</div>
 
+<!-- Floating Shop Chat Widget -->
+<button class="chat-btn" onclick="toggleChat('Dukaania Support')">
+    <i class="fa-regular fa-comments"></i> Shop Chat
+</button>
+
+<div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+        <span id="chatShopName">Shop Chat</span>
+        <span style="cursor:pointer;" onclick="toggleChat()">&times;</span>
+    </div>
+    <div class="chat-body" id="chatBody">
+        <p style="background:#e2e8f0; padding:8px; border-radius:6px; max-width:80%; margin-bottom:10px;">Hello! Welcome to our store. How can we help you today?</p>
+    </div>
+    <div class="chat-footer">
+        <input type="text" id="chatInput" placeholder="Type a message..." style="flex:1; border:1px solid var(--border); border-radius:4px; padding:6px; outline:none;">
+        <button onclick="sendChatMessage()" style="background:var(--primary); color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+</div>
+
+<!-- JavaScript Logic -->
 <script>
-// JavaScript Logic
-function openModal() {
-    document.getElementById('authModal').style.display = 'flex';
+function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+function handleAuth(e) {
+    e.preventDefault();
+    const name = document.getElementById('custName').value;
+    const email = document.getElementById('custEmail').value;
+
+    // Set User Info
+    document.getElementById('userNameDisplay').textContent = name;
+    document.getElementById('avatarLetter').textContent = name.charAt(0).toUpperCase();
+
+    closeModal('authModal');
+    
+    // Switch Views
+    document.getElementById('landing-page').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+
+    // Trigger Email Notification Simulation
+    triggerEmailToast(name, email);
 }
 
-function closeModal() {
-    document.getElementById('authModal').style.display = 'none';
+function triggerEmailToast(name, email) {
+    const toast = document.getElementById('emailToast');
+    document.getElementById('emailToastBody').innerHTML = `Hi <b>${name}</b>, Welcome to <b>Dukaania</b>! Confirmation email sent to <i>${email}</i>.`;
+    toast.classList.add('active');
+    
+    setTimeout(() => {
+        toast.classList.remove('active');
+    }, 5000);
 }
 
-function switchForm(type) {
-    if(type === 'signup') {
-        document.getElementById('loginForm').style.display = 'none';
-        document.getElementById('signupForm').style.display = 'block';
-    } else {
-        document.getElementById('signupForm').style.display = 'none';
-        document.getElementById('loginForm').style.display = 'block';
-    }
+function logout() {
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('landing-page').style.display = 'block';
 }
 
-function togglePassword(inputId, el) {
-    const pwdInput = document.getElementById(inputId);
-    if (pwdInput.type === 'password') {
-        pwdInput.type = 'text';
-        el.textContent = 'Hide';
-    } else {
-        pwdInput.type = 'password';
-        el.textContent = 'Show';
-    }
+function saveAddress(e) {
+    e.preventDefault();
+    alert('Address saved successfully for orders!');
+    closeModal('addressModal');
 }
 
-function handleAuth(event, type) {
-    event.preventDefault();
-    if(type === 'login') {
-        alert('Log In Successful!');
-    } else {
-        alert('Account Created Successfully!');
-    }
-    closeModal();
+/* Chat System */
+function toggleChat(shopName = 'Dukaania Support') {
+    const chat = document.getElementById('chatWindow');
+    document.getElementById('chatShopName').textContent = shopName;
+    chat.style.display = (chat.style.display === 'flex') ? 'none' : 'flex';
 }
 
-// Close Modal when clicking outside the box
-window.onclick = function(event) {
-    const modal = document.getElementById('authModal');
-    if (event.target === modal) {
-        closeModal();
+function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const body = document.getElementById('chatBody');
+    if(input.value.trim() !== '') {
+        body.innerHTML += `<p style="background:#2563eb; color:white; padding:8px; border-radius:6px; max-width:80%; margin-bottom:10px; margin-left:auto;">${input.value}</p>`;
+        input.value = '';
+        body.scrollTop = body.scrollHeight;
     }
 }
 </script>
