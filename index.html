@@ -5,31 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dukaan AI</title>
   
-  <!-- Modern Fonts (Outfit, Inter, JetBrains Mono) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Local Custom CSS Link -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-[#0d0f18] text-[#e2e4f0] font-sans antialiased min-h-screen flex flex-col justify-between">
 
-  <!-- Header / Navigation -->
+  <!-- Header -->
   <header class="border-b border-gray-800 p-4 flex items-center justify-between max-w-7xl mx-auto w-full">
     <div class="flex items-center gap-3">
-      <img src="logo.svg" alt="Dukaan AI Logo" class="h-8 w-auto" onerror="this.style.display='none'">
       <span class="font-['Outfit'] font-bold text-xl tracking-wide text-white">DUKAAN<span class="text-indigo-500">.AI</span></span>
     </div>
     <nav class="hidden md:flex gap-6 text-sm text-gray-400">
-      <a href="#" class="hover:text-white transition">Home</a>
-      <a href="#" class="hover:text-white transition">Features</a>
-      <a href="#" class="hover:text-white transition">Pricing</a>
+      <a href="#features" class="hover:text-white transition">Features</a>
+      <a href="#pricing" class="hover:text-white transition">Pricing</a>
     </nav>
-    <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition">
+    <button id="getStartedBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition cursor-pointer">
       Get Started
     </button>
   </header>
@@ -45,18 +39,22 @@
     <p class="text-gray-400 text-base sm:text-lg max-w-2xl mb-8">
       Manage inventory, automate sales, and grow your e-commerce business seamlessly with smart tools.
     </p>
-    <div class="flex flex-col sm:flex-row gap-4 w-full justify-center max-w-md">
-      <input type="email" placeholder="Enter your email" class="bg-[#161926] border border-gray-800 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 flex-1 text-white">
-      <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-lg text-sm transition">
+
+    <!-- Interactive Form -->
+    <form id="trialForm" class="flex flex-col sm:flex-row gap-4 w-full justify-center max-w-md">
+      <input type="email" id="emailInput" required placeholder="Enter your email" class="bg-[#161926] border border-gray-800 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 flex-1 text-white">
+      <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-lg text-sm transition cursor-pointer">
         Start Free Trial
       </button>
-    </div>
+    </form>
+    <p id="responseMessage" class="text-emerald-400 text-sm mt-4 hidden"></p>
   </main>
 
-  <!-- Footer -->
   <footer class="border-t border-gray-800 py-6 text-center text-xs text-gray-500">
     © 2026 Dukaan AI. All rights reserved.
   </footer>
 
+  <!-- Link JavaScript File -->
+  <script src="script.js"></script>
 </body>
 </html>
