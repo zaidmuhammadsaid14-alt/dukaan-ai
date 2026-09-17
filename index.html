@@ -166,7 +166,45 @@ body { background: #f1f5f9; color: var(--text-main); display: flex; height: 100v
         </section>
     </div>
 </div>
+<!-- SHOP REPUTATION & REVIEW SECTION -->
+<div style="background:#fff; border:1px solid var(--border); border-radius:12px; padding:20px; margin-top:20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+            <h4 style="margin:0;">Shop Reputation & Reviews</h4>
+            <div id="shopRatingBadge" style="font-size:14px; font-weight:bold; color:#f59e0b; margin-top:4px;">
+                <i class="fa-solid fa-star"></i> 5.0 / 5.0 (New Merchant)
+            </div>
+        </div>
+        <button class="btn-action" onclick="toggleReviewModal(true)"><i class="fa-solid fa-pen-to-square"></i> Leave Review</button>
+    </div>
 
+    <div id="reviewsList" style="margin-top:15px; display:flex; flex-direction:column; gap:10px; max-height:200px; overflow-y:auto;">
+        <p style="font-size:13px; color:var(--text-muted);">Abhi tak koi review nahi aaya hai.</p>
+    </div>
+</div>
+
+<!-- REVIEW POPUP MODAL -->
+<div id="reviewModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:99999; justify-content:center; align-items:center;">
+    <div style="background:#fff; padding:25px; border-radius:12px; width:340px; text-align:center;">
+        <h3 style="margin-bottom:10px; color:var(--primary);">Rate Your Product</h3>
+        <input type="text" id="revProductName" placeholder="Product Name (e.g. Milk)" class="form-input" style="margin-bottom:10px;">
+        
+        <div style="margin-bottom:15px; font-size:24px; color:#f59e0b; cursor:pointer;" id="starRatingContainer">
+            <i class="fa-regular fa-star" onclick="setRating(1)"></i>
+            <i class="fa-regular fa-star" onclick="setRating(2)"></i>
+            <i class="fa-regular fa-star" onclick="setRating(3)"></i>
+            <i class="fa-regular fa-star" onclick="setRating(4)"></i>
+            <i class="fa-regular fa-star" onclick="setRating(5)"></i>
+        </div>
+
+        <textarea id="revComment" placeholder="Write your review or comment..." class="form-input" style="height:80px; margin-bottom:15px; resize:none;"></textarea>
+
+        <div style="display:flex; gap:10px;">
+            <button class="btn-action btn-danger" style="flex:1;" onclick="toggleReviewModal(false)">Cancel</button>
+            <button class="btn-action" style="flex:1;" onclick="submitReview()">Submit</button>
+        </div>
+    </div>
+</div>
 <!-- FLOATING DUKAANIA AI ASSISTANT -->
 <div class="ai-widget">
     <div class="ai-header">
@@ -243,6 +281,87 @@ function appendLiveMessage(msg) {
 
 // Page load par live chat active karne ke liye
 initLiveChat();
+    // --- REVIEW & RATING ENGINE ---
+let selectedStars = 5;
+
+function toggleReviewModal(show) {
+    document.getElementById('reviewModal').style.display = show ? 'flex' : 'none';
+}
+
+function setRating(stars) {
+    selectedStars = stars;
+    const starEls = document.querySelectorAll('#starRatingContainer i');
+    starEls.forEach((el, index) => {
+        if (index < stars) {
+            el.className = 'fa-solid fa-star';
+        } else {
+            el.className = 'fa-regular fa-star';
+        }
+    });
+}
+
+async function submitReview() {
+    const pName = document.getElementById('revProductName').value.trim();
+    const comment = document.getElementById('revComment').value.trim();
+    
+    if(!pName || !comment) return alert("Product name aur comment dono enter karein.");
+
+    const { data: { session } } = await dbClient.auth.getSession();
+    const userId = session ? session.user.id : null;
+
+    const { error } = await dbClient.from('reviews').insert([{
+        user_id: userId,
+        product_name: pName,
+        rating: selectedStars,
+        comment: comment
+    }]);
+
+    if(error) {
+        alert("Review save nahi ho saka: " + error.message);
+    } else {
+        alert("Review submit ho gaya! Thank you.");
+        toggleReviewModal(false);
+        document.getElementById('revProductName').value = '';
+        document.getElementById('revComment').value = '';
+        fetchReviews();
+    }
+}
+
+async function fetchReviews() {
+    const { data, error } = await dbClient.from('reviews').select('*').order('created_at', { ascending: false });
+    if (error || !data) return;
+
+    const listContainer = document.getElementById('reviewsList');
+    if (data.length === 0) {
+        listContainer.innerHTML = '<p style="font-size:13px; color:var(--text-muted);">Abhi tak koi review nahi aaya hai.</p>';
+        return;
+    }
+
+    let totalScore = 0;
+    listContainer.innerHTML = '';
+
+    data.forEach(r => {
+        totalScore += r.rating;
+        listContainer.innerHTML += `
+            <div style="border-bottom:1px solid var(--border); padding-bottom:8px; font-size:12px;">
+                <div style="display:flex; justify-content:space-between; font-weight:bold;">
+                    <span>${r.product_name}</span>
+                    <span style="color:#f59e0b;"><i class="fa-solid fa-star"></i> ${r.rating}/5</span>
+                </div>
+                <div style="color:var(--text-main); margin-top:2px;">${r.comment}</div>
+            </div>`;
+    });
+
+    const avg = (totalScore / data.length).toFixed(1);
+    let badgeTitle = "Verified Merchant";
+    if (avg >= 4.5) badgeTitle = "Top Rated Merchant 🌟";
+    else if (avg >= 3.5) badgeTitle = "Trusted Shop 👍";
+
+    document.getElementById('shopRatingBadge').innerHTML = `<i class="fa-solid fa-star"></i> ${avg} / 5.0 (${badgeTitle} • ${data.length} reviews)`;
+}
+
+// Auto Load Reviews on page start
+fetchReviews();
 let isSignUpMode = false;
 let productsList = [];
 let customersList = [];
