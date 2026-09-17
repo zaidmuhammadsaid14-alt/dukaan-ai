@@ -1,1 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dukaan AI</title>
+  
+  <!-- Modern Fonts (Outfit, Inter, JetBrains Mono) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Local Custom CSS Link -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#0d0f18] text-[#e2e4f0] font-sans antialiased min-h-screen flex flex-col justify-between">
 
+  <!-- Header / Navigation -->
+  <header class="border-b border-gray-800 p-4 flex items-center justify-between max-w-7xl mx-auto w-full">
+    <div class="flex items-center gap-3">
+      <img src="logo.svg" alt="Dukaan AI Logo" class="h-8 w-auto" onerror="this.style.display='none'">
+      <span class="font-['Outfit'] font-bold text-xl tracking-wide text-white">DUKAAN<span class="text-indigo-500">.AI</span></span>
+    </div>
+    <nav class="hidden md:flex gap-6 text-sm text-gray-400">
+      <a href="#" class="hover:text-white transition">Home</a>
+      <a href="#" class="hover:text-white transition">Features</a>
+      <a href="#" class="hover:text-white transition">Pricing</a>
+    </nav>
+    <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition">
+      Get Started
+    </button>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="max-w-4xl mx-auto text-center px-4 py-20 flex-1 flex flex-col justify-center items-center">
+    <span class="px-3 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-full text-xs font-mono mb-6">
+      Powered by AI
+    </span>
+    <h1 class="font-['Outfit'] font-extrabold text-4xl sm:text-6xl text-white mb-6 leading-tight">
+      Build Your Store Smartly with <span class="text-indigo-400">Dukaan AI</span>
+    </h1>
+    <p class="text-gray-400 text-base sm:text-lg max-w-2xl mb-8">
+      Manage inventory, automate sales, and grow your e-commerce business seamlessly with smart tools.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 w-full justify-center max-w-md">
+      <input type="email" placeholder="Enter your email" class="bg-[#161926] border border-gray-800 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 flex-1 text-white">
+      <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-lg text-sm transition">
+        Start Free Trial
+      </button>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-800 py-6 text-center text-xs text-gray-500">
+    © 2026 Dukaan AI. All rights reserved.
+  </footer>
+
+</body>
+</html>
