@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daraz Marketplace - DukaanLink</title>
+    <title>Daraz - DukaanLink Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -20,7 +20,7 @@
             color: var(--text-dark);
             padding-bottom: 70px;
         }
-        /* Top Search Header */
+        /* Top Header */
         .daraz-header {
             background-color: var(--primary-orange);
             padding: 10px 12px;
@@ -46,23 +46,24 @@
             width: 100%;
             font-size: 14px;
         }
-        .search-btn {
+        .login-badge {
             background: #ffe1d2;
             color: var(--primary-orange);
             border: none;
-            padding: 6px 14px;
+            padding: 6px 12px;
             border-radius: 4px;
             font-weight: bold;
             cursor: pointer;
+            font-size: 13px;
         }
 
-        /* Categories Icon Grid */
+        /* Categories Row */
         .categories-row {
             background: white;
             display: flex;
             justify-content: space-around;
             padding: 12px 5px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             overflow-x: auto;
         }
         .cat-item {
@@ -72,38 +73,24 @@
             min-width: 60px;
             cursor: pointer;
         }
-        .cat-icon {
-            font-size: 22px;
-            margin-bottom: 4px;
-        }
+        .cat-icon { font-size: 22px; margin-bottom: 4px; }
 
-        /* Flash Sale / Banner */
-        .promo-banner {
-            background: white;
+        /* Banner Slider Style */
+        .banner-slider {
+            background: linear-gradient(135deg, #ff7e5f, #feb47b);
             margin: 0 10px 10px 10px;
             border-radius: 8px;
-            padding: 12px;
+            padding: 20px;
             text-align: center;
+            color: white;
             font-weight: bold;
-            color: var(--primary-orange);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
 
-        /* Product Grid (Daraz Style) */
-        .product-section {
-            padding: 0 10px;
-        }
-        .section-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin: 12px 4px;
-            color: #333;
-        }
-        .daraz-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
+        /* Product Grid */
+        .product-section { padding: 0 10px; }
+        .section-title { font-size: 15px; font-weight: bold; margin: 12px 4px; color: #333; }
+        .daraz-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
         .daraz-card {
             background: white;
             border-radius: 4px;
@@ -111,47 +98,15 @@
             box-shadow: 0 1px 2px rgba(0,0,0,0.08);
             display: flex;
             flex-direction: column;
+            cursor: pointer;
         }
-        .card-img {
-            width: 100%;
-            height: 140px;
-            background: #eee;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #777;
-            font-size: 12px;
-        }
-        .card-body {
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .card-title {
-            font-size: 12px;
-            color: #333;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        .card-price {
-            color: var(--primary-orange);
-            font-size: 15px;
-            font-weight: bold;
-        }
-        .free-delivery-badge {
-            background: #fff3ee;
-            color: var(--primary-orange);
-            font-size: 9px;
-            padding: 2px 4px;
-            border-radius: 2px;
-            width: fit-content;
-            font-weight: bold;
-        }
+        .card-img { width: 100%; height: 130px; background: #e0e0e0; display: flex; align-items: center; justify-content: center; color: #777; font-size: 11px; }
+        .card-body { padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+        .card-title { font-size: 12px; color: #333; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .card-price { color: var(--primary-orange); font-size: 15px; font-weight: bold; }
+        .free-delivery-badge { background: #fff3ee; color: var(--primary-orange); font-size: 9px; padding: 2px 4px; border-radius: 2px; width: fit-content; font-weight: bold; }
 
-        /* Screens & Views */
+        /* General Forms & Containers */
         .container { padding: 16px; max-width: 600px; margin: 0 auto; }
         .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
         .btn { background-color: var(--primary-orange); color: white; padding: 12px; border: none; border-radius: 4px; width: 100%; font-weight: 600; cursor: pointer; margin-top: 10px; }
@@ -159,12 +114,10 @@
         input, select { width: 100%; padding: 10px; margin: 6px 0 12px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
         .hidden { display: none !important; }
 
-        /* Bottom Navigation Bar (Daraz Style) */
+        /* Bottom Nav Bar */
         .bottom-nav {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
+            bottom: 0; left: 0; width: 100%;
             background: white;
             border-top: 1px solid #ddd;
             display: flex;
@@ -173,156 +126,123 @@
             z-index: 1000;
             box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
         }
-        .nav-tab {
-            text-align: center;
-            font-size: 10px;
-            color: var(--text-gray);
-            cursor: pointer;
-            background: none;
-            border: none;
-        }
-        .nav-tab.active {
-            color: var(--primary-orange);
-            font-weight: bold;
-        }
-        .nav-tab span {
-            display: block;
-            font-size: 18px;
-        }
+        .nav-tab { text-align: center; font-size: 10px; color: var(--text-gray); cursor: pointer; background: none; border: none; }
+        .nav-tab.active { color: var(--primary-orange); font-weight: bold; }
+        .nav-tab span { display: block; font-size: 18px; }
     </style>
 </head>
 <body>
 
-    <!-- MAIN APP VIEW (Daraz Home Screen) -->
     <div id="homeScreen">
-        <!-- Top Search Header -->
         <div class="daraz-header">
             <div class="search-box">
                 <span>🔍</span>
                 <input type="text" placeholder="Search in Daraz...">
             </div>
-            <button class="search-btn" onclick="openLogin()">Login</button>
+            <button class="login-badge" onclick="openLoginPortal()">Login</button>
         </div>
 
-        <!-- Categories Row -->
         <div class="categories-row">
-            <div class="cat-item"><div class="cat-icon">🪙</div>Daraz Coins</div>
+            <div class="cat-item"><div class="cat-icon">🪙</div>Coins</div>
             <div class="cat-item"><div class="cat-icon">🎁</div>Daraz Land</div>
-            <div class="cat-item"><div class="cat-icon">💡</div>Pay Utilities</div>
+            <div class="cat-item"><div class="cat-icon">💡</div>Utilities</div>
             <div class="cat-item"><div class="cat-icon">🏷️</div>Vouchers</div>
-            <div class="cat-item"><div class="cat-icon">🛍️</div>Buy Any 3</div>
+            <div class="cat-item"><div class="cat-icon">🛍️</div>Any 3</div>
         </div>
 
-        <!-- Promo Banner -->
-        <div class="promo-banner">
-            ⚡ Flash Sale Live - Up to 80% OFF!
+        <div class="banner-slider">
+            ⚡ Mega Flash Sale - Up to 80% OFF Live Now!
         </div>
 
-        <!-- Product Feed Grid -->
         <div class="product-section">
             <div class="section-title">Just For You 🔥</div>
-            <div id="darazProductFeed" class="daraz-grid">
-                <!-- Products loaded dynamically -->
-            </div>
+            <div id="darazProductFeed" class="daraz-grid"></div>
         </div>
     </div>
 
-    <!-- LOGIN / ROLE SCREEN -->
-    <div id="authScreen" class="container hidden" style="margin-top: 50px;">
+    <div id="authScreen" class="container hidden" style="margin-top: 40px;">
         <div class="card" style="text-align: center;">
             <h2>Welcome to Daraz</h2>
-            <p style="color: #666; font-size: 13px; margin-bottom: 20px;">Discover the endless possibilities</p>
+            <p style="color:#666; font-size:13px; margin-bottom:20px;">Sign in to access your dashboard & cart</p>
             <button class="btn" onclick="loginWithGoogle()">Continue with Google</button>
-            <button class="btn" style="background-color: #757575;" onclick="showHome()">Back to Home</button>
+            <button class="btn" style="background:#757575;" onclick="switchTab('home')">Back to Home</button>
         </div>
     </div>
 
-    <!-- ROLE SELECTION (Customer vs Seller) -->
-    <div id="roleScreen" class="container hidden" style="margin-top: 50px;">
+    <div id="roleScreen" class="container hidden" style="margin-top: 40px;">
         <div class="card" style="text-align: center;">
-            <h2>Choose Your Portal</h2>
-            <p style="color: #666; font-size: 13px;">Select how you want to use the app:</p>
+            <h2>Select Portal</h2>
+            <p style="color:#666; font-size:13px;">Choose how you want to use DukaanLink:</p>
             <button class="btn" onclick="selectRole('customer')">🛍️ Customer Shopping Mode</button>
-            <button class="btn btn-success" onclick="selectRole('seller')">🏪 Seller Shop Dashboard</button>
+            <button class="btn btn-success" onclick="selectRole('seller')">🏪 Seller Store Dashboard</button>
         </div>
     </div>
 
-    <!-- SELLER DASHBOARD -->
     <div id="sellerDashboard" class="container hidden">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin: 15px 0;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin:15px 0;">
             <h3 style="margin:0;">Seller Dashboard</h3>
-            <button onclick="showAddProduct()" class="btn btn-success" style="width: auto; margin:0; padding: 6px 12px; font-size:12px;">+ Add Product</button>
+            <button onclick="showAddProduct()" class="btn btn-success" style="width:auto; margin:0; padding:6px 12px; font-size:12px;">+ Add Product</button>
         </div>
         <div class="card">
-            <h4>Your Store Inventory</h4>
+            <h4>Your Inventory</h4>
             <div id="sellerProductsList"><p style="color:#777; font-size:12px;">Loading...</p></div>
         </div>
-        <button onclick="logout()" class="btn" style="background-color: #d32f2f;">Logout</button>
+        <button onclick="logout()" class="btn" style="background:#d32f2f;">Logout</button>
     </div>
 
-    <!-- ADD PRODUCT SCREEN -->
     <div id="addProductScreen" class="container hidden">
         <div class="card">
-            <h3 style="margin-top: 0;">Upload Product 📦</h3>
-            <label>Product Title</label><input type="text" id="prodTitle" placeholder="e.g. Smart Watch">
-            <label>Price (Rs.)</label><input type="number" id="prodPrice" placeholder="1499">
-            <label>Stock</label><input type="number" id="prodStock" placeholder="20">
-            <button class="btn" onclick="publishProduct()">Publish Product</button>
-            <button onclick="showSellerDashboard()" class="btn" style="background-color: #757575;">Cancel</button>
+            <h3 style="margin-top:0;">Upload Product 📦</h3>
+            <label>Title</label><input type="text" id="prodTitle" placeholder="Product Name">
+            <label>Price (Rs.)</label><input type="number" id="prodPrice" placeholder="999">
+            <label>Stock</label><input type="number" id="prodStock" placeholder="10">
+            <button class="btn" onclick="publishProduct()">Publish</button>
+            <button onclick="showSellerDashboard()" class="btn" style="background:#757575;">Cancel</button>
         </div>
     </div>
 
-    <!-- ACCOUNT / PROFILE SCREEN (When Logged in as Customer) -->
+    <div id="cartScreen" class="container hidden">
+        <div class="card" style="text-align:center; padding:30px 20px;">
+            <span style="font-size:40px;">🛒</span>
+            <h3>Your Shopping Cart</h3>
+            <div id="cartItemsContainer" style="margin-top:15px; text-align:left;">
+                <p style="color:#777; font-size:13px; text-align:center;">Cart is empty.</p>
+            </div>
+            <button class="btn" onclick="switchTab('home')" style="margin-top:15px;">Continue Shopping</button>
+        </div>
+    </div>
+
     <div id="accountScreen" class="container hidden">
-        <div class="card" style="text-align: center;">
-            <div style="font-size: 40px; margin-bottom: 10px;">👤</div>
+        <div class="card" style="text-align:center;">
+            <span style="font-size:40px;">👤</span>
             <h3 id="userEmailDisplay">My Account</h3>
             <p style="color:var(--primary-orange); font-weight:bold;" id="userRoleDisplay">Customer</p>
-            <button onclick="switchToSeller()" class="btn btn-success" style="margin-top:10px;">Switch to Seller Dashboard</button>
-            <button onclick="logout()" class="btn" style="background-color: #d32f2f; margin-top:10px;">Logout</button>
+            <button onclick="showSellerDashboard()" class="btn btn-success" id="switchToSellerBtn" style="display:none; margin-top:10px;">Open Seller Dashboard</button>
+            <button onclick="logout()" class="btn" style="background:#d32f2f; margin-top:10px;">Logout</button>
         </div>
     </div>
 
-    <!-- CART SCREEN -->
-    <div id="cartScreen" class="container hidden">
-        <div class="card" style="text-align: center; padding: 40px 20px;">
-            <span style="font-size: 40px;">🛒</span>
-            <h3>There are no items in this cart</h3>
-            <button class="btn" onclick="switchTab('home')" style="width: auto; padding: 10px 20px; margin-top: 15px;">CONTINUE SHOPPING</button>
-        </div>
-    </div>
-
-    <!-- MESSAGES SCREEN -->
     <div id="messageScreen" class="container hidden">
-        <div class="card" style="text-align: center; padding: 40px 20px;">
-            <span style="font-size: 40px;">💬</span>
-            <h3>No Messages Yet</h3>
-            <p style="color:#777; font-size:12px;">Chat with sellers will appear here.</p>
+        <div class="card" style="text-align:center; padding:30px 20px;">
+            <span style="font-size:40px;">💬</span>
+            <h3>Messages</h3>
+            <p style="color:#777; font-size:12px;">No active chats with sellers.</p>
         </div>
     </div>
-    <!-- Daraz Bottom Navigation Bar -->
     <div class="bottom-nav">
-        <button class="nav-tab active" onclick="switchTab('home')">
-            <span>🏠</span>Home
-        </button>
-        <button class="nav-tab" onclick="switchTab('messages')">
-            <span>💬</span>Messages
-        </button>
-        <button class="nav-tab" style="color: var(--primary-orange);">
-            <span>💯</span>Authentic
-        </button>
-        <button class="nav-tab" onclick="switchTab('cart')">
-            <span>🛒</span>Cart
-        </button>
-        <button class="nav-tab" onclick="switchTab('account')">
-            <span>👤</span>Account
-        </button>
+        <button class="nav-tab active" onclick="switchTab('home')"><span>🏠</span>Home</button>
+        <button class="nav-tab" onclick="switchTab('messages')"><span>💬</span>Messages</button>
+        <button class="nav-tab" style="color:var(--primary-orange);"><span>💯</span>Authentic</button>
+        <button class="nav-tab" onclick="switchTab('cart')"><span>🛒</span>Cart</button>
+        <button class="nav-tab" onclick="switchTab('account')"><span>👤</span>Account</button>
     </div>
 
     <script>
         const SUPABASE_URL = 'https://yrrrqagtnbcufhcswstp.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_FGqvkjDrSAHG2RQxW4ErHw_29yN11YR';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let cart = [];
 
         window.onload = async function() {
             loadDarazProducts();
@@ -346,7 +266,7 @@
             feed.innerHTML = '';
             products.forEach(p => {
                 feed.innerHTML += `
-                    <div class="daraz-card">
+                    <div class="daraz-card" onclick="addToCart('${p.id}', '${p.title.replace(/'/g, "")}', ${p.price})">
                         <div class="card-img">No Image</div>
                         <div class="card-body">
                             <div class="card-title">${p.title}</div>
@@ -355,6 +275,31 @@
                         </div>
                     </div>`;
             });
+        }
+
+        function addToCart(id, title, price) {
+            cart.push({ id, title, price });
+            alert(`"${title}" added to Cart! 🛒`);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cartItemsContainer');
+            if (cart.length === 0) {
+                container.innerHTML = '<p style="color:#777; font-size:13px; text-align:center;">Cart is empty.</p>';
+                return;
+            }
+            let html = '';
+            let total = 0;
+            cart.forEach((item, index) => {
+                total += item.price;
+                html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #eee; font-size:13px;">
+                    <span>${item.title}</span>
+                    <span style="color:var(--primary-orange); font-weight:bold;">Rs. ${item.price}</span>
+                </div>`;
+            });
+            html += `<div style="margin-top:10px; font-weight:bold; text-align:right;">Total: Rs. ${total}</div>`;
+            container.innerHTML = html;
         }
 
         async function loginWithGoogle() {
@@ -372,7 +317,7 @@
             }
         }
 
-        function openLogin() {
+        function openLoginPortal() {
             supabaseClient.auth.getSession().then(({ data: { session } }) => {
                 if (session) {
                     checkUserProfile(session.user).then(() => {
@@ -413,11 +358,14 @@
             } else if (tabName === 'account') {
                 supabaseClient.auth.getSession().then(({ data: { session } }) => {
                     if (!session) {
-                        openLogin();
+                        openLoginPortal();
                     } else {
                         document.getElementById('accountScreen').classList.remove('hidden');
                         document.getElementById('userEmailDisplay').innerText = session.user.email;
                         document.getElementById('userRoleDisplay').innerText = window.currentUserRole ? window.currentUserRole.toUpperCase() : 'CUSTOMER';
+                        if (window.currentUserRole === 'seller') {
+                            document.getElementById('switchToSellerBtn').style.display = 'block';
+                        }
                     }
                 });
             }
@@ -434,16 +382,10 @@
             document.getElementById('messageScreen').classList.add('hidden');
         }
 
-        function showHome() { switchTab('home'); }
-
         function showSellerDashboard() {
             hideAllScreens();
             document.getElementById('sellerDashboard').classList.remove('hidden');
             loadSellerProducts();
-        }
-
-        function switchToSeller() {
-            showSellerDashboard();
         }
 
         function showAddProduct() {
@@ -488,3 +430,4 @@
     </script>
 </body>
 </html>
+
