@@ -47,14 +47,28 @@
         Start Free Trial
       </button>
     </form>
-    <p id="responseMessage" class="text-emerald-400 text-sm mt-4 hidden"></p>
+    <p id="responseMessage" class="text-emerald-400 text-sm mt-4 font-medium hidden"></p>
   </main>
 
   <footer class="border-t border-gray-800 py-6 text-center text-xs text-gray-500">
     © 2026 Dukaan AI. All rights reserved.
   </footer>
 
-  <!-- Link JavaScript File -->
-  <script src="script.js"></script>
+  <!-- Built-in JavaScript for Instant Working -->
+  <script>
+    document.getElementById('getStartedBtn').addEventListener('click', function() {
+        alert('Welcome to Dukaan AI! Dashboard is getting ready.');
+    });
+
+    document.getElementById('trialForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const email = document.getElementById('emailInput').value;
+        const msg = document.getElementById('responseMessage');
+        
+        msg.textContent = `Success! Confirmation link sent to ${email}.`;
+        msg.classList.remove('hidden');
+        document.getElementById('emailInput').value = '';
+    });
+  </script>
 </body>
 </html>
