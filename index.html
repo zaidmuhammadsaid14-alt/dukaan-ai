@@ -1,1 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DukaanLink</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        header { background-color: #2563eb; color: white; padding: 10px; text-align: center; }
+        .container { padding: 20px; }
+        .hidden { display: none; }
+        .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: white; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+        .product { border: 1px solid #ccc; padding: 10px; background: white; }
+        .cart { position: fixed; bottom: 0; left: 0; right: 0; background: #2563eb; color: white; text-align: center; padding: 10px; }
+        .nav { position: fixed; bottom: 0; left: 0; right: 0; background: #2563eb; color: white; display: flex; justify-content: space-around; }
+        .nav button { background: none; border: none; color: white; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>DukaanLink</h1>
+        <div id="role-switcher">
+            <button onclick="toggleRole()">Switch Role</button>
+        </div>
+    </header>
+    <div class="container" id="app">
+        <div id="login" class="hidden">
+            <h2>Login / Signup</h2>
+            <input type="text" id="username" placeholder="Enter your name">
+            <select id="role">
+                <option value="customer">Customer Shopping Mode</option>
+                <option value="seller">Seller Store Dashboard</option>
+            </select>
+            <button onclick="login()">Login</button>
+        </div>
+        <div id="seller-dashboard" class="hidden">
+            <h2>Seller Dashboard</h2>
+            <button onclick="openModal()">+ Add Item</button>
+            <div id="product-list" class="product-grid"></div>
+        </div>
+        <div id="customer-marketplace" class="hidden">
+            <h2>Marketplace</h2>
+            <input type="text" id="search" placeholder="Search products..." oninput="searchProducts()">
+            <div id="marketplace-list" class="product-grid"></div>
+        </div>
+        <div id="cart" class="hidden">
+            <h2>Shopping Cart</h2>
+            <div id="cart-items"></div>
+            <div>Total: <span id="total-price">0</span></div>
+            <button onclick="checkout()">Checkout</button>
+        </div>
+        <div id="chat" class="hidden">
+            <h2>Chat with Seller</h2>
+            <div id="chat-messages"></div>
+            <input type="text" id="chat-input" placeholder="Type a message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    <div class="nav">
+        <button onclick="show('customer-marketplace')">Home</button>
+        <button onclick="show('chat')">Chats</button>
+        <button onclick="show('cart')">Cart</button>
+        <button onclick="show('profile')">Profile</button>
+    </div>
+    <div class="modal" id="add-item-modal">
+        <div class="modal-content">
+            <span onclick="closeModal()" style="cursor:pointer;">&times;</span>
+            <h2>Add Item</h2>
+            <input type="text" id="item-title" placeholder="Title">
+            <input type="number" id="item-price" placeholder="Price">
+            <input type="number" id="item-stock" placeholder="Stock">
+            <input type="text" id="item-category" placeholder="Category">
+            <input type="text" id="item-image" placeholder="Image URL">
+            <button onclick="addItem()">Add Item</button>
+        </div>
+    </div>
+    <script>
+        let currentUser = null;
+        let currentRole = 'customer';
+        const products = JSON.parse(localStorage.getItem('products')) || [];
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        function toggleRole() {
+            currentRole = currentRole === 'customer' ? 'seller' : 'customer';
+            show(currentRole === 'customer' ? 'customer-marketplace' : 'seller-dashboard');
+        }
+
+        function login() {
+            const username = document.getElementById('username').value;
+            if (username) {
+                currentUser = username;
+                document.getElementById('login').classList.add('hidden');
+                show(currentRole === 'customer' ? 'customer-marketplace' : 'seller-dashboard');
+                renderProducts();
+            }
+        }
+
+        function show(section) {
+            document.getElementById('seller-dashboard').classList.add('hidden');
+            document.getElementById('customer-marketplace').classList.add('hidden');
+            document.getElementById('cart').classList.add('hidden');
+            document.getElementById('chat').classList.add('hidden');
+            document.getElementById(section).classList.remove('hidden');
+            if (section === 'cart') renderCart();
+            if (section === 'chat') renderChat();
+        }
+
+        function openModal() {
+            document.getElementById('add-item-modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('add-item-modal').style.display = 'none';
+        }
+
+        function addItem() {
+            const title = document.getElementById('item-title').value;
+            const price = document.getElementById('item-price').value;
+            const stock = document.getElementById('item-stock').value;
+            const category = document.getElementById('item-category').value;
+            const image = document.getElementById('item-image').value;
+            if (title && price && stock && category && image) {
+                products.push({ title, price, stock, category, image });
+                localStorage.setItem('products', JSON.stringify(products));
+                closeModal();
+                renderProducts();
+            }
+        }
+
+        function renderProducts() {
+            const productList = document.getElementById('product-list');
+            productList.innerHTML = '';
+            products.forEach((product, index) => {
+                productList.innerHTML += `
+                    <div class="product">
+                        <img src="${product.image}" alt="${product.title}" style="width:100%">
+                        <h3>${product.title}</h3>
+                        <p>Price: $${product.price}</p>
+                        <button onclick="addToCart(${index})">Add to Cart</button>
+                    </div>
+                `;
+            });
+        }
+
+        function addToCart(index) {
+            const product = products[index];
+            const cartItem = cart.find(item => item.title === product.title);
+            if (cartItem) {
+                cartItem.quantity++;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+        }
+
+        function renderCart() {
+            const cartItems = document.getElementById('cart-items');
+            cartItems.innerHTML = '';
+            let total = 0;
+            cart.forEach((item, index) => {
+                total += item.price * item.quantity;
+                cartItems.innerHTML += `
+                    <div>
+                        <h4>${item.title}</h4>
+                        <p>Price: $${item.price} x ${item.quantity}</p>
+                        <button onclick="removeFromCart(${index})">Remove</button>
+                    </div>
+                `;
+            });
+            document.getElementById('total-price').innerText = total;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+        }
+
+        function checkout() {
+            alert('Checkout functionality not implemented yet.');
+        }
+
+        function searchProducts() {
+            const query = document.getElementById('search').value.toLowerCase();
+            const marketplaceList = document.getElementById('marketplace-list');
+            marketplaceList.innerHTML = '';
+            products.filter(product => product.title.toLowerCase().includes(query)).forEach(product => {
+                marketplaceList.innerHTML += `
+                    <div class="product">
+                        <img src="${product.image}" alt="${product.title}" style="width:100%">
+                        <h3>${product.title}</h3>
+                        <p>Price: $${product.price}</p>
+                        <button onclick="addToCart(product)">Add to Cart</button>
+                    </div>
+                `;
+            });
+        }
+
+        function renderChat() {
+            const chatMessages = document.getElementById('chat-messages');
+            chatMessages.innerHTML = '';
+            // Chat rendering logic here
+        }
+
+        function sendMessage() {
+            const message = document.getElementById('chat-input').value;
+            // Send message logic here
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            show('login');
+        });
+    </script>
+</body>
+</html>
 
