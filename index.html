@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Rise of the Streets</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#050505;
+  font-family:Arial,Helvetica,sans-serif;
+  color:white;
+}
+
+body{
+  touch-action:none;
+}
+
+#game{
+  position:fixed;
+  inset:0;
+}
+
+canvas{
+  display:block;
+  width:100%;
+  height:100%;
+}
+
+/* =========================
+   LOADING SCREEN
+========================= */
+
+#loading{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  background:
+    radial-gradient(circle at center,#242424 0%,#090909 55%,#000 100%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:18px;
+}
+
+.logo-space{
+  width:min(300px,70vw);
+  height:180px;
+  border:2px dashed rgba(255,180,0,.35);
+  border-radius:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:rgba(255,255,255,.35);
+  text-align:center;
+  padding:20px;
+}
+
+.logo-space span{
+  font-size:14px;
+  letter-spacing:2px;
+}
+
+#loading h1{
+  font-size:clamp(25px,7vw,48px);
+  letter-spacing:4px;
+  text-align:center;
+  text-shadow:0 0 20px rgba(255,170,0,.45);
+}
+
+#loading p{
+  color:#aaa;
+  font-size:14px;
+}
+
+.loader{
+  width:220px;
+  height:5px;
+  background:#222;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.loader div{
+  width:0%;
+  height:100%;
+  background:#ffb300;
+  animation:load 2.2s ease forwards;
+}
+
+@keyframes load{
+  from{width:0}
+  to{width:100%}
+}
+
+/* =========================
+   HUD
+========================= */
+
+#hud{
+  position:fixed;
+  top:12px;
+  left:12px;
+  z-index:20;
+  display:none;
+  pointer-events:none;
+}
+
+.panel{
+  min-width:190px;
+  padding:12px 14px;
+  border-radius:12px;
+  background:rgba(0,0,0,.65);
+  border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(8px);
+  box-shadow:0 8px 30px rgba(0,0,0,.35);
+}
+
+.game-title{
+  font-size:13px;
+  letter-spacing:2px;
+  color:#ffbd2e;
+  margin-bottom:7px;
+  font-weight:bold;
+}
+
+.stat{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  font-size:13px;
+  margin:4px 0;
+}
+
+.value{
+  color:#fff;
+  font-weight:bold;
+}
+
+/* =========================
+   MESSAGE
+========================= */
+
+#message{
+  position:fixed;
+  left:50%;
+  bottom:130px;
+  transform:translateX(-50%);
+  z-index:30;
+  display:none;
+  max-width:85vw;
+  padding:10px 16px;
+  border-radius:10px;
+  background:rgba(0,0,0,.78);
+  border:1px solid rgba(255,180,0,.4);
+  color:#fff;
+  font-size:14px;
+  text-align:center;
+}
+
+/* =========================
+   CROSSHAIR
+========================= */
+
+#crosshair{
+  position:fixed;
+  left:50%;
+  top:50%;
+  width:18px;
+  height:18px;
+  transform:translate(-50%,-50%);
+  z-index:15;
+  pointer-events:none;
+  display:none;
+}
+
+#crosshair:before,
+#crosshair:after{
+  content:"";
+  position:absolute;
+  background:rgba(255,255,255,.8);
+}
+
+#crosshair:before{
+  width:18px;
+  height:2px;
+  left:0;
+  top:8px;
+}
+
+#crosshair:after{
+  width:2px;
+  height:18px;
+  left:8px;
+  top:0;
+}
+
+/* =========================
+   DESKTOP HELP
+========================= */
+
+#controls{
+  position:fixed;
+  right:12px;
+  top:12px;
+  z-index:20;
+  display:none;
+  pointer-events:none;
+}
+
+.control-box{
+  background:rgba(0,0,0,.65);
+  border:1px solid rgba(255,255,255,.12);
+  padding:12px;
+  border-radius:12px;
+  font-size:12px;
+  color:#ccc;
+  line-height:1.8;
+}
+
+.key{
+  color:#fff;
+  font-weight:bold;
+}
+
+/* =========================
+   MOBILE CONTROLS
+========================= */
+
+#mobileControls{
+  position:fixed;
+  inset:0;
+  z-index:40;
+  display:none;
+  pointer-events:none;
+}
+
+#joystick{
+  position:absolute;
+  left:25px;
+  bottom:25px;
+  width:125px;
+  height:125px;
+  border-radius:50%;
+  background:rgba(255,255,255,.08);
+  border:2px solid rgba(255,255,255,.18);
+  pointer-events:auto;
+}
+
+#stick{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:55px;
+  height:55px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:rgba(255,180,0,.65);
+  border:2px solid rgba(255,255,255,.4);
+}
+
+.mobile-btn{
+  position:absolute;
+  width:65px;
+  height:65px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.6);
+  color:white;
+  font-size:12px;
+  font-weight:bold;
+  pointer-events:auto;
+}
+
+#jumpBtn{
+  right:25px;
+  bottom:145px;
+}
+
+#fireBtn{
+  right:105px;
+  bottom:75px;
+}
+
+#actionBtn{
+  right:25px;
+  bottom:65px;
+}
+
+#saveBtn{
+  right:105px;
+  bottom:5px;
+}
+
+@media(max-width:800px){
+  #mobileControls{
+    display:block;
+  }
+
+  #controls{
+    display:none!important;
+  }
+}
+
+@media(min-width:801px){
+  #controls{
+    display:block;
+  }
+}
+
+/* =========================
+   GAME OVERLAY
+========================= */
+
+#startScreen{
+  position:fixed;
+  inset:0;
+  z-index:200;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.35);
+}
+
+.start-card{
+  width:min(420px,90vw);
+  padding:28px;
+  text-align:center;
+  border-radius:18px;
+  background:rgba(10,10,10,.88);
+  border:1px solid rgba(255,180,0,.25);
+}
+
+.start-card h2{
+  color:#ffb300;
+  margin-bottom:10px;
+  letter-spacing:2px;
+}
+
+.start-card p{
+  color:#aaa;
+  font-size:14px;
+  line-height:1.6;
+  margin-bottom:18px;
+}
+
+.start-button{
+  border:0;
+  background:#ffb300;
+  color:#111;
+  padding:12px 22px;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div id="game"></div>
+
+<!-- =========================
+     LOADING
+========================= -->
+
+<div id="loading">
+  <div class="logo-space">
+    <span>LOGO WILL BE ADDED HERE LATER</span>
+  </div>
+
+  <h1>RISE OF THE STREETS</h1>
+
+  <p>Loading city...</p>
+
+  <div class="loader">
+    <div></div>
+  </div>
+</div>
+
+<!-- =========================
+     HUD
+========================= -->
+
+<div id="hud">
+  <div class="panel">
+    <div class="game-title">RISE OF THE STREETS</div>
+
+    <div class="stat">
+      <span>Cash</span>
+      <span class="value" id="cash">$5000</span>
+    </div>
+
+    <div class="stat">
+      <span>Health</span>
+      <span class="value" id="health">100</span>
+    </div>
+
+    <div class="stat">
+      <span>Wanted</span>
+      <span class="value" id="wanted">0</span>
+    </div>
+
+    <div class="stat">
+      <span>Property</span>
+      <span class="value" id="property">None</span>
+    </div>
+
+    <div class="stat">
+      <span>Vehicle</span>
+      <span class="value" id="vehicle">On Foot</span>
+    </div>
+  </div>
+</div>
+
+<!-- =========================
+     CONTROLS
+========================= -->
+
+<div id="controls">
+  <div class="control-box">
+    <div><span class="key">W A S D</span> / Arrows — Move</div>
+    <div><span class="key">SPACE</span> — Jump</div>
+    <div><span class="key">E</span> — Enter / Exit / Buy</div>
+    <div><span class="key">F</span> — Fire</div>
+    <div><span class="key">P</span> — Save</div>
+    <div><span class="key">H</span> — Help</div>
+  </div>
+</div>
+
+<!-- =========================
+     CROSSHAIR
+========================= -->
+
+<div id="crosshair"></div>
+
+<!-- =========================
+     MESSAGE
+========================= -->
+
+<div id="message"></div>
+
+<!-- =========================
+     MOBILE
+========================= -->
+
+<div id="mobileControls">
+
+  <div id="joystick">
+    <div id="stick"></div>
+  </div>
+
+  <button class="mobile-btn" id="jumpBtn">JUMP</button>
+  <button class="mobile-btn" id="fireBtn">FIRE</button>
+  <button class="mobile-btn" id="actionBtn">ACTION</button>
+  <button class="mobile-btn" id="saveBtn">SAVE</button>
+
+</div>
+
+<script type="module">
+
+import * as THREE from
+"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js";
+
+/* =========================================================
+   BASIC SETUP
+========================================================= */
+
+const game = document.getElementById("game");
+
+const scene = new THREE.Scene();
+
+scene.background = new THREE.Color(0x78a9c8);
+
+scene.fog = new THREE.Fog(
+  0x78a9c8,
+  80,
+  420
+);
+
+const camera = new THREE.PerspectiveCamera(
+  65,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
+);
+
+camera.position.set(
+  0,
+  8,
+  14
+);
+
+const renderer = new THREE.WebGLRenderer({
+  antialias:true,
+  powerPreference:"high-performance"
+});
+
+renderer.setPixelRatio(
+  Math.min(window.devicePixelRatio,2)
+);
+
+renderer.setSize(
+  window.innerWidth,
+  window.innerHeight
+);
+
+renderer.shadowMap.enabled = true;
+
+renderer.shadowMap.type =
+THREE.PCFSoftShadowMap;
+
+game.appendChild(renderer.domElement);
+
+/* =========================================================
+   LIGHT
+========================================================= */
+
+const ambientLight =
+new THREE.HemisphereLight(
+  0xffffff,
+  0x444444,
+  2.0
+);
+
+scene.add(ambientLight);
+
+const sun =
+new THREE.DirectionalLight(
+  0xffffff,
+  2.2
+);
+
+sun.position.set(
+  100,
+  180,
+  80
+);
+
+sun.castShadow = true;
+
+sun.shadow.mapSize.width = 2048;
+sun.shadow.mapSize.height = 2048;
+
+sun.shadow.camera.left = -250;
+sun.shadow.camera.right = 250;
+sun.shadow.camera.top = 250;
+sun.shadow.camera.bottom = -250;
+
+scene.add(sun);
+
+/* =========================================================
+   WORLD
+========================================================= */
+
+const WORLD_SIZE = 300;
+
+const groundMaterial =
+new THREE.MeshStandardMaterial({
+  color:0x30342e,
+  roughness:1
+});
+
+const ground =
+new THREE.Mesh(
+  new THREE.PlaneGeometry(
+    WORLD_SIZE,
+    WORLD_SIZE
+  ),
+  groundMaterial
+);
+
+ground.rotation.x = -Math.PI / 2;
+
+ground.receiveShadow = true;
+
+scene.add(ground);
+
+/* =========================================================
+   MATERIALS
+========================================================= */
+
+const roadMaterial =
+new THREE.MeshStandardMaterial({
+  color:0x202020,
+  roughness:.95
+});
+
+const sidewalkMaterial =
+new THREE.MeshStandardMaterial({
+  color:0x777777
+});
+
+const buildingMaterials = [
+
+  new THREE.MeshStandardMaterial({
+    color:0x7c6d63
+  }),
+
+  new THREE.MeshStandardMaterial({
+    color:0x525c68
+  }),
+
+  new THREE.MeshStandardMaterial({
+    color:0x77685c
+  }),
+
+  new THREE.MeshStandardMaterial({
+    color:0x565c55
+  }),
+
+  new THREE.MeshStandardMaterial({
+    color:0x6b5b67
+  })
+];
+
+/* =========================================================
+   ROAD CREATION
+========================================================= */
+
+function createRoad(
+  x,
+  z,
+  width,
+  depth
+){
+
+  const road =
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      width,
+      .08,
+      depth
+    ),
+    roadMaterial
+  );
+
+  road.position.set(
+    x,
+    .04,
+    z
+  );
+
+  road.receiveShadow = true;
+
+  scene.add(road);
+
+  return road;
+}
+
+/* Main roads */
+
+createRoad(0,0,300,18);
+createRoad(0,0,18,300);
+
+createRoad(0,60,300,14);
+createRoad(0,-60,300,14);
+
+createRoad(60,0,14,300);
+createRoad(-60,0,14,300);
+
+createRoad(0,120,300,12);
+createRoad(120,0,12,300);
+
+createRoad(0,-120,300,12);
+createRoad(-120,0,12,300);
+
+/* =========================================================
+   BUILDINGS
+========================================================= */
+
+const buildings = [];
+
+function createBuilding(
+  x,
+  z,
+  w,
+  h,
+  d
+){
+
+  const material =
+  buildingMaterials[
+    Math.floor(
+      Math.random() *
+      buildingMaterials.length
+    )
+  ];
+
+  const building =
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      w,
+      h,
+      d
+    ),
+    material
+  );
+
+  building.position.set(
+    x,
+    h / 2,
+    z
+  );
+
+  building.castShadow = true;
+  building.receiveShadow = true;
+
+  scene.add(building);
+
+  buildings.push(building);
+
+  /* Roof */
+
+  if(h > 12){
+
+    const roof =
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        w + .5,
+        .4,
+        d + .5
+      ),
+      new THREE.MeshStandardMaterial({
+        color:0x222222
+      })
+    );
+
+    roof.position.set(
+      x,
+      h + .2,
+      z
+    );
+
+    roof.castShadow = true;
+
+    scene.add(roof);
+  }
+
+  /* Windows */
+
+  const windowMaterial =
+  new THREE.MeshStandardMaterial({
+    color:0x172532,
+    emissive:0x111111
+  });
+
+  const rows =
+  Math.max(
+    2,
+    Math.floor(h / 5)
+  );
+
+  const cols =
+  Math.max(
+    2,
+    Math.floor(w / 4)
+  );
+
+  for(
+    let row=0;
+    row<rows;
+    row++
+  ){
+
+    for(
+      let col=0;
+      col<cols;
+      col++
+    ){
+
+      if(
+        Math.random() < .25
+      ) continue;
+
+      const win =
+      new THREE.Mesh(
+        new THREE.BoxGeometry(
+          .7,
+          1.2,
+          .05
+        ),
+        windowMaterial
+      );
+
+      const wx =
+      x -
+      w/2 +
+      1.5 +
+      col *
+      ((w-3) /
+      Math.max(cols-1,1));
+
+      const wy =
+      2 +
+      row *
+      ((h-4) /
+      Math.max(rows-1,1));
+
+      win.position.set(
+        wx,
+        wy,
+        z-d/2-.03
+      );
+
+      scene.add(win);
+    }
+  }
+
+  return building;
+}
+
+/* City blocks */
+
+const positions = [
+
+  [-35,-35],
+  [35,-35],
+  [-35,35],
+  [35,35],
+
+  [-95,-35],
+  [-95,35],
+  [95,-35],
+  [95,35],
+
+  [-35,-95],
+  [35,-95],
+  [-35,95],
+  [35,95],
+
+  [-95,-95],
+  [95,-95],
+  [-95,95],
+  [95,95],
+
+  [-145,-35],
+  [-145,35],
+  [145,-35],
+  [145,35],
+
+  [-35,-145],
+  [35,-145],
+  [-35,145],
+  [35,145]
+];
+
+positions.forEach((p,i)=>{
+
+  const w =
+  18 +
+  Math.random()*12;
+
+  const d =
+  18 +
+  Math.random()*12;
+
+  const h =
+  10 +
+  Math.random()*35;
+
+  createBuilding(
+    p[0],
+    p[1],
+    w,
+    h,
+    d
+  );
+});
+
+/* =========================================================
+   STREET LIGHTS
+========================================================= */
+
+function createStreetLight(
+  x,
+  z
+){
+
+  const poleMaterial =
+  new THREE.MeshStandardMaterial({
+    color:0x333333
+  });
+
+  const pole =
+  new THREE.Mesh(
+    new THREE.CylinderGeometry(
+      .08,
+      .1,
+      5
+    ),
+    poleMaterial
+  );
+
+  pole.position.set(
+    x,
+    2.5,
+    z
+  );
+
+  pole.castShadow = true;
+
+  scene.add(pole);
+
+  const lamp =
+  new THREE.Mesh(
+    new THREE.SphereGeometry(
+      .25,
+      8,
+      8
+    ),
+    new THREE.MeshStandardMaterial({
+      color:0xffdd88,
+      emissive:0xffaa22,
+      emissiveIntensity:2
+    })
+  );
+
+  lamp.position.set(
+    x,
+    5,
+    z
+  );
+
+  scene.add(lamp);
+}
+
+for(
+  let x=-140;
+  x<=140;
+  x+=20
+){
+
+  createStreetLight(
+    x,
+    10
+  );
+
+  createStreetLight(
+    x,
+    -10
+  );
+}
+
+/* =========================================================
+   PLAYER
+========================================================= */
+
+const player = {
+
+  position:
+  new THREE.Vector3(
+    0,
+    1,
+    15
+  ),
+
+  velocity:
+  new THREE.Vector3(),
+
+  speed:7,
+
+  health:100,
+
+  grounded:true,
+
+  inVehicle:false,
+
+  cash:5000,
+
+  property:false
+};
+
+const playerGroup =
+new THREE.Group();
+
+scene.add(playerGroup);
+
+function createPlayer(){
+
+  const bodyMaterial =
+  new THREE.MeshStandardMaterial({
+    color:0x202020
+  });
+
+  const skinMaterial =
+  new THREE.MeshStandardMaterial({
+    color:0xb77a55
+  });
+
+  const body =
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      1.1,
+      1.5,
+      .65
+    ),
+    bodyMaterial
+  );
+
+  body.position.y=1.5;
+
+  body.castShadow=true;
+
+  playerGroup.add(body);
+
+  const head =
+  new THREE.Mesh(
+    new THREE.SphereGeometry(
+      .42,
+      16,
+      16
+    ),
+    skinMaterial
+  );
+
+  head.position.y=2.55;
+
+  head.castShadow=true;
+
+  playerGroup.add(head);
+
+  const leg1 =
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      .35,
+      1,
+      .35
+    ),
+    bodyMaterial
+  );
+
+  leg1.position.set(
+    -.28,
+    .5,
+    0
+  );
+
+  leg1.castShadow=true;
+
+  playerGroup.add(leg1);
+
+  const leg2 =
+  leg1.clone();
+
+  leg2.position.x=.28;
+
+  playerGroup.add(leg2);
+}
+
+createPlayer();
+
+/* =========================================================
+   CAR
+========================================================= */
+
+const car =
+new THREE.Group();
+
+scene.add(car);
+
+const carBody =
+new THREE.Mesh(
+  new THREE.BoxGeometry(
+    3.2,
+    .8,
+    5.2
+  ),
+  new THREE.MeshStandardMaterial({
+    color:0x9c1515
+  })
+);
+
+carBody.position.y=.75;
+
+carBody.castShadow=true;
+
+car.add(carBody);
+
+const carTop =
+new THREE.Mesh(
+  new THREE.BoxGeometry(
+    2.4,
+    .7,
+    2.5
+  ),
+  new THREE.MeshStandardMaterial({
+    color:0x171717
+  })
+);
+
+carTop.position.set(
+  0,
+  1.45,
+  -.1
+);
+
+carTop.castShadow=true;
+
+car.add(carTop);
+
+/* Wheels */
+
+const wheelMaterial =
+new THREE.MeshStandardMaterial({
+  color:0x080808
+});
+
+const wheelPositions = [
+
+  [-1.65,.45,-1.7],
+  [1.65,.45,-1.7],
+  [-1.65,.45,1.7],
+  [1.65,.45,1.7]
+
+];
+
+wheelPositions.forEach(
+  p=>{
+
+    const wheel =
+    new THREE.Mesh(
+      new THREE.CylinderGeometry(
+        .55,
+        .55,
+        .35,
+        16
+      ),
+      wheelMaterial
+    );
+
+    wheel.rotation.z=
+    Math.PI/2;
+
+    wheel.position.set(
+      p[0],
+      p[1],
+      p[2]
+    );
+
+    wheel.castShadow=true;
+
+    car.add(wheel);
+  }
+);
+
+car.position.set(
+  8,
+  0,
+  15
+);
+
+/* =========================================================
+   PROPERTY
+========================================================= */
+
+const property =
+new THREE.Mesh(
+  new THREE.BoxGeometry(
+    10,
+    7,
+    10
+  ),
+  new THREE.MeshStandardMaterial({
+    color:0x3d3d3d
+  })
+);
+
+property.position.set(
+  30,
+  3.5,
+  30
+);
+
+property.castShadow=true;
+
+scene.add(property);
+
+const propertyMarker =
+new THREE.Mesh(
+  new THREE.CylinderGeometry(
+    1.5,
+    1.5,
+    .2,
+    24
+  ),
+  new THREE.MeshStandardMaterial({
+    color:0xffb300,
+    emissive:0xff8800,
+    emissiveIntensity:1
+  })
+);
+
+propertyMarker.position.set(
+  30,
+  .2,
+  23
+);
+
+scene.add(propertyMarker);
+
+/* =========================================================
+   NPC TARGETS
+========================================================= */
+
+const npcs=[];
+
+function createNPC(
+  x,
+  z
+){
+
+  const npc =
+  new THREE.Group();
+
+  const body =
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      .9,
+      1.4,
+      .6
+    ),
+    new THREE.MeshStandardMaterial({
+      color:0x263a68
+    })
+  );
+
+  body.position.y=1.4;
+
+  body.castShadow=true;
+
+  npc.add(body);
+
+  const head =
+  new THREE.Mesh(
+    new THREE.SphereGeometry(
+      .4,
+      12,
+      12
+    ),
+    new THREE.MeshStandardMaterial({
+      color:0x9d6d4c
+    })
+  );
+
+  head.position.y=2.35;
+
+  head.castShadow=true;
+
+  npc.add(head);
+
+  npc.position.set(
+    x,
+    0,
+    z
+  );
+
+  scene.add(npc);
+
+  npcs.push({
+    group:npc,
+    health:100,
+    alive:true,
+    speed:1.3
+  });
+}
+
+createNPC(
+  -20,
+  -20
+);
+
+createNPC(
+  20,
+  -25
+);
+
+createNPC(
+  -30,
+  55
+);
+
+createNPC(
+  45,
+  55
+);
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+const keys={};
+
+window.addEventListener(
+  "keydown",
+  e=>{
+
+    keys[e.key.toLowerCase()]=true;
+
+    if(
+      e.key.toLowerCase()===" "
+    ){
+      jump();
+    }
+
+    if(
+      e.key.toLowerCase()==="e"
+    ){
+      action();
+    }
+
+    if(
+      e.key.toLowerCase()==="f"
+    ){
+      fire();
+    }
+
+    if(
+      e.key.toLowerCase()==="p"
+    ){
+      saveGame();
+    }
+
+    if(
+      e.key.toLowerCase()==="h"
+    ){
+      showHelp();
+    }
+  }
+);
+
+window.addEventListener(
+  "keyup",
+  e=>{
+    keys[e.key.toLowerCase()]=false;
+  }
+);
+
+/* =========================================================
+   MOBILE JOYSTICK
+========================================================= */
+
+let joystickX=0;
+let joystickY=0;
+
+const joystick =
+document.getElementById(
+  "joystick"
+);
+
+const stick =
+document.getElementById(
+  "stick"
+);
+
+let joystickActive=false;
+
+function updateJoystick(
+  clientX,
+  clientY
+){
+
+  const rect =
+  joystick.getBoundingClientRect();
+
+  const centerX =
+  rect.left +
+  rect.width/2;
+
+  const centerY =
+  rect.top +
+  rect.height/2;
+
+  let dx =
+  clientX-centerX;
+
+  let dy =
+  clientY-centerY;
+
+  const max =
+  rect.width/2-28;
+
+  const length =
+  Math.sqrt(
+    dx*dx+dy*dy
+  );
+
+  if(length>max){
+
+    dx =
+    dx/length*max;
+
+    dy =
+    dy/length*max;
+  }
+
+  joystickX =
+  dx/max;
+
+  joystickY =
+  dy/max;
+
+  stick.style.transform =
+  `translate(calc(-50% + ${dx}p
